@@ -1,0 +1,19 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <include file="changelog-create-access-card-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-create-role-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="changelog-application-config-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-create-users-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-create-users-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="changelog-create-car-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-create-cordinate-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="changelog-create-recognizer-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-recognize-has-coordinate-table.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

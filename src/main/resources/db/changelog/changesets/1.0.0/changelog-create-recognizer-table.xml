@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="vinicius" id="1586309094835-1">
+        <createTable tableName="recognizers">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="recognizers_pkey"/>
+            </column>
+            <column name="camera_id" type="INTEGER"/>
+            <column name="confidence" type="FLOAT4"/>
+            <column name="created_at" type="date"/>
+            <column name="epoch_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="matches_template" type="INTEGER"/>
+            <column name="origin" type="VARCHAR(255)"/>
+            <column name="plate" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processing_time_ms" type="FLOAT4"/>
+            <column name="uuid_daemon" type="UUID"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

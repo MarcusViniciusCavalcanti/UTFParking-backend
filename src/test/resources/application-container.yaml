@@ -1,0 +1,15 @@
+spring:
+  servlet:
+    port: 8080
+    context-path: /api/v1
+  datasource:
+    url: jdbc:tc:postgresql:9.6.8://localhost:5432/utfparking
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG

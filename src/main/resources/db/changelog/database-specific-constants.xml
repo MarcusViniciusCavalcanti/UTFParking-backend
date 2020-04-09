@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <property name="char" value="" dbms="mysql,h2"/>
+
+    <property name="maxVarcharLength" value="16383" dbms="mysql"/>
+    <property name="maxVarcharLength" value="32767" dbms="h2"/>
+
+    <property name="now" value="now()" dbms="mysql,h2"/>
+
+    <property name="uuid" value="BINARY(16)" dbms="mysql,h2"/>
+    <property name="uuid" value="uuid" dbms="postgresql"/>
+
+    <property name="uuid_function" value="uid.uuid_generate_v4()" dbms="postgresql"/>
+    <property name="uuid_function" value="NEWID()" dbms="mssql"/>
+
+</databaseChangeLog>

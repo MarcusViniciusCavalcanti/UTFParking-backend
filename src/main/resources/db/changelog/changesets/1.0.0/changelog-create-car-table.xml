@@ -1,0 +1,25 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="vinicius" id="1586308927801-1">
+        <createTable tableName="cars">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="cars_pkey"/>
+            </column>
+            <column name="created_at" type="date"/>
+            <column name="last_access" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="model" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="plate" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="date"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="vinicius" id="1586308927801-2">
+        <addUniqueConstraint columnNames="plate" constraintName="uk_h47vv10sihuuf1d7ea6ehgvh9" tableName="cars"/>
+    </changeSet>
+    <changeSet author="vinicius" id="1586308927801-3">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="cars" constraintName="fkhscxbelofh2am1w96xtgwa15y" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="access_card_id" referencedTableName="users" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,41 @@
+logging:
+  level:
+    root: INFO
+    com.memorynotfound: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+spring:
+  liquibase:
+    change-log: classpath:/db/changelog/databaseChangelog.xml
+    database-change-log-table: AD_DB_CHANGELOG
+    database-change-log-lock-table: AD_DB_CHANGELOG_LOCK
+
+---
+spring:
+  profiles: development
+  jpa:
+    open-in-view: false
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/utfparking
+    username: utfparking
+    password: password
+    continueOnError: true
+    initialSize: 0
+    timeBetweenEvictionRunsMillis: 5000
+    minEvictableIdleTimeMillis: 5000
+    minIdle: 0
+    initialization-mode: always
+

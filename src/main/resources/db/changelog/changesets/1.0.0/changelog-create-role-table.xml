@@ -1,0 +1,72 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="vinicius" id="1586297898559-1">
+        <createTable tableName="role">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="role_pkey"/>
+            </column>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="vinicius" id="1586297950712-1">
+        <createTable tableName="access_card_has_roles">
+            <column name="access_card_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="profile_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="vinicius" id="1586297950712-2">
+        <addForeignKeyConstraint
+                baseColumnNames="access_card_id"
+                baseTableName="access_card_has_roles"
+                constraintName="fkdsh1grrtnx436omsiq31wupk"
+                deferrable="false"
+                initiallyDeferred="false"
+                onDelete="NO ACTION"
+                onUpdate="NO ACTION"
+                referencedColumnNames="id"
+                referencedTableName="access_card"
+                validate="true"/>
+    </changeSet>
+
+    <changeSet author="vinicius" id="1586297950712-3">
+        <addForeignKeyConstraint
+                baseColumnNames="profile_id"
+                baseTableName="access_card_has_roles"
+                constraintName="fkrv6arklvspdf2ktf1bdqrwyk7"
+                deferrable="false"
+                initiallyDeferred="false"
+                onDelete="NO ACTION"
+                onUpdate="NO ACTION"
+                referencedColumnNames="id"
+                referencedTableName="role"
+                validate="true"/>
+    </changeSet>
+
+    <changeSet id="1586297950712-4" author="vinicius">
+        <insert tableName="role">
+            <column name="description">Perfil usuário</column>
+            <column name="name">ROLE_USER</column>
+        </insert>
+
+        <insert tableName="role">
+            <column name="description">Perfil Administrador</column>
+            <column name="name">ROLE_ADMIN</column>
+        </insert>
+
+        <insert tableName="role">
+            <column name="description">Perfil Operador</column>
+            <column name="name">ROLE_OPERATOR</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
