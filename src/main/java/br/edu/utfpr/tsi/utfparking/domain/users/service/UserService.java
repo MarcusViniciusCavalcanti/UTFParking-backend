@@ -102,4 +102,8 @@ public class UserService {
 
         return new PageImpl<>(userDTOS, pageable, userPage.getTotalElements());
     }
+
+    public void delete(Long id) {
+        userRepository.deleteById(id);
+    }
 }

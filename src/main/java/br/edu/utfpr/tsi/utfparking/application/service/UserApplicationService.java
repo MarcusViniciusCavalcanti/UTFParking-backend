@@ -13,4 +13,6 @@ public interface UserApplicationService {
     Page<UserDTO> findAllPageableUsers(Pageable pageable);
 
     UserDTO saveNewUser(InputUserDTO inputUser);
+
+    void deleteById(Long id);
 }

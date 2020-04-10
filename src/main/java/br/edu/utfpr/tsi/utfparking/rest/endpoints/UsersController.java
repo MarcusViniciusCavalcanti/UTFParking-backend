@@ -12,9 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -44,5 +42,12 @@ public class UsersController {
         var userRepresentations = pagedResourcesAssembler.toModel(page, userRepresentationFactory);
 
         return ResponseEntity.ok(userRepresentations);
+    }
+
+    @IsAdmin
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
+        userApplicationService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

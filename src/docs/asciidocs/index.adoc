@@ -76,7 +76,7 @@ fica a cargo do JWT.
 [[security-headers]]
 === Headers
 
-Toda requisição, exceto para requisitar um token e requisições advinda do dispositivo (este utiliza outro tipo de autorização, vide: <<authentication-device>>),
+Toda requisição, exceto para requisitar um token e requisições advinda do dispositivo (este utiliza outro tipo de autorização, vide: <<security-device>>),
 deverá conter um Header `Authorization` contendo um portador (`Bearer`).
 
 Exemplo:
@@ -121,8 +121,32 @@ include::{snippets}/authenticate/Login/success/response-fields.adoc[]
 
 IMPORTANT: As requisições para login, serão validadas, consulte: <<erros-badrequest>> para mais informações
 
-[[authentication-device]]
+[[security-device]]
 === Autorizando Dispositivo
+
+[[users]]
+== Usuários
+
+[[users-delete]]
+=== Deletando Usuários
+|===
+|DELETE |`/ap/v1/delete/{id}`
+|===
+
+Deleta um usuário.
+
+Exemplo de requisição:
+include::{snippets}/user/delete/success/http-request.adoc[]
+
+Resposta:
+include::{snippets}/user/delete/success/http-response.adoc[]
+
+IMPORTANT: Não é possível remover o usuário da mesma sessão,
+caso isso ocorra um error será lançado com código de status`422`
+
+include::{snippets}/user/delete/error/http-response.adoc[]
+##Consute sessão de errors para mais informações sobre os campos da mensagem.##
 
 [[erros-badrequest]]
 === Bad Request
+
