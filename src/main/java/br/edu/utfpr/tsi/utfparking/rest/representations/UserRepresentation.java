@@ -1,4 +1,4 @@
-package br.edu.utfpr.tsi.utfparking.application.representations;
+package br.edu.utfpr.tsi.utfparking.rest.representations;
 
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import lombok.Data;

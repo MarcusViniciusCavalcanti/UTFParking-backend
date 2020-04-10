@@ -14,6 +14,9 @@ import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -88,5 +92,25 @@ public class UserService {
 
         user.setAccessCard(accessCard);
         return user;
+    }
+
+    public Page<UserDTO> findAllPageableUsers(Pageable pageable) {
+        var userPage = userRepository.findAll(pageable);
+        var userDTOS = userPage.stream()
+                .map(userFacade::createUserDTOByUser)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userDTOS, pageable, userPage.getTotalElements());
+    }
+
+    public void delete(Long id) {
+        userRepository.deleteById(id);
+    }
+
+
+    public UserDTO findById(Long id) {
+        return userRepository.findById(id)
+                .map(userFacade::createUserDTOByUser)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User by: %d not found", id)));
     }
 }

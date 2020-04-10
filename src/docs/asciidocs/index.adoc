@@ -1,0 +1,152 @@
+= Api - UTFParking
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+:operation-curl-request-title: Example request
+:operation-http-response-title: Example response
+
+[[overview]]
+== Overview
+
+[[overview-http-verbs]]
+=== HTTP Verbs
+
+Esta Api foi construída seguindo os padrões RESTFull, tentando aderir o mais próximo
+possíveis as suas conveções em seu uso dos verbos HTTP
+
+|===
+| Verb | Usage
+
+| `GET`
+| Usado para recuperar recursos
+
+| `POST`
+| Usado para crear um recurso
+
+| `PUT`
+| Usado para atualizar, parcialmente ou completamente.
+
+| `DELETE`
+| Usado para remover um recurso existente.
+|===
+
+[[overview-http-status-codes]]
+=== HTTP status codes
+
+Esta Api foi construída seguindo os padrões RESTFull, tentando aderir o mais próximo
+possíveis as suas convenções em seu uso dos códigos de Status HTTP
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| Para requisições aceitas e processadas
+
+| `201 Created`
+| Um novo recurso foi criado com sucesso. O URI do recurso está disponível a partir da resposta
+`Localizaçao` body.link._self.href
+
+| `204 No Content`
+| Requisição foi processada e não há respostas para tal
+
+| `400 Bad Request`
+| Requsição negada, pois está mal formatada, exemplo de retorno de erro quando
+a falta de um atributo.
+
+| `404 Not Found`
+| Este recurso não foi encontrado.
+|===
+
+[[overview-headers]]
+=== Headers
+
+Cada resposta tem o(s) seguinte(s) cabeçalho(s):
+
+
+[[security]]
+== Segurança
+
+As requisições feitas para Api serão STATELESS (**Sem estado**), logo a utilização de Token para
+autorizar uma determinada requisição se faz necessário, assim a Api para Autorizar e autenticar um usuário
+fica a cargo do JWT.
+
+[[security-headers]]
+=== Headers
+
+Toda requisição, exceto para requisitar um token e requisições advinda do dispositivo (este utiliza outro tipo de autorização, vide: <<security-device>>),
+deverá conter um Header `Authorization` contendo um portador (`Bearer`).
+
+Exemplo:
+[source,http,options="nowrap"]
+----
+Authorization: Bearer <TOKEN>
+----
+
+[[security-error-messagens]]
+=== Resposta de error
+
+==== Não Autenticado
+Caso a requisição não contenha o header acima, excluido as que não carece de autenticação, será retornar uma mensagem
+de error com **status code** `401`.
+
+Exemplo:
+include::{snippets}/authenticate/Login/failure/unauthorized/http-response.adoc[]
+
+---
+==== Não Autorizado
+Para os casos de não autorizado, a mensagem de erro retornada será com **status code** `403`.
+
+Exemplo:
+include::{snippets}/authenticate/Login/failure/forbidden/http-response.adoc[]
+
+
+##Consute sessão de errors para mais informações sobre os campos da mensagem.##
+
+[[security-autehtntication-login]]
+=== Login
+
+|===
+|POST |`/ap/v1/login`
+|===
+
+Para criar um token **/api/v1/login** passando as credenciais, username e password.
+
+Exemplo:
+include::{snippets}/authenticate/Login/success/http-request.adoc[]
+
+include::{snippets}/authenticate/Login/success/response-fields.adoc[]
+
+IMPORTANT: As requisições para login, serão validadas, consulte: <<erros-badrequest>> para mais informações
+
+[[security-device]]
+=== Autorizando Dispositivo
+
+[[users]]
+== Usuários
+
+[[users-delete]]
+=== Deletando Usuários
+|===
+|DELETE |`/ap/v1/delete/{id}`
+|===
+
+Deleta um usuário.
+
+Exemplo de requisição:
+include::{snippets}/user/delete/success/http-request.adoc[]
+
+Resposta:
+include::{snippets}/user/delete/success/http-response.adoc[]
+
+IMPORTANT: Não é possível remover o usuário da mesma sessão,
+caso isso ocorra um error será lançado com código de status`422`
+
+include::{snippets}/user/delete/error/http-response.adoc[]
+##Consute sessão de errors para mais informações sobre os campos da mensagem.##
+
+[[erros-badrequest]]
+=== Bad Request
+

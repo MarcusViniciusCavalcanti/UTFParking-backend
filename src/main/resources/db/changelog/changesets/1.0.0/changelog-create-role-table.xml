@@ -55,16 +55,19 @@
 
     <changeSet id="1586297950712-4" author="vinicius">
         <insert tableName="role">
+            <column name="id">1</column>
             <column name="description">Perfil usuário</column>
             <column name="name">ROLE_USER</column>
         </insert>
 
         <insert tableName="role">
+            <column name="id">2</column>
             <column name="description">Perfil Administrador</column>
             <column name="name">ROLE_ADMIN</column>
         </insert>
 
         <insert tableName="role">
+            <column name="id">3</column>
             <column name="description">Perfil Operador</column>
             <column name="name">ROLE_OPERATOR</column>
         </insert>
