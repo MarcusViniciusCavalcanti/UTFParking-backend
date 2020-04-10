@@ -1,5 +1,6 @@
 package br.edu.utfpr.tsi.utfparking.application.service.impl;
 
+import br.edu.utfpr.tsi.utfparking.application.exceptions.IlegalProcessDeleteException;
 import br.edu.utfpr.tsi.utfparking.application.service.UserApplicationService;
 import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
@@ -29,5 +30,14 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public UserDTO saveNewUser(InputUserDTO inputUser) {
         return userService.saveNewUser(inputUser);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        if (getUserRequest().getId().equals(id)) {
+            throw new IlegalProcessDeleteException("It is not possible to delete the user from the same session.");
+        }
+
+        userService.delete(id);
     }
 }
