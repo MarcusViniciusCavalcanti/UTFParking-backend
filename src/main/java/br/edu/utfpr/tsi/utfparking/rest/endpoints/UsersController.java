@@ -3,6 +3,7 @@ package br.edu.utfpr.tsi.utfparking.rest.endpoints;
 import br.edu.utfpr.tsi.utfparking.application.service.UserApplicationService;
 import br.edu.utfpr.tsi.utfparking.rest.annotations.IsAdmin;
 import br.edu.utfpr.tsi.utfparking.rest.annotations.IsEqualsUser;
+import br.edu.utfpr.tsi.utfparking.rest.annotations.IsOperator;
 import br.edu.utfpr.tsi.utfparking.rest.factories.UserRepresentationFactory;
 import br.edu.utfpr.tsi.utfparking.rest.representations.UserRepresentation;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
@@ -28,11 +29,7 @@ public class UsersController {
     @IsEqualsUser
     @GetMapping(value = "/by-access-card")
     public ResponseEntity<UserRepresentation> getUserByAccessCard() {
-        var user = userApplicationService.getUserRequest();
-        var factory = new UserRepresentationFactory();
-        var userResource = factory.toModel(user);
-
-        return ResponseEntity.ok(userResource);
+        return unwrap(userApplicationService.getUserRequest());
     }
 
     @IsAdmin
@@ -49,5 +46,16 @@ public class UsersController {
     public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         userApplicationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @IsOperator
+    @GetMapping("/{id}")
+    public ResponseEntity<UserRepresentation> findById(@PathVariable("id") Long id) {
+        return unwrap(userApplicationService.findUserById(id));
+    }
+
+    private ResponseEntity<UserRepresentation> unwrap(UserDTO user) {
+        var userRepresentation = userRepresentationFactory.toModel(user);
+        return ResponseEntity.ok(userRepresentation);
     }
 }

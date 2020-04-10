@@ -106,4 +106,11 @@ public class UserService {
     public void delete(Long id) {
         userRepository.deleteById(id);
     }
+
+
+    public UserDTO findById(Long id) {
+        return userRepository.findById(id)
+                .map(userFacade::createUserDTOByUser)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User by: %d not found", id)));
+    }
 }

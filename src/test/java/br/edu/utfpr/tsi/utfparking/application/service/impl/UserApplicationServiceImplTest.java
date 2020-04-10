@@ -27,7 +27,6 @@ class UserApplicationServiceImplTest {
     @Test
     void shouldReturnErrorWhenDeleteSelf() {
         Mockito.when(userService.getUserRequest()).thenReturn(UserDTO.builder().id(ID).build());
-
         assertThrows(IlegalProcessDeleteException.class, () -> userApplicationService.deleteById(ID));
     }
 }
