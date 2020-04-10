@@ -15,4 +15,6 @@ public interface UserApplicationService {
     UserDTO saveNewUser(InputUserDTO inputUser);
 
     void deleteById(Long id);
+
+    UserDTO findUserById(Long id);
 }

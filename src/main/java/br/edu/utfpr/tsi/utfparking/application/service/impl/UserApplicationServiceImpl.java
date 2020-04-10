@@ -40,4 +40,9 @@ public class UserApplicationServiceImpl implements UserApplicationService {
 
         userService.delete(id);
     }
+
+    @Override
+    public UserDTO findUserById(Long id) {
+        return userService.findById(id);
+    }
 }
