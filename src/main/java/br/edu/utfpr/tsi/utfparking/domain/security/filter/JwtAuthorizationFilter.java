@@ -1,17 +1,16 @@
 package br.edu.utfpr.tsi.utfparking.domain.security.filter;
 
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
-import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
 import br.edu.utfpr.tsi.utfparking.domain.security.service.TokenConverter;
+import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.FilterChain;
@@ -21,14 +20,23 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class JwtAuthorizationFilter extends OncePerRequestFilter {
+public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private final JwtConfiguration jwtConfiguration;
 
     private final TokenConverter tokenConverter;
 
     private final AccessCardRepository accessCardRepository;
+
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
+                                  JwtConfiguration jwtConfiguration,
+                                  TokenConverter tokenConverter,
+                                  AccessCardRepository accessCardRepository) {
+        super(authenticationManager);
+        this.jwtConfiguration = jwtConfiguration;
+        this.tokenConverter = tokenConverter;
+        this.accessCardRepository = accessCardRepository;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {

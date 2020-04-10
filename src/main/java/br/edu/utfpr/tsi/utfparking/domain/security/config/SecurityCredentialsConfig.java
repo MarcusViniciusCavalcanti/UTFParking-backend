@@ -19,6 +19,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -57,11 +58,13 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
                     .exceptionHandling()
                     .authenticationEntryPoint((req, resp, ex) -> resp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, jwtConfiguration, tokenCreator))
-                    .addFilterAfter(new JwtAuthorizationFilter(jwtConfiguration, tokenConverter, accessCardRepository), UsernamePasswordAuthenticationFilter.class)
+                    .addFilterAfter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, jwtConfiguration, tokenCreator), UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), jwtConfiguration, tokenConverter, accessCardRepository), BasicAuthenticationFilter.class)
                     .authorizeRequests()
                         .antMatchers(jwtConfiguration.getLoginUrl()).permitAll()
-                        .antMatchers("/recognizer/plate").permitAll();
+                        .antMatchers("/recognizer/plate").permitAll()
+                        .antMatchers("/docs/**").permitAll()
+                    .anyRequest().authenticated();
     }
 
     @Bean

@@ -19,6 +19,11 @@
 
         <!-- TestContainers -->
         <testcontainers.version>1.12.4</testcontainers.version>
+
+        <rest-assured.version>4.2.0</rest-assured.version>
+
+        <snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
+
     </properties>
 
 
@@ -84,9 +89,15 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.restdocs</groupId>
-            <artifactId>spring-restdocs-mockmvc</artifactId>
+            <artifactId>spring-restdocs-restassured</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
@@ -136,6 +147,30 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Rest Assured -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>spring-mock-mvc</artifactId>
+            <version>${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Rest Assured: Json Path -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Rest Assured: Xml Path -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>xml-path</artifactId>
+            <version>${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -154,6 +189,11 @@
                         <configuration>
                             <backend>html</backend>
                             <doctype>book</doctype>
+                            <attributes>
+                                <snippets>${snippetsDirectory}</snippets>
+                            </attributes>
+                            <sourceDirectory>${basedir}/src/docs/asciidocs</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-docs</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -168,6 +208,28 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/static/docs</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/generated-docs</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -1,0 +1,66 @@
+= Api - UTFParking
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+:operation-curl-request-title: Example request
+:operation-http-response-title: Example response
+
+[[overview]]
+= Overview
+
+[[overview-http-verbs]]
+== HTTP Verbs
+
+Esta Api foi construída seguindo os padrões RESTFull, tentando aderir o mais próximo
+possíveis as suas conveções em seu uso dos verbos HTTP
+
+|===
+| Verb | Usage
+
+| `GET`
+| Usado para recuperar recursos
+
+| `POST`
+| Usado para crear um recurso
+
+| `PUT`
+| Usado para atualizar, parcialmente ou completamente.
+
+| `DELETE`
+| Usado para remover um recurso existente.
+|===
+
+[[overview-http-status-codes]]
+== HTTP status codes
+
+Esta Api foi construída seguindo os padrões RESTFull, tentando aderir o mais próximo
+possíveis as suas conveções em seu uso dos códigos de Status HTTP
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| Para requisições aceitas e processadas
+
+| `201 Created`
+| Um novo recurso foi criado com sucesso. O URI do recurso está disponível a partir da resposta
+`Localizaçao` body.link._self.href
+
+| `204 No Content`
+| Requisição foi processada e não há respostas para tal
+
+| `400 Bad Request`
+| Requsição negada, pois está mal formatada, exemplo de retorno de erro quando
+a falta de um atributo.
+
+| `404 Not Found`
+| Este recurso não foi encontrado.
+|===
+
+[[overview-headers]]
+== Headers
+
+Cada resposta tem o(s) seguinte(s) cabeçalho(s):
