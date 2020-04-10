@@ -191,9 +191,9 @@
                             <doctype>book</doctype>
                             <attributes>
                                 <snippets>${snippetsDirectory}</snippets>
+                                <project-version>${project.version}</project-version>
                             </attributes>
-                            <sourceDirectory>${basedir}/src/docs/asciidocs</sourceDirectory>
-                            <outputDirectory>${project.build.directory}/generated-docs</outputDirectory>
+                            <sourceDirectory>src/docs/asciidocs</sourceDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -205,6 +205,7 @@
                     </dependency>
                 </dependencies>
             </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

@@ -1,5 +1,7 @@
 package br.edu.utfpr.tsi.utfparking.domain.security.config;
 
+import br.edu.utfpr.tsi.utfparking.domain.security.filter.AccessDeniedFailureHandler;
+import br.edu.utfpr.tsi.utfparking.domain.security.filter.AuthenticationFailureHandlerImpl;
 import br.edu.utfpr.tsi.utfparking.domain.security.filter.JwtAuthenticationFilter;
 import br.edu.utfpr.tsi.utfparking.domain.security.filter.JwtAuthorizationFilter;
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
@@ -10,6 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,16 +22,21 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
+@Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
@@ -56,7 +65,8 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .exceptionHandling()
-                    .authenticationEntryPoint((req, resp, ex) -> resp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                    .accessDeniedHandler(new AccessDeniedFailureHandler())
+                    .authenticationEntryPoint(new AuthenticationFailureHandlerImpl())
                 .and()
                     .addFilterAfter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, jwtConfiguration, tokenCreator), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), jwtConfiguration, tokenConverter, accessCardRepository), BasicAuthenticationFilter.class)
