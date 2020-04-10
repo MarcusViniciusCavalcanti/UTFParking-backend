@@ -9,10 +9,10 @@
 :operation-http-response-title: Example response
 
 [[overview]]
-= Overview
+== Overview
 
 [[overview-http-verbs]]
-== HTTP Verbs
+=== HTTP Verbs
 
 Esta Api foi construída seguindo os padrões RESTFull, tentando aderir o mais próximo
 possíveis as suas conveções em seu uso dos verbos HTTP
@@ -34,10 +34,10 @@ possíveis as suas conveções em seu uso dos verbos HTTP
 |===
 
 [[overview-http-status-codes]]
-== HTTP status codes
+=== HTTP status codes
 
 Esta Api foi construída seguindo os padrões RESTFull, tentando aderir o mais próximo
-possíveis as suas conveções em seu uso dos códigos de Status HTTP
+possíveis as suas convenções em seu uso dos códigos de Status HTTP
 
 |===
 | Status code | Usage
@@ -61,6 +61,68 @@ a falta de um atributo.
 |===
 
 [[overview-headers]]
-== Headers
+=== Headers
 
 Cada resposta tem o(s) seguinte(s) cabeçalho(s):
+
+
+[[security]]
+== Segurança
+
+As requisições feitas para Api serão STATELESS (**Sem estado**), logo a utilização de Token para
+autorizar uma determinada requisição se faz necessário, assim a Api para Autorizar e autenticar um usuário
+fica a cargo do JWT.
+
+[[security-headers]]
+=== Headers
+
+Toda requisição, exceto para requisitar um token e requisições advinda do dispositivo (este utiliza outro tipo de autorização, vide: <<authentication-device>>),
+deverá conter um Header `Authorization` contendo um portador (`Bearer`).
+
+Exemplo:
+[source,http,options="nowrap"]
+----
+Authorization: Bearer <TOKEN>
+----
+
+[[security-error-messagens]]
+=== Resposta de error
+
+==== Não Autenticado
+Caso a requisição não contenha o header acima, excluido as que não carece de autenticação, será retornar uma mensagem
+de error com **status code** `401`.
+
+Exemplo:
+include::{snippets}/authenticate/Login/failure/unauthorized/http-response.adoc[]
+
+---
+==== Não Autorizado
+Para os casos de não autorizado, a mensagem de erro retornada será com **status code** `403`.
+
+Exemplo:
+include::{snippets}/authenticate/Login/failure/forbidden/http-response.adoc[]
+
+
+##Consute sessão de errors para mais informações sobre os campos da mensagem.##
+
+[[security-autehtntication-login]]
+=== Login
+
+|===
+|POST |`/ap/v1/login`
+|===
+
+Para criar um token **/api/v1/login** passando as credenciais, username e password.
+
+Exemplo:
+include::{snippets}/authenticate/Login/success/http-request.adoc[]
+
+include::{snippets}/authenticate/Login/success/response-fields.adoc[]
+
+IMPORTANT: As requisições para login, serão validadas, consulte: <<erros-badrequest>> para mais informações
+
+[[authentication-device]]
+=== Autorizando Dispositivo
+
+[[erros-badrequest]]
+=== Bad Request

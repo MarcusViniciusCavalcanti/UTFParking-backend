@@ -32,7 +32,6 @@ public class UserFactory {
                         .build())
                 .collect(Collectors.toList());
 
-
         var accessCardDto = AccessCardDTO.builder()
                 .username(accessCard.getUsername())
                 .accountNonExpired(accessCard.isAccountNonExpired())

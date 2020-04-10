@@ -1,11 +1,13 @@
-package br.edu.utfpr.tsi.utfparking.application.factories;
+package br.edu.utfpr.tsi.utfparking.rest.factories;
 
 
-import br.edu.utfpr.tsi.utfparking.application.endpoints.UsersController;
-import br.edu.utfpr.tsi.utfparking.application.representations.UserRepresentation;
+import br.edu.utfpr.tsi.utfparking.rest.endpoints.UsersController;
+import br.edu.utfpr.tsi.utfparking.rest.representations.UserRepresentation;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserRepresentationFactory extends RepresentationModelAssemblerSupport<UserDTO, UserRepresentation> {
 
     public UserRepresentationFactory() {

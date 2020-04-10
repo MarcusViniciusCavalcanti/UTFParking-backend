@@ -14,9 +14,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
@@ -44,12 +42,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         var credentials = Optional.ofNullable(objectMapper.readValue(request.getInputStream(), LoginDTO.class))
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("login input is empty"));
 
-        log.info("Creating the authentication object for the access card: '{}'", credentials.getEmail());
+        log.info("Creating the authentication object for the access card: '{}'", credentials.getUsername());
 
-        var token = new UsernamePasswordAuthenticationToken(credentials.getEmail(), credentials.getPassword(), Collections.emptyList());
+        var token = new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword(), Collections.emptyList());
 
         var accessCard = AccessCard.builder()
-                .username(credentials.getEmail())
+                .username(credentials.getUsername())
                 .password(credentials.getPassword())
                 .build();
 
