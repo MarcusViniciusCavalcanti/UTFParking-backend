@@ -2,6 +2,7 @@ spring:
   jackson:
     serialization:
       INDENT_OUTPUT: true
+    default-property-inclusion: non_null
   servlet:
     port: 8080
     context-path: /api/v1
@@ -11,6 +12,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
 logging:
   level:
     org:

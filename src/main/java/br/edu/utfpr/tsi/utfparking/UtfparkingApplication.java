@@ -41,7 +41,6 @@ public class UtfparkingApplication implements CommandLineRunner {
     public void run(String... args) {
 
         if(propertiesDevelopment.isMock()) {
-
             System.out.println("-----------------------------------------------------------------------------------");
             System.out.println("############################### Criando mock ######################################");
 

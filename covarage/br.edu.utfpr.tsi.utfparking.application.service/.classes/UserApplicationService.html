@@ -1,0 +1,67 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: UserApplicationService</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">br.edu.utfpr.tsi.utfparking.application.service</a> ]
+</div>
+
+<h1>Coverage Summary for Class: UserApplicationService (br.edu.utfpr.tsi.utfparking.application.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">UserApplicationService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package br.edu.utfpr.tsi.utfparking.application.service;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
+<i>4</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
+<i>5</i>&nbsp;import org.springframework.data.domain.Page;
+<i>6</i>&nbsp;import org.springframework.data.domain.Pageable;
+<i>7</i>&nbsp;import org.springframework.stereotype.Service;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;@Service
+<i>10</i>&nbsp;public interface UserApplicationService {
+<i>11</i>&nbsp;    UserDTO getUserRequest();
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;    Page&lt;UserDTO&gt; findAllPageableUsers(Pageable pageable);
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;    UserDTO saveNewUser(InputUserDTO inputUser);
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;    void deleteById(Long id);
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;    UserDTO findUserById(Long id);
+<i>20</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-11 09:57</div>
+</div>
+</body>
+</html>

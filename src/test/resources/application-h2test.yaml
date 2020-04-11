@@ -1,4 +1,8 @@
 spring:
+  liquibase:
+    change-log: classpath:/db/changelog/databaseChangelog.xml
+    database-change-log-table: AD_DB_CHANGELOG
+    database-change-log-lock-table: AD_DB_CHANGELOG_LOCK
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:utfparking;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE

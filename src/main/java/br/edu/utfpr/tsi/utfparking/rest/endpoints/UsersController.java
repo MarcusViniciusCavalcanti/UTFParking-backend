@@ -4,16 +4,22 @@ import br.edu.utfpr.tsi.utfparking.application.service.UserApplicationService;
 import br.edu.utfpr.tsi.utfparking.rest.annotations.IsAdmin;
 import br.edu.utfpr.tsi.utfparking.rest.annotations.IsEqualsUser;
 import br.edu.utfpr.tsi.utfparking.rest.annotations.IsOperator;
+import br.edu.utfpr.tsi.utfparking.rest.erros.exceptions.IlegalRequestBodyException;
 import br.edu.utfpr.tsi.utfparking.rest.factories.UserRepresentationFactory;
 import br.edu.utfpr.tsi.utfparking.rest.representations.UserRepresentation;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -53,6 +59,21 @@ public class UsersController {
     public ResponseEntity<UserRepresentation> findById(@PathVariable("id") Long id) {
         return unwrap(userApplicationService.findUserById(id));
     }
+
+    @IsAdmin
+    @PostMapping
+    public ResponseEntity<UserRepresentation> createNew(@Valid @RequestBody InputUserNewDTO inputUserNewDTO, BindingResult resultSet) {
+        if (resultSet.hasErrors()) {
+            throw new IlegalRequestBodyException("User", resultSet);
+        }
+
+        UserDTO userDTO = userApplicationService.saveNewUser(inputUserNewDTO);
+        var userRepresentation = userRepresentationFactory.toModel(userDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userRepresentation);
+    }
+
+
 
     private ResponseEntity<UserRepresentation> unwrap(UserDTO user) {
         var userRepresentation = userRepresentationFactory.toModel(user);

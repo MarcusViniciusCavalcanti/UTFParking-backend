@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "users")
@@ -24,7 +25,7 @@ public class User implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @MapsId
     private AccessCard accessCard;
 
@@ -33,6 +34,13 @@ public class User implements Serializable {
 
     @Column(name = "updated_at")
     private LocalDate updatedAt;
+
+    @Column(name = "type")
+    @Enumerated(value = EnumType.STRING)
+    private TypeUser typeUser;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Car car;
 
     @PrePersist
     private void newAccessCard() {
@@ -43,6 +51,10 @@ public class User implements Serializable {
     @PreUpdate
     private void updateAccessCard() {
         this.updatedAt = LocalDate.now();
+    }
+
+    public Optional<Car> car() {
+        return Optional.ofNullable(this.car);
     }
 
     @Override

@@ -2,8 +2,9 @@ package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
 import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.LoginDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,18 +25,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-@ActiveProfiles("container")
+@ActiveProfiles("h2test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class IntegrationTest {
 
-    private static final String FULANO_ADMIN = "fulano_admin";
+    protected static final String FULANO_ADMIN = "fulano_admin";
     private static final String PASSWORD = "1234567";
     private static final String FULANO = "fulano";
     private static final String URI_LOGIN = "/api/v1/login";
@@ -117,12 +117,13 @@ public abstract class IntegrationTest {
     }
 
     private void createMockUser() {
-        var inputUser = new InputUserDTO();
+        var inputUser = new InputUserNewDTO();
 
         inputUser.setAccountNonExpired(true);
         inputUser.setAccountNonLocked(true);
         inputUser.setEnabled(true);
         inputUser.setName(FULANO);
+        inputUser.setType(TypeUserDTO.SERVICE);
         inputUser.setUsername(FULANO_ADMIN);
         inputUser.setPassword(PASSWORD);
         inputUser.setAuthorities(List.of(1L, 2L));

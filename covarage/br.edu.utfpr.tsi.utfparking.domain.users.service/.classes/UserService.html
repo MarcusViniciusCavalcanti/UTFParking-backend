@@ -1,0 +1,246 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: UserService</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">br.edu.utfpr.tsi.utfparking.domain.users.service</a> ]
+</div>
+
+<h1>Coverage Summary for Class: UserService (br.edu.utfpr.tsi.utfparking.domain.users.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserService</td>
+<td class="coverageStat">
+  <span class="percent">
+    84,6%
+  </span>
+  <span class="absValue">
+    (11/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    86,4%
+  </span>
+  <span class="absValue">
+    (38/ 44)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UserService$$EnhancerBySpringCGLIB$$b8368dae</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$$EnhancerBySpringCGLIB$$b8368dae$$FastClassBySpringCGLIB$$56f49a43</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$$FastClassBySpringCGLIB$$7567be9f</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$94667629</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$94667629$auxiliary$9o1Pw5SK</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$94667629$auxiliary$BnRRhYUL</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$94667629$auxiliary$cM8qlu8a</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$94667629$auxiliary$iJYSyWIP</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$94667629$auxiliary$JNHSL1vq</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$94667629$auxiliary$mOSzueZc</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$94667629$auxiliary$NoFzU5Du</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$94667629$auxiliary$qF7ydM4a</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    84,6%
+  </span>
+  <span class="absValue">
+    (11/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    86,4%
+  </span>
+  <span class="absValue">
+    (38/ 44)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package br.edu.utfpr.tsi.utfparking.domain.users.service;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
+<i>4</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.security.factory.AccessCardFactory;
+<i>5</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
+<i>6</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.factory.UserFactory;
+<i>7</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.AccessCardDTO;
+<i>8</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
+<i>9</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.RoleDTO;
+<i>10</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
+<i>11</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
+<i>12</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
+<i>13</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
+<i>14</i>&nbsp;import lombok.RequiredArgsConstructor;
+<i>15</i>&nbsp;import lombok.extern.slf4j.Slf4j;
+<i>16</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>17</i>&nbsp;import org.springframework.data.domain.Page;
+<i>18</i>&nbsp;import org.springframework.data.domain.PageImpl;
+<i>19</i>&nbsp;import org.springframework.data.domain.Pageable;
+<i>20</i>&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
+<i>21</i>&nbsp;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+<i>22</i>&nbsp;import org.springframework.stereotype.Service;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import javax.persistence.EntityNotFoundException;
+<i>25</i>&nbsp;import javax.transaction.Transactional;
+<i>26</i>&nbsp;import java.util.List;
+<i>27</i>&nbsp;import java.util.function.Function;
+<i>28</i>&nbsp;import java.util.stream.Collectors;
+<i>29</i>&nbsp;
+<b class="fc"><i>30</i>&nbsp;@Slf4j</b>
+<i>31</i>&nbsp;@Service
+<b class="fc"><i>32</i>&nbsp;@RequiredArgsConstructor(onConstructor = @__(@Autowired))</b>
+<i>33</i>&nbsp;public class UserService {
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    private final UserRepository userRepository;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;    private final RoleRepository roleRepository;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    private final AccessCardRepository accessCardRepository;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    private final AccessCardFactory accessCardFacade;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    private final UserFactory userFacade;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    private final BCryptPasswordEncoder encoder;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    public UserDTO getUserRequest() {
+<b class="fc"><i>48</i>&nbsp;        var principal = (AccessCard) SecurityContextHolder.getContext().getAuthentication().getPrincipal();</b>
+<b class="fc"><i>49</i>&nbsp;        return userRepository.findByAccessCard(principal)</b>
+<b class="fc"><i>50</i>&nbsp;                .map(user -&gt; UserDTO.builder()</b>
+<b class="fc"><i>51</i>&nbsp;                .id(user.getId())</b>
+<b class="fc"><i>52</i>&nbsp;                .name(user.getName())</b>
+<b class="fc"><i>53</i>&nbsp;                .accessCard(createAccessCardDTO(user, createRoleDTOS(user)))</b>
+<b class="fc"><i>54</i>&nbsp;                .build())</b>
+<b class="fc"><i>55</i>&nbsp;                .orElseThrow(EntityNotFoundException::new);</b>
+<i>56</i>&nbsp;    }
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    @Transactional
+<i>59</i>&nbsp;    public UserDTO saveNewUser(InputUserDTO inputUser) {
+<b class="fc"><i>60</i>&nbsp;        var user = getUser(inputUser);</b>
+<b class="fc"><i>61</i>&nbsp;        user.getAccessCard().setPassword(encoder.encode(inputUser.getPassword()));</b>
+<i>62</i>&nbsp;
+<b class="fc"><i>63</i>&nbsp;        var newUser = userRepository.save(user);</b>
+<b class="fc"><i>64</i>&nbsp;        return userFacade.createUserDTOByUser(newUser);</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    private AccessCardDTO createAccessCardDTO(User user, List&lt;RoleDTO&gt; roles) {
+<b class="fc"><i>68</i>&nbsp;        return AccessCardDTO.builder()</b>
+<b class="fc"><i>69</i>&nbsp;                .accountNonExpired(user.getAccessCard().isAccountNonExpired())</b>
+<b class="fc"><i>70</i>&nbsp;                .accountNonExpired(user.getAccessCard().isAccountNonExpired())</b>
+<b class="fc"><i>71</i>&nbsp;                .credentialsNonExpired(user.getAccessCard().isCredentialsNonExpired())</b>
+<b class="fc"><i>72</i>&nbsp;                .enabled(user.getAccessCard().isEnabled())</b>
+<b class="fc"><i>73</i>&nbsp;                .roles(roles)</b>
+<b class="fc"><i>74</i>&nbsp;                .build();</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    private List&lt;RoleDTO&gt; createRoleDTOS(User user) {
+<b class="fc"><i>78</i>&nbsp;        return user.getAccessCard().getRoles().stream()</b>
+<b class="fc"><i>79</i>&nbsp;                .map(role -&gt; RoleDTO.builder()</b>
+<b class="fc"><i>80</i>&nbsp;                        .id(role.getId())</b>
+<b class="fc"><i>81</i>&nbsp;                        .description(role.getDescription())</b>
+<b class="fc"><i>82</i>&nbsp;                        .name(role.getName())</b>
+<b class="fc"><i>83</i>&nbsp;                        .build()</b>
+<b class="fc"><i>84</i>&nbsp;                ).collect(Collectors.toList());</b>
+<i>85</i>&nbsp;    }
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    private User getUser(InputUserDTO inputUser) {
+<b class="fc"><i>88</i>&nbsp;        var roles = roleRepository.findAllById(inputUser.getAuthorities());</b>
+<i>89</i>&nbsp;
+<b class="fc"><i>90</i>&nbsp;        var accessCard = accessCardFacade.createAccessCardByInputUser(inputUser, roles);</b>
+<b class="fc"><i>91</i>&nbsp;        var user = userFacade.createUserByUserDTO(inputUser);</b>
+<i>92</i>&nbsp;
+<b class="fc"><i>93</i>&nbsp;        user.setAccessCard(accessCard);</b>
+<b class="fc"><i>94</i>&nbsp;        return user;</b>
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    public Page&lt;UserDTO&gt; findAllPageableUsers(Pageable pageable) {
+<b class="nc"><i>98</i>&nbsp;        var userPage = userRepository.findAll(pageable);</b>
+<b class="nc"><i>99</i>&nbsp;        var userDTOS = userPage.stream()</b>
+<b class="nc"><i>100</i>&nbsp;                .map(userFacade::createUserDTOByUser)</b>
+<b class="nc"><i>101</i>&nbsp;                .collect(Collectors.toList());</b>
+<i>102</i>&nbsp;
+<b class="nc"><i>103</i>&nbsp;        return new PageImpl&lt;&gt;(userDTOS, pageable, userPage.getTotalElements());</b>
+<i>104</i>&nbsp;    }
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    public void delete(Long id) {
+<b class="fc"><i>107</i>&nbsp;        userRepository.deleteById(id);</b>
+<b class="fc"><i>108</i>&nbsp;    }</b>
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    public UserDTO findById(Long id) {
+<b class="fc"><i>112</i>&nbsp;        return userRepository.findById(id)</b>
+<b class="fc"><i>113</i>&nbsp;                .map(userFacade::createUserDTOByUser)</b>
+<b class="fc"><i>114</i>&nbsp;                .orElseThrow(() -&gt; new EntityNotFoundException(String.format(&quot;User by: %d not found&quot;, id)));</b>
+<i>115</i>&nbsp;    }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    public Boolean existUserByUsername(String username) {
+<b class="nc"><i>118</i>&nbsp;        return userRepository.existsUserByAccessCardUsername(username);</b>
+<i>119</i>&nbsp;    }
+<i>120</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-11 09:57</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,156 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: UserFactory</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">br.edu.utfpr.tsi.utfparking.domain.users.factory</a> ]
+</div>
+
+<h1>Coverage Summary for Class: UserFactory (br.edu.utfpr.tsi.utfparking.domain.users.factory)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserFactory</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (25/ 25)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UserFactory$MockitoMock$669365547</td>
+  </tr>
+  <tr>
+    <td class="name">UserFactory$MockitoMock$669365547$auxiliary$D7ON0BNu</td>
+  </tr>
+  <tr>
+    <td class="name">UserFactory$MockitoMock$669365547$auxiliary$ipS6U510</td>
+  </tr>
+  <tr>
+    <td class="name">UserFactory$MockitoMock$669365547$auxiliary$k9kVbCSD</td>
+  </tr>
+  <tr>
+    <td class="name">UserFactory$MockitoMock$669365547$auxiliary$oNi5Gbnf</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (25/ 25)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package br.edu.utfpr.tsi.utfparking.domain.users.factory;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
+<i>4</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.AccessCardDTO;
+<i>5</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
+<i>6</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.RoleDTO;
+<i>7</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
+<i>8</i>&nbsp;import lombok.RequiredArgsConstructor;
+<i>9</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>10</i>&nbsp;import org.springframework.stereotype.Component;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;import java.util.stream.Collectors;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;@Component
+<b class="fc"><i>15</i>&nbsp;@RequiredArgsConstructor(onConstructor = @__(@Autowired))</b>
+<i>16</i>&nbsp;public class UserFactory {
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;    public User createUserByUserDTO(InputUserDTO dto) {
+<b class="fc"><i>19</i>&nbsp;        return User.builder()</b>
+<b class="fc"><i>20</i>&nbsp;                .name(dto.getName())</b>
+<b class="fc"><i>21</i>&nbsp;                .build();</b>
+<i>22</i>&nbsp;    }
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;    public UserDTO createUserDTOByUser(User user) {
+<b class="fc"><i>25</i>&nbsp;        var accessCard = user.getAccessCard();</b>
+<i>26</i>&nbsp;
+<b class="fc"><i>27</i>&nbsp;        var rolesDto = accessCard.getRoles().stream()</b>
+<b class="fc"><i>28</i>&nbsp;                .map(role -&gt; RoleDTO.builder()</b>
+<b class="fc"><i>29</i>&nbsp;                        .id(role.getId())</b>
+<b class="fc"><i>30</i>&nbsp;                        .description(role.getDescription())</b>
+<b class="fc"><i>31</i>&nbsp;                        .name(role.getName())</b>
+<b class="fc"><i>32</i>&nbsp;                        .build())</b>
+<b class="fc"><i>33</i>&nbsp;                .collect(Collectors.toList());</b>
+<i>34</i>&nbsp;
+<b class="fc"><i>35</i>&nbsp;        var accessCardDto = AccessCardDTO.builder()</b>
+<b class="fc"><i>36</i>&nbsp;                .username(accessCard.getUsername())</b>
+<b class="fc"><i>37</i>&nbsp;                .accountNonExpired(accessCard.isAccountNonExpired())</b>
+<b class="fc"><i>38</i>&nbsp;                .accountNonLocked(accessCard.isAccountNonLocked())</b>
+<b class="fc"><i>39</i>&nbsp;                .credentialsNonExpired(accessCard.isCredentialsNonExpired())</b>
+<b class="fc"><i>40</i>&nbsp;                .enabled(accessCard.isEnabled())</b>
+<b class="fc"><i>41</i>&nbsp;                .roles(rolesDto)</b>
+<b class="fc"><i>42</i>&nbsp;                .build();</b>
+<i>43</i>&nbsp;
+<b class="fc"><i>44</i>&nbsp;        return UserDTO.builder()</b>
+<b class="fc"><i>45</i>&nbsp;                .accessCard(accessCardDto)</b>
+<b class="fc"><i>46</i>&nbsp;                .id(user.getId())</b>
+<b class="fc"><i>47</i>&nbsp;                .name(user.getName())</b>
+<b class="fc"><i>48</i>&nbsp;                .build();</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-11 09:57</div>
+</div>
+</body>
+</html>
