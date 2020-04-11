@@ -39,3 +39,25 @@ spring:
     minIdle: 0
     initialization-mode: always
 
+---
+spring:
+  profiles: docker
+  jpa:
+    open-in-view: false
+    show-sql: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://utfparking:5432/utfparking
+    username: utfparking
+    password: password
+    continueOnError: true
+    initialSize: 0
+    timeBetweenEvictionRunsMillis: 5000
+    minEvictableIdleTimeMillis: 5000
+    minIdle: 0
+    initialization-mode: always
+
+isMock: true

@@ -9,3 +9,19 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: utfparking
       POSTGRES_DB: utfparking
+    network_mode: bridge
+    tty: true
+  api:
+    container_name: api
+    build:
+      context: ./
+    image: api_utfparking
+    user: application
+    links:
+      - postgres
+    ports:
+    - 8080:8080
+    network_mode: bridge
+    expose:
+      - 8080
+
