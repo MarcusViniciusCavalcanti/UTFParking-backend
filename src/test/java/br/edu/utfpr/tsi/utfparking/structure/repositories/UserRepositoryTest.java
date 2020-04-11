@@ -1,6 +1,7 @@
 package br.edu.utfpr.tsi.utfparking.structure.repositories;
 
 import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
+import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ class UserRepositoryTest {
 
         User user = User.builder()
                 .name("Name")
+                .typeUser(TypeUser.SERVICE)
                 .accessCard(accessCard)
                 .build();
 

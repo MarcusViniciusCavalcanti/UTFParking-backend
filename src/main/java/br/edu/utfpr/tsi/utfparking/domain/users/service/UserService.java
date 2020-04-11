@@ -1,19 +1,20 @@
 package br.edu.utfpr.tsi.utfparking.domain.users.service;
 
+import br.edu.utfpr.tsi.utfparking.domain.exceptions.AuthoritiesNotAllowedException;
+import br.edu.utfpr.tsi.utfparking.domain.exceptions.UsernameExistException;
 import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
 import br.edu.utfpr.tsi.utfparking.domain.security.factory.AccessCardFactory;
+import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
+import br.edu.utfpr.tsi.utfparking.domain.users.factory.CarFactory;
 import br.edu.utfpr.tsi.utfparking.domain.users.factory.UserFactory;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.AccessCardDTO;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.RoleDTO;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
-import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.*;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,9 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.function.Function;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,11 +39,11 @@ public class UserService {
 
     private final RoleRepository roleRepository;
 
-    private final AccessCardRepository accessCardRepository;
+    private final AccessCardFactory accessCardFactory;
 
-    private final AccessCardFactory accessCardFacade;
+    private final UserFactory userFactory;
 
-    private final UserFactory userFacade;
+    private final CarFactory carFactory;
 
     private final BCryptPasswordEncoder encoder;
 
@@ -56,12 +59,59 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO saveNewUser(InputUserDTO inputUser) {
+    public UserDTO saveNewUser(InputUserNewDTO inputUser) {
         var user = getUser(inputUser);
         user.getAccessCard().setPassword(encoder.encode(inputUser.getPassword()));
 
-        var newUser = userRepository.save(user);
-        return userFacade.createUserDTOByUser(newUser);
+        setCarIfExist(inputUser, user);
+
+        try {
+            User newUser = saveOrUpdate(user);
+            return CompletableFuture
+                    .supplyAsync(() -> userFactory.createUserDTOByUser(newUser))
+                    .thenCombineAsync(executorCreateAccessCardDTO(newUser), executorSetAccessCardToUserDTO())
+                    .thenCombineAsync(executorCreateCarDTO(newUser), executorSetCarToUserDTO())
+                    .handle((dto, exception) -> {
+                        if (exception != null) {
+                            throw new RuntimeException(exception);
+                        }
+
+                        return dto;
+                    })
+                    .get();
+
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Transactional
+    public Page<UserDTO> findAllPageableUsers(Pageable pageable) {
+        var userPage = userRepository.findAll(pageable);
+        var userDTOS = userPage.stream()
+                .map(userFactory::createUserDTOByUser)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userDTOS, pageable, userPage.getTotalElements());
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Boolean existUserByUsername(String username) {
+        return userRepository.existsUserByAccessCardUsername(username);
+    }
+
+    private User saveOrUpdate(User user) {
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException ex) {
+            throw new UsernameExistException(String.format("Username %s already exist", user.getAccessCard().getUsername()));
+        }
     }
 
     private AccessCardDTO createAccessCardDTO(User user, List<RoleDTO> roles) {
@@ -84,37 +134,66 @@ public class UserService {
                 ).collect(Collectors.toList());
     }
 
-    private User getUser(InputUserDTO inputUser) {
+    private User getUser(InputUserNewDTO inputUser) {
+        if (inputUser.getType() == TypeUserDTO.STUDENTS) {
+            var allowedProfiles = TypeUser.valueOf(inputUser.getType().name()).getAllowedProfiles();
+
+            var size = inputUser.getAuthorities().stream()
+                    .filter(value -> !allowedProfiles.contains(value))
+                    .count();
+
+            if (size != 0) {
+                throw new AuthoritiesNotAllowedException();
+            }
+        }
+
+
         var roles = roleRepository.findAllById(inputUser.getAuthorities());
 
-        var accessCard = accessCardFacade.createAccessCardByInputUser(inputUser, roles);
-        var user = userFacade.createUserByUserDTO(inputUser);
+        var accessCard = accessCardFactory.createAccessCardByInputUser(inputUser, roles);
+        var user = userFactory.createUserByUserDTO(inputUser);
 
         user.setAccessCard(accessCard);
+
         return user;
-    }
-
-    public Page<UserDTO> findAllPageableUsers(Pageable pageable) {
-        var userPage = userRepository.findAll(pageable);
-        var userDTOS = userPage.stream()
-                .map(userFacade::createUserDTOByUser)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(userDTOS, pageable, userPage.getTotalElements());
-    }
-
-    public void delete(Long id) {
-        userRepository.deleteById(id);
     }
 
 
     public UserDTO findById(Long id) {
         return userRepository.findById(id)
-                .map(userFacade::createUserDTOByUser)
+                .map(userFactory::createUserDTOByUser)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User by: %d not found", id)));
     }
 
-    public Boolean existUserByUsername(String username) {
-        return userRepository.existsUserByAccessCardUsername(username);
+    private void setCarIfExist(InputUserNewDTO inputUser, User user) {
+        if ((inputUser.getCarPlate() != null && !inputUser.getCarPlate().isEmpty()) ||
+                (inputUser.getCarModel() != null && !inputUser.getCarModel().isEmpty())) {
+            var car = carFactory.createCarByInputUser(inputUser, user);
+            user.setCar(car);
+        }
+    }
+
+    private BiFunction<UserDTO, CarDTO, UserDTO> executorSetCarToUserDTO() {
+        return (userDTO, carDTO) -> {
+            userDTO.setCar(carDTO);
+            return userDTO;
+        };
+    }
+
+    private CompletableFuture<CarDTO> executorCreateCarDTO(User newUser) {
+        return CompletableFuture.supplyAsync(
+                () -> newUser.car().map(car -> carFactory.createCarDTOByUser(newUser)).orElse(null));
+    }
+
+    private BiFunction<UserDTO, AccessCardDTO, UserDTO> executorSetAccessCardToUserDTO() {
+        return (userDTO, accessCardDTO) -> {
+            userDTO.setAccessCard(accessCardDTO);
+            return userDTO;
+        };
+    }
+
+    private CompletableFuture<AccessCardDTO> executorCreateAccessCardDTO(User newUser) {
+        return CompletableFuture.supplyAsync(
+                () -> accessCardFactory.createAccessCardByUserDTO(newUser));
     }
 }

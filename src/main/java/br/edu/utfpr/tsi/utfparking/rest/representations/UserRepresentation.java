@@ -16,11 +16,20 @@ public class UserRepresentation extends RepresentationModel<UserRepresentation> 
 
     private String name;
 
+    private String type;
+
     private List<RoleRepresentation> roles;
+
+    private CarRepresentation car;
 
     public void copyAttributeBy(UserDTO user) {
         this.userId = user.getId();
         this.name = user.getName();
+        this.type = user.getTypeUser().name();
+        this.car = new CarRepresentation();
+
+        this.car.copyAttributeBy(user.getCar());
+
         this.roles = user.getAccessCard().getRoles().stream()
             .map(role -> new RoleRepresentation(role.getId(), role.getName(), role.getDescription()))
             .collect(Collectors.toList());

@@ -127,15 +127,79 @@ IMPORTANT: As requisições para login, serão validadas, consulte: <<erros-badr
 [[users]]
 == Usuários
 
+Usuário e um recurso da api, que representa quem utiliza do sistema, seja ele operador, motorista, ou administrador
+
+Os tipos de usuário será definido no campo `type`, este campo defini o comportamento do sistema para atribuição de perfils.
+
+**SERVICE**: Servidores, professores, colaboradores em geral
+
+**STUDENT**: Alunos do campus:
+
+Os tipos definem quais possíveis perfils serão atribuido a um usuário, as restrições serão:
+
+|===
+|**SERVICE** |Podera ter perfil de ADMIN, OPERATOR, DRIVE
+|**STUDENT** |Tera apenas perfil de DRIVE
+|===
+
+Para mais informações dos perfil consulte a sessão de Perfils, <<roles>>
+
+Para controle do acesso, cada usuário poderá ter apenas um <<cars>> cadastrado no sistema, porém cada usuário
+podera alterar o carro quando lhe for conveniente.
+
+Campos:
+include::{snippets}/user/create/success/response-fields.adoc[]
+
+Links:
+include::{snippets}/user/create/success/links.adoc[]
+
+___
+[[users-delete]]
+=== Criando Usuários
+|===
+|POST |`/ap/v1/users`
+|===
+
+Cria um recurso usuário.
+
+Requisição:
+include::{snippets}/user/create/success/http-request.adoc[]
+
+Descrição dos campos:
+include::{snippets}/user/create/success/request-fields.adoc[]
+
+Resposta:
+include::{snippets}/user/create/success/http-response.adoc[]
+
+---
+##### Respostas de error
+
+`400`
+Para error de validação de campos:
+include::{snippets}/user/create/error/validation/http-response.adoc[]
+
+
+`409`
+Para username já existe:
+include::{snippets}/user/create/error/username/http-response.adoc[]
+
+
+`422`
+Para caso do campo id for preenchido, indicando que a URL acessa é apenas para criação
+include::{snippets}/user/create/error/idExist/http-response.adoc[]
+
+##Consute sessão de errors para mais informações sobre os campos da mensagem.##
+
+___
 [[users-delete]]
 === Deletando Usuários
 |===
-|DELETE |`/ap/v1/delete/{id}`
+|DELETE |`/ap/v1/users/{id}`
 |===
 
-Deleta um usuário.
+Remover um determinado recurso usuário.
 
-Exemplo de requisição:
+Requisição:
 include::{snippets}/user/delete/success/http-request.adoc[]
 
 Resposta:
@@ -144,8 +208,13 @@ include::{snippets}/user/delete/success/http-response.adoc[]
 IMPORTANT: Não é possível remover o usuário da mesma sessão,
 caso isso ocorra um error será lançado com código de status`422`
 
-include::{snippets}/user/delete/error/http-response.adoc[]
-##Consute sessão de errors para mais informações sobre os campos da mensagem.##
+___
+[[roles]]
+== Perfils
+
+[[cars]]
+== Carro
+
 
 [[erros-badrequest]]
 === Bad Request

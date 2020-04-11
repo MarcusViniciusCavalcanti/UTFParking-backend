@@ -2,8 +2,9 @@ package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
 import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.LoginDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
@@ -35,7 +36,7 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-@ActiveProfiles("container")
+@ActiveProfiles("h2test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SecurityIntegrationTest {
 
@@ -199,8 +200,8 @@ public class SecurityIntegrationTest {
         return userService.saveNewUser(createNewUser(List.of(1L, 2L), FULANO_ADMIN));
     }
 
-    private InputUserDTO createNewUser(List<Long> roles, String username) {
-        var inputUser = new InputUserDTO();
+    private InputUserNewDTO createNewUser(List<Long> roles, String username) {
+        var inputUser = new InputUserNewDTO();
 
         inputUser.setAccountNonExpired(true);
         inputUser.setAccountNonLocked(true);
@@ -209,6 +210,7 @@ public class SecurityIntegrationTest {
         inputUser.setUsername(username);
         inputUser.setPassword(PASSWORD);
         inputUser.setAuthorities(roles);
+        inputUser.setType(TypeUserDTO.SERVICE);
         return inputUser;
     }
 }
