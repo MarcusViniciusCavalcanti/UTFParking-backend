@@ -38,6 +38,8 @@ spring:
     minEvictableIdleTimeMillis: 5000
     minIdle: 0
     initialization-mode: always
+configuration:
+  isMock: false
 
 ---
 spring:
@@ -60,4 +62,5 @@ spring:
     minIdle: 0
     initialization-mode: always
 
-isMock: true
+configuration:
+  isMock: true

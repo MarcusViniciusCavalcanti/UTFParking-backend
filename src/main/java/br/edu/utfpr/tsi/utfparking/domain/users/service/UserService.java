@@ -113,4 +113,8 @@ public class UserService {
                 .map(userFacade::createUserDTOByUser)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User by: %d not found", id)));
     }
+
+    public Boolean existUserByUsername(String username) {
+        return userRepository.existsUserByAccessCardUsername(username);
+    }
 }
