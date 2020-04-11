@@ -1,11 +1,14 @@
 package br.edu.utfpr.tsi.utfparking;
 
+import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
+import br.edu.utfpr.tsi.utfparking.domain.security.entity.Role;
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
-import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.domain.users.config.PropertiesDevelopment;
+import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
+import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
+import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,15 +17,21 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import java.util.List;
 
 @SpringBootApplication
-@EnableConfigurationProperties(value = JwtConfiguration.class)
+@EnableConfigurationProperties(value = {
+        JwtConfiguration.class,
+        PropertiesDevelopment.class
+})
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UtfparkingApplication implements CommandLineRunner {
 
-    @Value("${isMock}")
-    private boolean isMock;
+    @Autowired
+    private PropertiesDevelopment propertiesDevelopment;
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(UtfparkingApplication.class, args);
@@ -31,14 +40,19 @@ public class UtfparkingApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        if(isMock) {
+        if(propertiesDevelopment.isMock()) {
 
             System.out.println("-----------------------------------------------------------------------------------");
             System.out.println("############################### Criando mock ######################################");
 
-            userService.saveNewUser(createUsers("Fulano Admin", "fulano_admin", List.of(1L, 2L)));
-            userService.saveNewUser(createUsers("Fulano Operator", "fulano_operator", List.of(1L, 3L)));
-            userService.saveNewUser(createUsers("Fulano User", "fulano_user", List.of(1L)));
+            List<User> users = List.of(
+                    createUsers("Fulano Admin", "fulano_admin", List.of(1L, 2L)),
+                    createUsers("Fulano Operator", "fulano_operator", List.of(1L, 3L)),
+                    createUsers("Fulano User", "fulano_user", List.of(1L))
+            );
+
+            userRepository.saveAll(users);
+            userRepository.flush();
 
             System.out.println();
             System.out.println();
@@ -68,17 +82,20 @@ public class UtfparkingApplication implements CommandLineRunner {
         }
     }
 
-    private InputUserDTO createUsers(String name, String username, List<Long> roles) {
-        var inputUser = new InputUserDTO();
+    private User createUsers(String name, String username, List<Long> roles) {
+        List<Role> role = roleRepository.findAllById(roles);
 
-        inputUser.setAccountNonExpired(true);
-        inputUser.setAccountNonLocked(true);
-        inputUser.setEnabled(true);
-        inputUser.setName(name);
-        inputUser.setUsername(username);
-        inputUser.setPassword("123456789");
-        inputUser.setAuthorities(roles);
+        AccessCard accessCard = AccessCard.builder()
+                .username("username")
+                .password("123456789")
+                .roles(role)
+                .build();
 
-        return inputUser;
+        User user = User.builder()
+                .name("Name")
+                .accessCard(accessCard)
+                .build();
+
+        return user;
     }
 }
