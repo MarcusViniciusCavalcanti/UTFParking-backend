@@ -7,6 +7,7 @@ import br.edu.utfpr.tsi.utfparking.structure.dtos.ValidationErrors;
 import br.edu.utfpr.tsi.utfparking.rest.erros.exceptions.IlegalRequestBodyException;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.ResponseError;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -53,31 +54,30 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(UsernameExistException.class)
     public ResponseEntity<?> handleUsernameExistException(UsernameExistException exception, HttpServletRequest request) {
-        log.error("Error in process request: " + request.getRequestURL() + " cause by: " + exception.getClass().getSimpleName());
-
-        var errors = ResponseError.builder()
-                .title("Username exist")
-                .timestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli())
-                .error(exception.getMessage())
-                .statusCode(HttpStatus.CONFLICT.value())
-                .path(request.getServletPath())
-                .build();
-
-        return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
+        return buildResponseEntityNotFound(request, exception.getClass().getSimpleName(), "Username exist", exception.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> handlerEntityNotFoundException(EntityNotFoundException exception, HttpServletRequest request) {
-        log.error("Error in process request: " + request.getRequestURL() + " cause by: " + exception.getClass().getSimpleName());
+        return buildResponseEntityNotFound(request, exception.getClass().getSimpleName(), "Entity Not Found", exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<?> handlerEmptyResultDataAccessException(EmptyResultDataAccessException exception, HttpServletRequest request) {
+        return buildResponseEntityNotFound(request, exception.getClass().getSimpleName(), "Entity Not Found", exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    private ResponseEntity<?> buildResponseEntityNotFound(HttpServletRequest request, String simpleName, String s, String message, HttpStatus notFound) {
+        log.error("Error in process request: " + request.getRequestURL() + " cause by: " + simpleName);
 
         var errors = ResponseError.builder()
-                .title("Entity Not Found")
+                .title(s)
                 .timestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli())
-                .error(exception.getMessage())
-                .statusCode(HttpStatus.NOT_FOUND.value())
+                .error(message)
+                .statusCode(notFound.value())
                 .path(request.getServletPath())
                 .build();
 
-        return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errors, notFound);
     }
 }

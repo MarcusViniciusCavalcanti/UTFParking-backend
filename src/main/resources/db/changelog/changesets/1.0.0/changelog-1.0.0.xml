@@ -16,4 +16,6 @@
 
     <include file="changelog-create-recognizer-table.xml" relativeToChangelogFile="true"/>
     <include file="changelog-recognize-has-coordinate-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="changelog-insert-default-user.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

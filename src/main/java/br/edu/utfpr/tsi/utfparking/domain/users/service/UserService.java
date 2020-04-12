@@ -141,7 +141,6 @@ public class UserService {
         return user;
     }
 
-
     public UserDTO findById(Long id) {
         return userRepository.findById(id)
                 .map(createUserDTO())

@@ -282,11 +282,11 @@ public class UserIntegrationTest extends IntegrationTest {
                 .then()
                 .assertThat()
                     .statusCode(HttpStatus.OK.value())
-                    .body("userId", is(2))
+                    .body("userId", is(userDTO.getId().intValue()))
                     .body("name", is(anotherName))
                     .body("car.plate", is(anotherPlate))
                     .body("car.model", is(anotherCarModel))
-                    .body("roles", hasSize(1))
+                    .body("roles", hasSize(TypeUser.STUDENTS.getAllowedProfiles().size()))
                     .body("roles[0].name", is("ROLE_USER"));
     }
 
@@ -319,7 +319,7 @@ public class UserIntegrationTest extends IntegrationTest {
                 .when()
                 .delete(URI_USERS + "/" + userIdNotFound)
                 .then()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+                .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
