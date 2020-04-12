@@ -2,11 +2,12 @@ package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
 import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.LoginDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
+import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
@@ -37,7 +38,7 @@ public abstract class IntegrationTest {
 
     protected static final String FULANO_ADMIN = "fulano_admin";
     private static final String PASSWORD = "1234567";
-    private static final String FULANO = "fulano";
+    private static final String FULANO = "fulano test";
     private static final String URI_LOGIN = "/api/v1/login";
 
     @Autowired
@@ -117,17 +118,7 @@ public abstract class IntegrationTest {
     }
 
     private void createMockUser() {
-        var inputUser = new InputUserNewDTO();
-
-        inputUser.setAccountNonExpired(true);
-        inputUser.setAccountNonLocked(true);
-        inputUser.setEnabled(true);
-        inputUser.setName(FULANO);
-        inputUser.setType(TypeUserDTO.SERVICE);
-        inputUser.setUsername(FULANO_ADMIN);
-        inputUser.setPassword(PASSWORD);
-        inputUser.setAuthorities(List.of(1L, 2L));
-
+        var inputUser = CreateMock.createMockInputUserDTO(FULANO, FULANO_ADMIN, PASSWORD, TypeUserDTO.SERVICE);
         currentUserDTO = userService.saveNewUser(inputUser);
     }
 }

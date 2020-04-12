@@ -9,10 +9,9 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserFactory {
 
-    public User createUserByUserDTO(InputUserNewDTO dto) {
+    public User createUserByUserDTO(InputUserDTO dto) {
         return User.builder()
                 .name(dto.getName())
                 .typeUser(TypeUser.valueOf(dto.getType().name()))

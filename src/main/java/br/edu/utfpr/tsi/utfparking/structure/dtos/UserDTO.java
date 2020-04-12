@@ -3,6 +3,8 @@ package br.edu.utfpr.tsi.utfparking.structure.dtos;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Optional;
+
 @Data
 @Builder
 public class UserDTO {
@@ -15,4 +17,8 @@ public class UserDTO {
     private AccessCardDTO accessCard;
 
     private CarDTO car;
+
+    public Optional<CarDTO> car() {
+        return Optional.ofNullable(car);
+    }
 }

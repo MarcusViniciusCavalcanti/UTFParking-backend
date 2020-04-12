@@ -1,10 +1,9 @@
 package br.edu.utfpr.tsi.utfparking.application.service.impl;
 
 import br.edu.utfpr.tsi.utfparking.application.exceptions.IlegalProcessDeleteException;
-import br.edu.utfpr.tsi.utfparking.application.exceptions.IlegalProcessNewUserException;
 import br.edu.utfpr.tsi.utfparking.application.service.UserApplicationService;
 import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +28,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     }
 
     @Override
-    public UserDTO saveNewUser(InputUserNewDTO inputUser) {
-        if (inputUser.getId() != null) {
-            throw new IlegalProcessNewUserException("Not process create new user because id is not null, please use another endpoind.");
-        }
-
+    public UserDTO saveNewUser(InputUserDTO inputUser) {
         return userService.saveNewUser(inputUser);
     }
 
@@ -49,5 +44,10 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public UserDTO findUserById(Long id) {
         return userService.findById(id);
+    }
+
+    @Override
+    public UserDTO updateUser(InputUserDTO inputUser, Long id) {
+        return userService.editUser(inputUser, id);
     }
 }

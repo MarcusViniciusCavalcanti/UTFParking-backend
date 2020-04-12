@@ -26,9 +26,11 @@ public class UserRepresentation extends RepresentationModel<UserRepresentation> 
         this.userId = user.getId();
         this.name = user.getName();
         this.type = user.getTypeUser().name();
-        this.car = new CarRepresentation();
 
-        this.car.copyAttributeBy(user.getCar());
+        user.car().ifPresent(carDTO -> {
+            this.car = new CarRepresentation();
+            this.car.copyAttributeBy(carDTO);
+        });
 
         this.roles = user.getAccessCard().getRoles().stream()
             .map(role -> new RoleRepresentation(role.getId(), role.getName(), role.getDescription()))

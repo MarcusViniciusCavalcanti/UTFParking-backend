@@ -7,6 +7,7 @@ import br.edu.utfpr.tsi.utfparking.domain.security.factory.AccessCardFactory;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
 import br.edu.utfpr.tsi.utfparking.domain.users.factory.CarFactory;
+import br.edu.utfpr.tsi.utfparking.domain.users.factory.RolesFactory;
 import br.edu.utfpr.tsi.utfparking.domain.users.factory.UserFactory;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.*;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
@@ -24,10 +25,10 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,21 +46,20 @@ public class UserService {
 
     private final CarFactory carFactory;
 
+    private final RolesFactory rolesFactory;
+
     private final BCryptPasswordEncoder encoder;
 
     public UserDTO getUserRequest() {
         var principal = (AccessCard) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         return userRepository.findByAccessCard(principal)
-                .map(user -> UserDTO.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .accessCard(createAccessCardDTO(user, createRoleDTOS(user)))
-                .build())
+                .map(createUserDTO())
                 .orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
-    public UserDTO saveNewUser(InputUserNewDTO inputUser) {
+    public UserDTO saveNewUser(InputUserDTO inputUser) {
         var user = getUser(inputUser);
         user.getAccessCard().setPassword(encoder.encode(inputUser.getPassword()));
 
@@ -87,6 +87,15 @@ public class UserService {
     }
 
     @Transactional
+    public UserDTO editUser(InputUserDTO inputUser, Long id) {
+        return userRepository.findById(id)
+                .map(setCarInUser(inputUser))
+                .map(updateUser(inputUser))
+                .map(createUserDTO())
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Transactional
     public Page<UserDTO> findAllPageableUsers(Pageable pageable) {
         var userPage = userRepository.findAll(pageable);
         var userDTOS = userPage.stream()
@@ -101,11 +110,6 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    @Transactional
-    public Boolean existUserByUsername(String username) {
-        return userRepository.existsUserByAccessCardUsername(username);
-    }
-
     private User saveOrUpdate(User user) {
         try {
             return userRepository.save(user);
@@ -114,27 +118,7 @@ public class UserService {
         }
     }
 
-    private AccessCardDTO createAccessCardDTO(User user, List<RoleDTO> roles) {
-        return AccessCardDTO.builder()
-                .accountNonExpired(user.getAccessCard().isAccountNonExpired())
-                .accountNonExpired(user.getAccessCard().isAccountNonExpired())
-                .credentialsNonExpired(user.getAccessCard().isCredentialsNonExpired())
-                .enabled(user.getAccessCard().isEnabled())
-                .roles(roles)
-                .build();
-    }
-
-    private List<RoleDTO> createRoleDTOS(User user) {
-        return user.getAccessCard().getRoles().stream()
-                .map(role -> RoleDTO.builder()
-                        .id(role.getId())
-                        .description(role.getDescription())
-                        .name(role.getName())
-                        .build()
-                ).collect(Collectors.toList());
-    }
-
-    private User getUser(InputUserNewDTO inputUser) {
+    private User getUser(InputUserDTO inputUser) {
         if (inputUser.getType() == TypeUserDTO.STUDENTS) {
             var allowedProfiles = TypeUser.valueOf(inputUser.getType().name()).getAllowedProfiles();
 
@@ -147,7 +131,6 @@ public class UserService {
             }
         }
 
-
         var roles = roleRepository.findAllById(inputUser.getAuthorities());
 
         var accessCard = accessCardFactory.createAccessCardByInputUser(inputUser, roles);
@@ -158,14 +141,13 @@ public class UserService {
         return user;
     }
 
-
     public UserDTO findById(Long id) {
         return userRepository.findById(id)
-                .map(userFactory::createUserDTOByUser)
+                .map(createUserDTO())
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User by: %d not found", id)));
     }
 
-    private void setCarIfExist(InputUserNewDTO inputUser, User user) {
+    private void setCarIfExist(InputUserDTO inputUser, User user) {
         if ((inputUser.getCarPlate() != null && !inputUser.getCarPlate().isEmpty()) ||
                 (inputUser.getCarModel() != null && !inputUser.getCarModel().isEmpty())) {
             var car = carFactory.createCarByInputUser(inputUser, user);
@@ -194,6 +176,47 @@ public class UserService {
 
     private CompletableFuture<AccessCardDTO> executorCreateAccessCardDTO(User newUser) {
         return CompletableFuture.supplyAsync(
-                () -> accessCardFactory.createAccessCardByUserDTO(newUser));
+                () -> accessCardFactory.createAccessCardByUser(newUser));
+    }
+
+    private Function<User, UserDTO> createUserDTO() {
+        return user -> {
+            var userDTO = userFactory.createUserDTOByUser(user);
+            var accessCardDTO = accessCardFactory.createAccessCardByUser(user);
+            var carDTO = carFactory.createCarDTOByUser(user);
+
+            userDTO.setAccessCard(accessCardDTO);
+            userDTO.setCar(carDTO);
+
+            return userDTO;
+        };
+    }
+
+    private Function<User, User> setCarInUser(InputUserDTO inputUser) {
+        return user -> {
+            var car = user.car()
+                    .map(mapCar -> {
+                        mapCar.setPlate(inputUser.getCarPlate());
+                        mapCar.setModel(inputUser.getCarModel());
+                        return mapCar;
+                    })
+                    .orElse(carFactory.createCarByInputUser(inputUser, user));
+            user.setCar(car);
+            return user;
+        };
+    }
+
+    private Function<User, User> updateUser(InputUserDTO inputUser) {
+        return user -> {
+            user.setName(inputUser.getName());
+            user.setTypeUser(TypeUser.valueOf(inputUser.getType().name()));
+
+            var roles = roleRepository.findAllById(inputUser.getAuthorities());
+
+            user.getAccessCard().setUsername(inputUser.getUsername());
+            user.getAccessCard().setRoles(roles);
+
+            return userRepository.save(user);
+        };
     }
 }

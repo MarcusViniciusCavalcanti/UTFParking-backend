@@ -11,6 +11,21 @@
 [[overview]]
 == Overview
 
+Api para o sistema UTFParking, de alunos para alunos.
+
+Esta api está agnostica de clientes deste que uso protocolos **HTTP**, seja ele a aplicação de reconhecimento
+ou web.
+
+## Começando
+Esta documentação ira auxiliar novas implementações de __clients sides__, dando uma base
+de como manipular os recursos que a API provem.
+
+|===
+| Repositório da api| https://github.com/MarcusViniciusCavalcanti/UTFParking-backend[]
+| Exemplo de __client side (**React**)__| https://github.com/MarcusViniciusCavalcanti/UTFParking-frontend[]
+| Exemplo de __sistema de reconhecimento (**React**)__| https://github.com/MarcusViniciusCavalcanti/UTFParking-recgonizer[]
+|===
+
 [[overview-http-verbs]]
 === HTTP Verbs
 
@@ -47,23 +62,25 @@ possíveis as suas convenções em seu uso dos códigos de Status HTTP
 
 | `201 Created`
 | Um novo recurso foi criado com sucesso. O URI do recurso está disponível a partir da resposta
-`Localizaçao` body.link._self.href
+`Localização` body.link._self.href
 
 | `204 No Content`
 | Requisição foi processada e não há respostas para tal
 
 | `400 Bad Request`
-| Requsição negada, pois está mal formatada, exemplo de retorno de erro quando
-a falta de um atributo.
+| Requisição negada, pois está mal formatada, exemplo de retorno de erro quando
+a falta de um atributo, no corpo da mensagem.
 
 | `404 Not Found`
 | Este recurso não foi encontrado.
+
+| `409 Conflict`
+| O recurso já existe com as informações dada.
+
+| `422 Unprocessable Entity`
+| Requisição negada, pois não passou na validação da requisição, um atributo nulo ou
+ultrapassou o limite de caracteres, são exemplos.
 |===
-
-[[overview-headers]]
-=== Headers
-
-Cada resposta tem o(s) seguinte(s) cabeçalho(s):
 
 
 [[security]]
@@ -114,12 +131,14 @@ include::{snippets}/authenticate/Login/failure/forbidden/http-response.adoc[]
 
 Para criar um token **/api/v1/login** passando as credenciais, username e password.
 
+IMPORTANT: As requisições para login, serão validadas, consulte: <<erros-badrequest>> para mais informações
+
 Exemplo:
 include::{snippets}/authenticate/Login/success/http-request.adoc[]
 
 include::{snippets}/authenticate/Login/success/response-fields.adoc[]
 
-IMPORTANT: As requisições para login, serão validadas, consulte: <<erros-badrequest>> para mais informações
+TIP: Para recuperar o usuário da do token clique <<users-get-me, aqui>> para ter informações.
 
 [[security-device]]
 === Autorizando Dispositivo
@@ -157,7 +176,11 @@ ___
 [[users-delete]]
 === Criando Usuários
 |===
-|POST |`/ap/v1/users`
+|METHOD|URI|ROLE
+
+|POST
+|`/ap/v1/users`
+|**ADMIN**
 |===
 
 Cria um recurso usuário.
@@ -174,27 +197,68 @@ include::{snippets}/user/create/success/http-response.adoc[]
 ---
 ##### Respostas de error
 
-`400`
+`422`
 Para error de validação de campos:
 include::{snippets}/user/create/error/validation/http-response.adoc[]
-
+##Consute sessão de errors para mais informações sobre os campos da mensagem.##
 
 `409`
 Para username já existe:
 include::{snippets}/user/create/error/username/http-response.adoc[]
 
-
-`422`
-Para caso do campo id for preenchido, indicando que a URL acessa é apenas para criação
-include::{snippets}/user/create/error/idExist/http-response.adoc[]
-
-##Consute sessão de errors para mais informações sobre os campos da mensagem.##
-
 ___
+
+[[users-get]]
+=== Recuperando Usuários
+|===
+|METHOD|URI|ROLE
+
+|GET
+|`/ap/v1/users/{ID}`
+|**ADMIN**, **OPERATOR**
+|===
+
+Para recuperar um determinado usuário, deve-se informar o id do usuário.
+
+include::{snippets}/user/get/success/path-parameters.adoc[]
+
+Requisição:
+include::{snippets}/user/get/success/http-request.adoc[]
+
+Resposta:
+include::{snippets}/user/get/success/http-response.adoc[]
+
+---
+##### Respostas de error
+`404`
+Para usuário não existe:
+include::{snippets}/user/get/error/http-response.adoc[]
+
+[[users-get-me]]
+=== Recuperando Usuários da sessão
+|===
+|METHOD|URI|ROLE
+
+|GET
+|`/ap/v1/users/me`
+|**ADMIN**, **OPERATOR**, **DRIVER**
+|===
+
+Requisição:
+include::{snippets}/user/me/success/http-request.adoc[]
+
+Resposta:
+include::{snippets}/user/me/success/http-response.adoc[]
+
+---
 [[users-delete]]
 === Deletando Usuários
 |===
-|DELETE |`/ap/v1/users/{id}`
+|METHOD|URI|ROLE
+
+|DELETE
+|`/ap/v1/users/{ID}`
+|**ADMIN**
 |===
 
 Remover um determinado recurso usuário.
@@ -207,6 +271,12 @@ include::{snippets}/user/delete/success/http-response.adoc[]
 
 IMPORTANT: Não é possível remover o usuário da mesma sessão,
 caso isso ocorra um error será lançado com código de status`422`
+
+---
+##### Respostas de error
+`404`
+Para usuário não existe:
+include::{snippets}/user/get/error/http-response.adoc[]
 
 ___
 [[roles]]
