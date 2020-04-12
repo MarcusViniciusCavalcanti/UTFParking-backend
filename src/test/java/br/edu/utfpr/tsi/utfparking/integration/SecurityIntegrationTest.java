@@ -2,12 +2,13 @@ package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
 import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.LoginDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
+import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.AfterEach;
@@ -200,17 +201,7 @@ public class SecurityIntegrationTest {
         return userService.saveNewUser(createNewUser(List.of(1L, 2L), FULANO_ADMIN));
     }
 
-    private InputUserNewDTO createNewUser(List<Long> roles, String username) {
-        var inputUser = new InputUserNewDTO();
-
-        inputUser.setAccountNonExpired(true);
-        inputUser.setAccountNonLocked(true);
-        inputUser.setEnabled(true);
-        inputUser.setName(FULANO);
-        inputUser.setUsername(username);
-        inputUser.setPassword(PASSWORD);
-        inputUser.setAuthorities(roles);
-        inputUser.setType(TypeUserDTO.SERVICE);
-        return inputUser;
+    private InputUserDTO createNewUser(List<Long> roles, String username) {
+        return CreateMock.createMockInputUserDTO(FULANO, username, PASSWORD, TypeUserDTO.SERVICE, roles);
     }
 }

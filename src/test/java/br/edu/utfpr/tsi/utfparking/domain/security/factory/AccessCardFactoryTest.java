@@ -1,8 +1,7 @@
 package br.edu.utfpr.tsi.utfparking.domain.security.factory;
 
-import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
-import br.edu.utfpr.tsi.utfparking.domain.security.entity.Role;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
+import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,27 +24,12 @@ class AccessCardFactoryTest {
 
     @Test
     void shouldHaveCreateAccessCardByInputUserDTO() {
-        var inputUser = new InputUserNewDTO();
+        var inputUser = CreateMock.createMockInputUserDTO(NAME_USER, USERNAME, PASSWORD, TypeUserDTO.SERVICE, AUTHORITIES);
+        var role = CreateMock.createRole(2L, "description", "role");
 
-        inputUser.setAccountNonExpired(true);
-        inputUser.setAccountNonLocked(true);
-        inputUser.setEnabled(true);
-        inputUser.setName(NAME_USER);
-        inputUser.setUsername(USERNAME);
-        inputUser.setPassword(PASSWORD);
-        inputUser.setAuthorities(AUTHORITIES);
-        inputUser.setId(ACCESS_CARD_ID);
-
-        Role role = Role.builder()
-                .id(2L)
-                .name("role")
-                .description("description")
-                .build();
-
-        AccessCard accessCardByInputUser = accessCardFactory.createAccessCardByInputUser(inputUser, List.of(role));
+        var accessCardByInputUser = accessCardFactory.createAccessCardByInputUser(inputUser, List.of(role));
 
         assertEquals(accessCardByInputUser.getUsername(), USERNAME);
-        assertEquals(accessCardByInputUser.getId(), ACCESS_CARD_ID);
         assertEquals(accessCardByInputUser.getRoles().size(), 1);
     }
 

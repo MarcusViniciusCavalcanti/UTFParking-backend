@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -43,11 +44,11 @@ public class RestExceptionHandler {
                 .title("Validation Errors " + exception.getTitle())
                 .timestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli())
                 .error(new ValidationErrors(exception.errors()))
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .path(request.getServletPath())
                 .build();
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(UsernameExistException.class)
@@ -65,18 +66,18 @@ public class RestExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(IlegalProcessNewUserException.class)
-    public ResponseEntity<?> handleUsernameExistException(IlegalProcessNewUserException exception, HttpServletRequest request) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> handlerEntityNotFoundException(EntityNotFoundException exception, HttpServletRequest request) {
         log.error("Error in process request: " + request.getRequestURL() + " cause by: " + exception.getClass().getSimpleName());
 
         var errors = ResponseError.builder()
-                .title("New user error")
+                .title("Entity Not Found")
                 .timestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli())
                 .error(exception.getMessage())
-                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .statusCode(HttpStatus.NOT_FOUND.value())
                 .path(request.getServletPath())
                 .build();
 
-        return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
     }
 }

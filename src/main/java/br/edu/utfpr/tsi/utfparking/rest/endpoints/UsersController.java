@@ -3,11 +3,11 @@ package br.edu.utfpr.tsi.utfparking.rest.endpoints;
 import br.edu.utfpr.tsi.utfparking.application.service.UserApplicationService;
 import br.edu.utfpr.tsi.utfparking.rest.annotations.IsAdmin;
 import br.edu.utfpr.tsi.utfparking.rest.annotations.IsEqualsUser;
-import br.edu.utfpr.tsi.utfparking.rest.annotations.IsOperator;
+import br.edu.utfpr.tsi.utfparking.rest.annotations.IsOperatorOrAdmin;
 import br.edu.utfpr.tsi.utfparking.rest.erros.exceptions.IlegalRequestBodyException;
 import br.edu.utfpr.tsi.utfparking.rest.factories.UserRepresentationFactory;
 import br.edu.utfpr.tsi.utfparking.rest.representations.UserRepresentation;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +32,7 @@ public class UsersController {
 
     private final UserApplicationService userApplicationService;
 
-    @IsEqualsUser
-    @GetMapping(value = "/by-access-card")
+    @GetMapping(value = "/me")
     public ResponseEntity<UserRepresentation> getUserByAccessCard() {
         return unwrap(userApplicationService.getUserRequest());
     }
@@ -54,7 +53,7 @@ public class UsersController {
         return ResponseEntity.noContent().build();
     }
 
-    @IsOperator
+    @IsOperatorOrAdmin
     @GetMapping("/{id}")
     public ResponseEntity<UserRepresentation> findById(@PathVariable("id") Long id) {
         return unwrap(userApplicationService.findUserById(id));
@@ -62,18 +61,27 @@ public class UsersController {
 
     @IsAdmin
     @PostMapping
-    public ResponseEntity<UserRepresentation> createNew(@Valid @RequestBody InputUserNewDTO inputUserNewDTO, BindingResult resultSet) {
+    public ResponseEntity<UserRepresentation> createNew(@Valid @RequestBody InputUserDTO inputUserDTO, BindingResult resultSet) {
         if (resultSet.hasErrors()) {
-            throw new IlegalRequestBodyException("User", resultSet);
+            throw new IlegalRequestBodyException("New User", resultSet);
         }
 
-        UserDTO userDTO = userApplicationService.saveNewUser(inputUserNewDTO);
+        var userDTO = userApplicationService.saveNewUser(inputUserDTO);
         var userRepresentation = userRepresentationFactory.toModel(userDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userRepresentation);
     }
 
+    @IsAdmin
+    @PutMapping("/{id}")
+    public ResponseEntity<UserRepresentation> editUser(@PathVariable("id") Long id, @Valid @RequestBody InputUserDTO inputUserDTO, BindingResult resultSet) {
+        if (resultSet.hasErrors()) {
+            throw new IlegalRequestBodyException("Edit User", resultSet);
+        }
 
+        var userDTO = userApplicationService.updateUser(inputUserDTO, id);
+        return unwrap(userDTO);
+    }
 
     private ResponseEntity<UserRepresentation> unwrap(UserDTO user) {
         var userRepresentation = userRepresentationFactory.toModel(user);

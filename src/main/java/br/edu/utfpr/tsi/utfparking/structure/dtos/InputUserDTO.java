@@ -11,9 +11,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Data
-public class InputUserNewDTO {
-
-    private Long id;
+public class InputUserDTO {
 
     @NotBlank(message = "Não deve ser nulo ou branco")
     @Size(min = 5, max = 255, message = "O tamanho deve estar entre 5 à 255 caracteres")

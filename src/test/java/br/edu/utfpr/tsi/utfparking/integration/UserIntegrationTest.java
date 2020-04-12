@@ -1,7 +1,10 @@
 package br.edu.utfpr.tsi.utfparking.integration;
 
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserNewDTO;
+import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
+import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,11 +13,13 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import java.util.List;
-
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 import static org.springframework.restdocs.snippet.Attributes.key;
 
@@ -35,44 +40,9 @@ public class UserIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    void shouldDeleteUser() {
-        InputUserNewDTO inputUser = createMockInputUserDTO();
-
-        var userDTO = userService.saveNewUser(inputUser);
-
-        given(specAuthentication)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .filter(document("user/delete/success", getRequestPreprocessor(), getResponsePreprocessor()))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete(URI_USERS + "/" + userDTO.getId())
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value());
-    }
-
-    @Test
-    void shouldReturnErrorWhenDeleteYourSelf() {
-        given(specAuthentication)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .filter(document("user/delete/error", getRequestPreprocessor(), getResponsePreprocessor(),
-                        responseFields(
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("Titulo do error."),
-                                fieldWithPath("statusCode").type(JsonFieldType.NUMBER).description("Código de status HTTP."),
-                                fieldWithPath("timestamp").type(JsonFieldType.NUMBER).description("Timestamp do error."),
-                                fieldWithPath("error").type(JsonFieldType.STRING).description("Definição do error."),
-                                fieldWithPath("path").type(JsonFieldType.STRING).description("Uri que gerou o error."))
-                ))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete(URI_USERS + "/" + currentUserDTO.getId())
-                .then()
-                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-    }
-
-    @Test
     void shouldCreateNewUser() {
         var mockInputUserDTO = createMockInputUserDTO();
-        var fields = new ConstrainedFields(InputUserNewDTO.class);
+        var fields = new ConstrainedFields(InputUserDTO.class);
 
         given(specAuthentication)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -81,11 +51,6 @@ public class UserIntegrationTest extends IntegrationTest {
                                 linkWithRel("self").description("Uri do recurso criado. ")
                         ),
                         requestFields(
-                                fields.withPath("id")
-                                        .type(JsonFieldType.NUMBER)
-                                        .description("Id do usuário, utilizado apenas para editar")
-                                        .attributes(key("Optional").value("true"))
-                                        .optional(),
                                 fields.withPath("name")
                                         .type(JsonFieldType.STRING)
                                         .description("Nome que será cadastrado."),
@@ -170,7 +135,7 @@ public class UserIntegrationTest extends IntegrationTest {
                 .when()
                 .post(URI_USERS)
                 .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     @Test
@@ -197,45 +162,186 @@ public class UserIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    void shouldReturnErrorWhenIdExist() {
+    void shouldGetUser() {
         var mockInputUserDTO = createMockInputUserDTO();
-        mockInputUserDTO.setId(10L);
+        var userDTO = userService.saveNewUser(mockInputUserDTO);
 
         given(specAuthentication)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .filter(document("user/create/error/idExist", getRequestPreprocessor(), getResponsePreprocessor(),
+                .filter(document("user/get/success", getRequestPreprocessor(), getResponsePreprocessor(),
+                        links(halLinks(),
+                                linkWithRel("self").description("Uri do recurso criado.")
+                        ),
+                        pathParameters(
+                                parameterWithName("id").description("id do recurso que será recuperado")
+                        ))
+                )
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(URI_USERS + "/{id}", userDTO.getId())
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .body("userId", is(userDTO.getId().intValue()))
+                .body("name", is(userDTO.getName()))
+                .body("car.plate", is(userDTO.getCar().getPlate()))
+                .body("car.model", is(userDTO.getCar().getModel()))
+                .body("roles", hasSize(userDTO.getAccessCard().getRoles().size()));
+    }
+
+    @Test
+    void shouldGetCurrentUser() {
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/me/success", getRequestPreprocessor(), getResponsePreprocessor(),
+                        links(halLinks(),
+                                linkWithRel("self").description("Uri do recurso criado.")
+                        ))
+                )
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(URI_USERS + "/me")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .body("userId", is(currentUserDTO.getId().intValue()))
+                .body("name", is(currentUserDTO.getName()))
+                .body("car.plate", is(currentUserDTO.getCar().getPlate()))
+                .body("car.model", is(currentUserDTO.getCar().getModel()))
+                .body("roles", hasSize(currentUserDTO.getAccessCard().getRoles().size()));
+    }
+
+    @Test
+    void shouldGetUserWhitErrorUserNotFound() {
+        var userIdNotFound = 1000;
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/get/error", getRequestPreprocessor(), getResponsePreprocessor(),
+                        pathParameters(
+                                parameterWithName("id").description("id do recurso que será recuperado")
+                        ),
+                        responseFields(
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("Titulo do error."),
+                                fieldWithPath("statusCode").type(JsonFieldType.NUMBER).description("Código de status HTTP."),
+                                fieldWithPath("timestamp").type(JsonFieldType.NUMBER).description("Timestamp do error."),
+                                fieldWithPath("error").type(JsonFieldType.STRING).description("Definição do error."),
+                                fieldWithPath("path").type(JsonFieldType.STRING).description("Uri que gerou o error.")
+                        ))
+                )
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(URI_USERS + "/{id}", userIdNotFound)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void shouldUpdateUser() {
+        var mockInputUserDTO = createMockInputUserDTO();
+        var fields = new ConstrainedFields(InputUserDTO.class);
+        var userDTO = userService.saveNewUser(mockInputUserDTO);
+
+        var anotherName = "Another Name";
+        var anotherCarModel = "Another car model";
+        var anotherPlate = "abc3454";
+
+        mockInputUserDTO.setName(anotherName);
+        mockInputUserDTO.setCarPlate(anotherPlate);
+        mockInputUserDTO.setCarModel(anotherCarModel);
+        mockInputUserDTO.setType(TypeUserDTO.STUDENTS);
+        mockInputUserDTO.setAuthorities(TypeUser.STUDENTS.getAllowedProfiles());
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/update/success", getRequestPreprocessor(), getResponsePreprocessor(),
+                        links(halLinks(),
+                                linkWithRel("self").description("Uri do recurso criado.")
+                        ),
+                        pathParameters(
+                                parameterWithName("id").description("id do recurso que será atualizado")
+                        ),
+                        requestFields(
+                                fields.withPath("name").description("Nome"),
+                                fields.withPath("username").ignored(),
+                                fields.withPath("password").ignored(),
+                                fields.withPath("authorities").description("Perfils"),
+                                fields.withPath("type").description("Tipo do usuário"),
+                                fields.withPath("accountNonExpired").description("expira a conta"),
+                                fields.withPath("accountNonLocked").description("bloqueia a conta"),
+                                fields.withPath("credentialsNonExpired").description("expira as credencias"),
+                                fields.withPath("enabled").description("ativa ou desativa a conta"),
+                                fields.withPath("carPlate").description("placa do carro"),
+                                fields.withPath("carModel").description("modelo do carro")
+                        ))
+                )
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(mockInputUserDTO)
+                .when()
+                .put(URI_USERS + "/{id}", userDTO.getId())
+                .then()
+                .assertThat()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("userId", is(2))
+                    .body("name", is(anotherName))
+                    .body("car.plate", is(anotherPlate))
+                    .body("car.model", is(anotherCarModel))
+                    .body("roles", hasSize(1))
+                    .body("roles[0].name", is("ROLE_USER"));
+    }
+
+    @Test
+    void shouldDeleteUser() {
+        InputUserDTO inputUser = createMockInputUserDTO();
+
+        var userDTO = userService.saveNewUser(inputUser);
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/delete/success", getRequestPreprocessor(), getResponsePreprocessor(),
+                        pathParameters(
+                                parameterWithName("id").description("id do recurso que será recuperado")
+                        )))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(URI_USERS + "/{id}", userDTO.getId())
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    void shouldReturnErrorDeleteUserNotFound() {
+        var userIdNotFound = 1000000;
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/delete/error", getRequestPreprocessor(), getResponsePreprocessor()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(URI_USERS + "/" + userIdNotFound)
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    void shouldReturnErrorWhenDeleteYourSelf() {
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/delete/error", getRequestPreprocessor(), getResponsePreprocessor(),
                         responseFields(
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("Titulo do error."),
                                 fieldWithPath("statusCode").type(JsonFieldType.NUMBER).description("Código de status HTTP."),
                                 fieldWithPath("timestamp").type(JsonFieldType.NUMBER).description("Timestamp do error."),
                                 fieldWithPath("error").type(JsonFieldType.STRING).description("Definição do error."),
                                 fieldWithPath("path").type(JsonFieldType.STRING).description("Uri que gerou o error."))
-                        )
-                ).contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(mockInputUserDTO)
+                ))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(URI_USERS)
+                .delete(URI_USERS + "/" + currentUserDTO.getId())
                 .then()
                 .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
-    private InputUserNewDTO createMockInputUserDTO() {
-        var inputUser = new InputUserNewDTO();
-
-        inputUser.setAccountNonExpired(true);
-        inputUser.setAccountNonLocked(true);
-        inputUser.setEnabled(true);
-        inputUser.setType(TypeUserDTO.SERVICE);
-        inputUser.setName(NAME_USER);
-        inputUser.setUsername(USERNAME);
-        inputUser.setPassword(PASSWORD);
-        inputUser.setCarModel("Gol");
-        inputUser.setCarPlate("abc1234");
-        inputUser.setAuthorities(List.of(1L, 2L));
-
-        return inputUser;
+    private InputUserDTO createMockInputUserDTO() {
+        return CreateMock.createMockInputUserDTO(NAME_USER, USERNAME, PASSWORD, TypeUserDTO.SERVICE, TypeUser.SERVICE.getAllowedProfiles(), "Another", "adf12345");
     }
-
-
-
 }

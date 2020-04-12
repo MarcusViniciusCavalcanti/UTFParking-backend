@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasRole('OPERATOR')")
-public @interface IsOperator {
+@PreAuthorize("hasRole('OPERATOR') or hasRole('ADMIN')")
+public @interface IsOperatorOrAdmin {
 }
