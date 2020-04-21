@@ -311,7 +311,7 @@ Resposta:
 include::{snippets}/user/delete/success/http-response.adoc[]
 
 IMPORTANT: Não é possível remover o usuário da mesma sessão,
-caso isso ocorra um error será lançado com código de status`422`
+caso isso ocorra um error será lançado com código de status ``422``. consulte <<overview-http-status-codes>>
 
 ---
 ##### Respostas de error

@@ -1,7 +1,6 @@
 package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
-import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
@@ -13,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.payload.JsonFieldType;
-
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasSize;
@@ -240,7 +237,7 @@ public class UserIntegrationTest extends IntegrationTest {
 
     @Test
     void shouldReturnPageUser() {
-        CreateMock.createListUser().forEach(userService::saveNewUser);
+        CreateMock.createListInputUsersDTO().forEach(userService::saveNewUser);
 
         given(specAuthentication)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
