@@ -1,5 +1,6 @@
-package br.edu.utfpr.tsi.utfparking.structure.dtos;
+package br.edu.utfpr.tsi.utfparking.structure.dtos.inputs;
 
+import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -3,7 +3,8 @@ package br.edu.utfpr.tsi.utfparking.application.service.impl;
 import br.edu.utfpr.tsi.utfparking.application.exceptions.IlegalProcessDeleteException;
 import br.edu.utfpr.tsi.utfparking.application.service.UserApplicationService;
 import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +50,10 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public UserDTO updateUser(InputUserDTO inputUser, Long id) {
         return userService.editUser(inputUser, id);
+    }
+
+    @Override
+    public UserDTO updateCar(InputUpdateCarDTO inputUpdateCarDTO, Long id) {
+        return userService.updateCar(inputUpdateCarDTO, id);
     }
 }

@@ -1,6 +1,7 @@
 package br.edu.utfpr.tsi.utfparking.application.service;
 
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,6 @@ public interface UserApplicationService {
     UserDTO findUserById(Long id);
 
     UserDTO updateUser(InputUserDTO inputUser, Long id);
+
+    UserDTO updateCar(InputUpdateCarDTO inputUpdateCarDTO, Long id);
 }

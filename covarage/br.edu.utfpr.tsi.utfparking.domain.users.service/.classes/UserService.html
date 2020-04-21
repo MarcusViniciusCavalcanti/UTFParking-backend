@@ -39,73 +39,76 @@
   <td class="name">UserService</td>
 <td class="coverageStat">
   <span class="percent">
-    84,6%
+    100%
   </span>
   <span class="absValue">
-    (11/ 13)
+    (31/ 31)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    86,4%
+    95%
   </span>
   <span class="absValue">
-    (38/ 44)
+    (96/ 101)
   </span>
 </td>
 </tr>
   <tr>
-    <td class="name">UserService$$EnhancerBySpringCGLIB$$b8368dae</td>
+    <td class="name">UserService$$EnhancerBySpringCGLIB$$e580d0db</td>
   </tr>
   <tr>
-    <td class="name">UserService$$EnhancerBySpringCGLIB$$b8368dae$$FastClassBySpringCGLIB$$56f49a43</td>
+    <td class="name">UserService$$EnhancerBySpringCGLIB$$e580d0db$$FastClassBySpringCGLIB$$f82c5aac</td>
   </tr>
   <tr>
     <td class="name">UserService$$FastClassBySpringCGLIB$$7567be9f</td>
   </tr>
   <tr>
-    <td class="name">UserService$MockitoMock$94667629</td>
+    <td class="name">UserService$MockitoMock$1810103041</td>
   </tr>
   <tr>
-    <td class="name">UserService$MockitoMock$94667629$auxiliary$9o1Pw5SK</td>
+    <td class="name">UserService$MockitoMock$1810103041$auxiliary$Ccani6xo</td>
   </tr>
   <tr>
-    <td class="name">UserService$MockitoMock$94667629$auxiliary$BnRRhYUL</td>
+    <td class="name">UserService$MockitoMock$1810103041$auxiliary$eeMwsfB1</td>
   </tr>
   <tr>
-    <td class="name">UserService$MockitoMock$94667629$auxiliary$cM8qlu8a</td>
+    <td class="name">UserService$MockitoMock$1810103041$auxiliary$gIsdwhKy</td>
   </tr>
   <tr>
-    <td class="name">UserService$MockitoMock$94667629$auxiliary$iJYSyWIP</td>
+    <td class="name">UserService$MockitoMock$1810103041$auxiliary$JrrM55Rg</td>
   </tr>
   <tr>
-    <td class="name">UserService$MockitoMock$94667629$auxiliary$JNHSL1vq</td>
+    <td class="name">UserService$MockitoMock$1810103041$auxiliary$nFMYqZ7o</td>
   </tr>
   <tr>
-    <td class="name">UserService$MockitoMock$94667629$auxiliary$mOSzueZc</td>
+    <td class="name">UserService$MockitoMock$1810103041$auxiliary$Or4HemFu</td>
   </tr>
   <tr>
-    <td class="name">UserService$MockitoMock$94667629$auxiliary$NoFzU5Du</td>
+    <td class="name">UserService$MockitoMock$1810103041$auxiliary$SfDvPCzL</td>
   </tr>
   <tr>
-    <td class="name">UserService$MockitoMock$94667629$auxiliary$qF7ydM4a</td>
+    <td class="name">UserService$MockitoMock$1810103041$auxiliary$U1WdLzgD</td>
+  </tr>
+  <tr>
+    <td class="name">UserService$MockitoMock$1810103041$auxiliary$ZdbvYgkF</td>
   </tr>
 <tr>
   <td class="name"><strong>total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    84,6%
+    100%
   </span>
   <span class="absValue">
-    (11/ 13)
+    (31/ 31)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    86,4%
+    95%
   </span>
   <span class="absValue">
-    (38/ 44)
+    (96/ 101)
   </span>
 </td>
 </tr>
@@ -117,130 +120,257 @@
 
 <div class="sourceCode"><i>1</i>&nbsp;package br.edu.utfpr.tsi.utfparking.domain.users.service;
 <i>2</i>&nbsp;
-<i>3</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
-<i>4</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.security.factory.AccessCardFactory;
-<i>5</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
-<i>6</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.factory.UserFactory;
-<i>7</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.AccessCardDTO;
-<i>8</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
-<i>9</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.RoleDTO;
-<i>10</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
-<i>11</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
-<i>12</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
-<i>13</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
-<i>14</i>&nbsp;import lombok.RequiredArgsConstructor;
-<i>15</i>&nbsp;import lombok.extern.slf4j.Slf4j;
-<i>16</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
-<i>17</i>&nbsp;import org.springframework.data.domain.Page;
-<i>18</i>&nbsp;import org.springframework.data.domain.PageImpl;
-<i>19</i>&nbsp;import org.springframework.data.domain.Pageable;
-<i>20</i>&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
-<i>21</i>&nbsp;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-<i>22</i>&nbsp;import org.springframework.stereotype.Service;
-<i>23</i>&nbsp;
-<i>24</i>&nbsp;import javax.persistence.EntityNotFoundException;
-<i>25</i>&nbsp;import javax.transaction.Transactional;
-<i>26</i>&nbsp;import java.util.List;
-<i>27</i>&nbsp;import java.util.function.Function;
-<i>28</i>&nbsp;import java.util.stream.Collectors;
-<i>29</i>&nbsp;
-<b class="fc"><i>30</i>&nbsp;@Slf4j</b>
-<i>31</i>&nbsp;@Service
-<b class="fc"><i>32</i>&nbsp;@RequiredArgsConstructor(onConstructor = @__(@Autowired))</b>
-<i>33</i>&nbsp;public class UserService {
-<i>34</i>&nbsp;
-<i>35</i>&nbsp;    private final UserRepository userRepository;
+<i>3</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.exceptions.AuthoritiesNotAllowedException;
+<i>4</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.exceptions.UsernameExistException;
+<i>5</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
+<i>6</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.security.factory.AccessCardFactory;
+<i>7</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.entity.Car;
+<i>8</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
+<i>9</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
+<i>10</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.factory.CarFactory;
+<i>11</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.factory.RolesFactory;
+<i>12</i>&nbsp;import br.edu.utfpr.tsi.utfparking.domain.users.factory.UserFactory;
+<i>13</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.*;
+<i>14</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
+<i>15</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
+<i>16</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
+<i>17</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
+<i>18</i>&nbsp;import lombok.RequiredArgsConstructor;
+<i>19</i>&nbsp;import lombok.extern.slf4j.Slf4j;
+<i>20</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>21</i>&nbsp;import org.springframework.dao.DataIntegrityViolationException;
+<i>22</i>&nbsp;import org.springframework.data.domain.Page;
+<i>23</i>&nbsp;import org.springframework.data.domain.PageImpl;
+<i>24</i>&nbsp;import org.springframework.data.domain.Pageable;
+<i>25</i>&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
+<i>26</i>&nbsp;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+<i>27</i>&nbsp;import org.springframework.stereotype.Service;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import javax.persistence.EntityNotFoundException;
+<i>30</i>&nbsp;import javax.transaction.Transactional;
+<i>31</i>&nbsp;import java.util.concurrent.CompletableFuture;
+<i>32</i>&nbsp;import java.util.concurrent.ExecutionException;
+<i>33</i>&nbsp;import java.util.function.BiFunction;
+<i>34</i>&nbsp;import java.util.function.Function;
+<i>35</i>&nbsp;import java.util.stream.Collectors;
 <i>36</i>&nbsp;
-<i>37</i>&nbsp;    private final RoleRepository roleRepository;
-<i>38</i>&nbsp;
-<i>39</i>&nbsp;    private final AccessCardRepository accessCardRepository;
-<i>40</i>&nbsp;
-<i>41</i>&nbsp;    private final AccessCardFactory accessCardFacade;
-<i>42</i>&nbsp;
-<i>43</i>&nbsp;    private final UserFactory userFacade;
-<i>44</i>&nbsp;
-<i>45</i>&nbsp;    private final BCryptPasswordEncoder encoder;
-<i>46</i>&nbsp;
-<i>47</i>&nbsp;    public UserDTO getUserRequest() {
-<b class="fc"><i>48</i>&nbsp;        var principal = (AccessCard) SecurityContextHolder.getContext().getAuthentication().getPrincipal();</b>
-<b class="fc"><i>49</i>&nbsp;        return userRepository.findByAccessCard(principal)</b>
-<b class="fc"><i>50</i>&nbsp;                .map(user -&gt; UserDTO.builder()</b>
-<b class="fc"><i>51</i>&nbsp;                .id(user.getId())</b>
-<b class="fc"><i>52</i>&nbsp;                .name(user.getName())</b>
-<b class="fc"><i>53</i>&nbsp;                .accessCard(createAccessCardDTO(user, createRoleDTOS(user)))</b>
-<b class="fc"><i>54</i>&nbsp;                .build())</b>
-<b class="fc"><i>55</i>&nbsp;                .orElseThrow(EntityNotFoundException::new);</b>
-<i>56</i>&nbsp;    }
-<i>57</i>&nbsp;
-<i>58</i>&nbsp;    @Transactional
-<i>59</i>&nbsp;    public UserDTO saveNewUser(InputUserDTO inputUser) {
-<b class="fc"><i>60</i>&nbsp;        var user = getUser(inputUser);</b>
-<b class="fc"><i>61</i>&nbsp;        user.getAccessCard().setPassword(encoder.encode(inputUser.getPassword()));</b>
-<i>62</i>&nbsp;
-<b class="fc"><i>63</i>&nbsp;        var newUser = userRepository.save(user);</b>
-<b class="fc"><i>64</i>&nbsp;        return userFacade.createUserDTOByUser(newUser);</b>
-<i>65</i>&nbsp;    }
-<i>66</i>&nbsp;
-<i>67</i>&nbsp;    private AccessCardDTO createAccessCardDTO(User user, List&lt;RoleDTO&gt; roles) {
-<b class="fc"><i>68</i>&nbsp;        return AccessCardDTO.builder()</b>
-<b class="fc"><i>69</i>&nbsp;                .accountNonExpired(user.getAccessCard().isAccountNonExpired())</b>
-<b class="fc"><i>70</i>&nbsp;                .accountNonExpired(user.getAccessCard().isAccountNonExpired())</b>
-<b class="fc"><i>71</i>&nbsp;                .credentialsNonExpired(user.getAccessCard().isCredentialsNonExpired())</b>
-<b class="fc"><i>72</i>&nbsp;                .enabled(user.getAccessCard().isEnabled())</b>
-<b class="fc"><i>73</i>&nbsp;                .roles(roles)</b>
-<b class="fc"><i>74</i>&nbsp;                .build();</b>
-<i>75</i>&nbsp;    }
-<i>76</i>&nbsp;
-<i>77</i>&nbsp;    private List&lt;RoleDTO&gt; createRoleDTOS(User user) {
-<b class="fc"><i>78</i>&nbsp;        return user.getAccessCard().getRoles().stream()</b>
-<b class="fc"><i>79</i>&nbsp;                .map(role -&gt; RoleDTO.builder()</b>
-<b class="fc"><i>80</i>&nbsp;                        .id(role.getId())</b>
-<b class="fc"><i>81</i>&nbsp;                        .description(role.getDescription())</b>
-<b class="fc"><i>82</i>&nbsp;                        .name(role.getName())</b>
-<b class="fc"><i>83</i>&nbsp;                        .build()</b>
-<b class="fc"><i>84</i>&nbsp;                ).collect(Collectors.toList());</b>
-<i>85</i>&nbsp;    }
-<i>86</i>&nbsp;
-<i>87</i>&nbsp;    private User getUser(InputUserDTO inputUser) {
-<b class="fc"><i>88</i>&nbsp;        var roles = roleRepository.findAllById(inputUser.getAuthorities());</b>
-<i>89</i>&nbsp;
-<b class="fc"><i>90</i>&nbsp;        var accessCard = accessCardFacade.createAccessCardByInputUser(inputUser, roles);</b>
-<b class="fc"><i>91</i>&nbsp;        var user = userFacade.createUserByUserDTO(inputUser);</b>
-<i>92</i>&nbsp;
-<b class="fc"><i>93</i>&nbsp;        user.setAccessCard(accessCard);</b>
-<b class="fc"><i>94</i>&nbsp;        return user;</b>
-<i>95</i>&nbsp;    }
-<i>96</i>&nbsp;
-<i>97</i>&nbsp;    public Page&lt;UserDTO&gt; findAllPageableUsers(Pageable pageable) {
-<b class="nc"><i>98</i>&nbsp;        var userPage = userRepository.findAll(pageable);</b>
-<b class="nc"><i>99</i>&nbsp;        var userDTOS = userPage.stream()</b>
-<b class="nc"><i>100</i>&nbsp;                .map(userFacade::createUserDTOByUser)</b>
-<b class="nc"><i>101</i>&nbsp;                .collect(Collectors.toList());</b>
-<i>102</i>&nbsp;
-<b class="nc"><i>103</i>&nbsp;        return new PageImpl&lt;&gt;(userDTOS, pageable, userPage.getTotalElements());</b>
-<i>104</i>&nbsp;    }
-<i>105</i>&nbsp;
-<i>106</i>&nbsp;    public void delete(Long id) {
-<b class="fc"><i>107</i>&nbsp;        userRepository.deleteById(id);</b>
-<b class="fc"><i>108</i>&nbsp;    }</b>
-<i>109</i>&nbsp;
-<i>110</i>&nbsp;
-<i>111</i>&nbsp;    public UserDTO findById(Long id) {
-<b class="fc"><i>112</i>&nbsp;        return userRepository.findById(id)</b>
-<b class="fc"><i>113</i>&nbsp;                .map(userFacade::createUserDTOByUser)</b>
-<b class="fc"><i>114</i>&nbsp;                .orElseThrow(() -&gt; new EntityNotFoundException(String.format(&quot;User by: %d not found&quot;, id)));</b>
-<i>115</i>&nbsp;    }
-<i>116</i>&nbsp;
-<i>117</i>&nbsp;    public Boolean existUserByUsername(String username) {
-<b class="nc"><i>118</i>&nbsp;        return userRepository.existsUserByAccessCardUsername(username);</b>
-<i>119</i>&nbsp;    }
-<i>120</i>&nbsp;}
+<b class="fc"><i>37</i>&nbsp;@Slf4j</b>
+<i>38</i>&nbsp;@Service
+<b class="fc"><i>39</i>&nbsp;@RequiredArgsConstructor(onConstructor = @__(@Autowired))</b>
+<i>40</i>&nbsp;public class UserService {
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    private final UserRepository userRepository;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    private final RoleRepository roleRepository;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    private final AccessCardFactory accessCardFactory;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    private final UserFactory userFactory;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    private final CarFactory carFactory;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    private final RolesFactory rolesFactory;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    private final BCryptPasswordEncoder encoder;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    public UserDTO getUserRequest() {
+<b class="fc"><i>57</i>&nbsp;        var principal = (AccessCard) SecurityContextHolder.getContext().getAuthentication().getPrincipal();</b>
+<i>58</i>&nbsp;
+<b class="fc"><i>59</i>&nbsp;        return userRepository.findByAccessCard(principal)</b>
+<b class="fc"><i>60</i>&nbsp;                .map(createUserDTO())</b>
+<b class="fc"><i>61</i>&nbsp;                .orElseThrow(EntityNotFoundException::new);</b>
+<i>62</i>&nbsp;    }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    @Transactional
+<i>65</i>&nbsp;    public UserDTO saveNewUser(InputUserDTO inputUser) {
+<b class="fc"><i>66</i>&nbsp;        var user = getUser(inputUser);</b>
+<b class="fc"><i>67</i>&nbsp;        user.getAccessCard().setPassword(encoder.encode(inputUser.getPassword()));</b>
+<i>68</i>&nbsp;
+<b class="fc"><i>69</i>&nbsp;        setCarIfExist(inputUser, user);</b>
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;        try {
+<b class="fc"><i>72</i>&nbsp;            User newUser = saveOrUpdate(user);</b>
+<b class="fc"><i>73</i>&nbsp;            return CompletableFuture</b>
+<b class="fc"><i>74</i>&nbsp;                    .supplyAsync(() -&gt; userFactory.createUserDTOByUser(newUser))</b>
+<b class="fc"><i>75</i>&nbsp;                    .thenCombineAsync(executorCreateAccessCardDTO(newUser), executorSetAccessCardToUserDTO())</b>
+<b class="fc"><i>76</i>&nbsp;                    .thenCombineAsync(executorCreateCarDTO(newUser), executorSetCarToUserDTO())</b>
+<b class="fc"><i>77</i>&nbsp;                    .handle((dto, exception) -&gt; {</b>
+<b class="fc"><i>78</i>&nbsp;                        if (exception != null) {</b>
+<b class="nc"><i>79</i>&nbsp;                            throw new RuntimeException(exception);</b>
+<i>80</i>&nbsp;                        }
+<i>81</i>&nbsp;
+<b class="fc"><i>82</i>&nbsp;                        return dto;</b>
+<i>83</i>&nbsp;                    })
+<b class="fc"><i>84</i>&nbsp;                    .get();</b>
+<i>85</i>&nbsp;
+<b class="nc"><i>86</i>&nbsp;        } catch (InterruptedException | ExecutionException e) {</b>
+<b class="nc"><i>87</i>&nbsp;            Thread.currentThread().interrupt();</b>
+<b class="nc"><i>88</i>&nbsp;            throw new RuntimeException(e);</b>
+<i>89</i>&nbsp;        }
+<i>90</i>&nbsp;    }
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    @Transactional
+<i>93</i>&nbsp;    public UserDTO editUser(InputUserDTO inputUser, Long id) {
+<b class="fc"><i>94</i>&nbsp;        return userRepository.findById(id)</b>
+<b class="fc"><i>95</i>&nbsp;                .map(setCarInUser(inputUser))</b>
+<b class="fc"><i>96</i>&nbsp;                .map(updateUser(inputUser))</b>
+<b class="fc"><i>97</i>&nbsp;                .map(createUserDTO())</b>
+<b class="fc"><i>98</i>&nbsp;                .orElseThrow(EntityNotFoundException::new);</b>
+<i>99</i>&nbsp;    }
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    @Transactional
+<i>102</i>&nbsp;    public UserDTO updateCar(InputUpdateCarDTO inputUpdateCarDTO, Long id) {
+<b class="fc"><i>103</i>&nbsp;        return userRepository.findById(id)</b>
+<b class="fc"><i>104</i>&nbsp;                .map(setCarInUser(inputUpdateCarDTO))</b>
+<b class="fc"><i>105</i>&nbsp;                .map(createUserDTO())</b>
+<b class="fc"><i>106</i>&nbsp;                .orElseThrow(EntityNotFoundException::new);</b>
+<i>107</i>&nbsp;    }
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    @Transactional
+<i>110</i>&nbsp;    public Page&lt;UserDTO&gt; findAllPageableUsers(Pageable pageable) {
+<b class="fc"><i>111</i>&nbsp;        var userPage = userRepository.findAll(pageable);</b>
+<b class="fc"><i>112</i>&nbsp;        var userDTOS = userPage.stream()</b>
+<b class="fc"><i>113</i>&nbsp;                .map(userFactory::createUserDTOByUser)</b>
+<b class="fc"><i>114</i>&nbsp;                .collect(Collectors.toList());</b>
+<i>115</i>&nbsp;
+<b class="fc"><i>116</i>&nbsp;        return new PageImpl&lt;&gt;(userDTOS, pageable, userPage.getTotalElements());</b>
+<i>117</i>&nbsp;    }
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;    @Transactional
+<i>120</i>&nbsp;    public void delete(Long id) {
+<b class="fc"><i>121</i>&nbsp;        userRepository.deleteById(id);</b>
+<b class="fc"><i>122</i>&nbsp;    }</b>
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    private User saveOrUpdate(User user) {
+<i>125</i>&nbsp;        try {
+<b class="fc"><i>126</i>&nbsp;            return userRepository.save(user);</b>
+<b class="fc"><i>127</i>&nbsp;        } catch (DataIntegrityViolationException ex) {</b>
+<b class="fc"><i>128</i>&nbsp;            throw new UsernameExistException(String.format(&quot;Username %s already exist&quot;, user.getAccessCard().getUsername()));</b>
+<i>129</i>&nbsp;        }
+<i>130</i>&nbsp;    }
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;    private User getUser(InputUserDTO inputUser) {
+<b class="fc"><i>133</i>&nbsp;        if (inputUser.getType() == TypeUserDTO.STUDENTS) {</b>
+<b class="fc"><i>134</i>&nbsp;            var allowedProfiles = TypeUser.valueOf(inputUser.getType().name()).getAllowedProfiles();</b>
+<i>135</i>&nbsp;
+<b class="fc"><i>136</i>&nbsp;            var size = inputUser.getAuthorities().stream()</b>
+<b class="fc"><i>137</i>&nbsp;                    .filter(value -&gt; !allowedProfiles.contains(value))</b>
+<b class="fc"><i>138</i>&nbsp;                    .count();</b>
+<i>139</i>&nbsp;
+<b class="fc"><i>140</i>&nbsp;            if (size != 0) {</b>
+<b class="fc"><i>141</i>&nbsp;                throw new AuthoritiesNotAllowedException();</b>
+<i>142</i>&nbsp;            }
+<i>143</i>&nbsp;        }
+<i>144</i>&nbsp;
+<b class="fc"><i>145</i>&nbsp;        var roles = roleRepository.findAllById(inputUser.getAuthorities());</b>
+<i>146</i>&nbsp;
+<b class="fc"><i>147</i>&nbsp;        var accessCard = accessCardFactory.createAccessCardByInputUser(inputUser, roles);</b>
+<b class="fc"><i>148</i>&nbsp;        var user = userFactory.createUserByUserDTO(inputUser);</b>
+<i>149</i>&nbsp;
+<b class="fc"><i>150</i>&nbsp;        user.setAccessCard(accessCard);</b>
+<i>151</i>&nbsp;
+<b class="fc"><i>152</i>&nbsp;        return user;</b>
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;    public UserDTO findById(Long id) {
+<b class="fc"><i>156</i>&nbsp;        return userRepository.findById(id)</b>
+<b class="fc"><i>157</i>&nbsp;                .map(createUserDTO())</b>
+<b class="fc"><i>158</i>&nbsp;                .orElseThrow(() -&gt; new EntityNotFoundException(String.format(&quot;User by: %d not found&quot;, id)));</b>
+<i>159</i>&nbsp;    }
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;    private void setCarIfExist(InputUserDTO inputUser, User user) {
+<b class="fc"><i>162</i>&nbsp;        if ((inputUser.getCarPlate() != null &amp;&amp; !inputUser.getCarPlate().isEmpty()) ||</b>
+<b class="nc"><i>163</i>&nbsp;                (inputUser.getCarModel() != null &amp;&amp; !inputUser.getCarModel().isEmpty())) {</b>
+<b class="fc"><i>164</i>&nbsp;            var car = carFactory.createCarByInputUser(inputUser, user);</b>
+<b class="fc"><i>165</i>&nbsp;            user.setCar(car);</b>
+<i>166</i>&nbsp;        }
+<b class="fc"><i>167</i>&nbsp;    }</b>
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;    private BiFunction&lt;UserDTO, CarDTO, UserDTO&gt; executorSetCarToUserDTO() {
+<b class="fc"><i>170</i>&nbsp;        return (userDTO, carDTO) -&gt; {</b>
+<b class="fc"><i>171</i>&nbsp;            userDTO.setCar(carDTO);</b>
+<b class="fc"><i>172</i>&nbsp;            return userDTO;</b>
+<i>173</i>&nbsp;        };
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    private CompletableFuture&lt;CarDTO&gt; executorCreateCarDTO(User newUser) {
+<b class="fc"><i>177</i>&nbsp;        return CompletableFuture.supplyAsync(</b>
+<b class="fc"><i>178</i>&nbsp;                () -&gt; newUser.car().map(car -&gt; carFactory.createCarDTOByUser(newUser)).orElse(null));</b>
+<i>179</i>&nbsp;    }
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;    private BiFunction&lt;UserDTO, AccessCardDTO, UserDTO&gt; executorSetAccessCardToUserDTO() {
+<b class="fc"><i>182</i>&nbsp;        return (userDTO, accessCardDTO) -&gt; {</b>
+<b class="fc"><i>183</i>&nbsp;            userDTO.setAccessCard(accessCardDTO);</b>
+<b class="fc"><i>184</i>&nbsp;            return userDTO;</b>
+<i>185</i>&nbsp;        };
+<i>186</i>&nbsp;    }
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;    private CompletableFuture&lt;AccessCardDTO&gt; executorCreateAccessCardDTO(User newUser) {
+<b class="fc"><i>189</i>&nbsp;        return CompletableFuture.supplyAsync(</b>
+<b class="fc"><i>190</i>&nbsp;                () -&gt; accessCardFactory.createAccessCardByUser(newUser));</b>
+<i>191</i>&nbsp;    }
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    private Function&lt;User, UserDTO&gt; createUserDTO() {
+<b class="fc"><i>194</i>&nbsp;        return user -&gt; {</b>
+<b class="fc"><i>195</i>&nbsp;            var userDTO = userFactory.createUserDTOByUser(user);</b>
+<b class="fc"><i>196</i>&nbsp;            var accessCardDTO = accessCardFactory.createAccessCardByUser(user);</b>
+<b class="fc"><i>197</i>&nbsp;            var carDTO = carFactory.createCarDTOByUser(user);</b>
+<i>198</i>&nbsp;
+<b class="fc"><i>199</i>&nbsp;            userDTO.setAccessCard(accessCardDTO);</b>
+<b class="fc"><i>200</i>&nbsp;            userDTO.setCar(carDTO);</b>
+<i>201</i>&nbsp;
+<b class="fc"><i>202</i>&nbsp;            return userDTO;</b>
+<i>203</i>&nbsp;        };
+<i>204</i>&nbsp;    }
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;    private Function&lt;User, User&gt; setCarInUser(InputUserDTO inputUser) {
+<b class="fc"><i>207</i>&nbsp;        return user -&gt; {</b>
+<b class="fc"><i>208</i>&nbsp;            var car = user.car()</b>
+<b class="fc"><i>209</i>&nbsp;                    .map(updateCar(inputUser.getCarPlate(), inputUser.getCarModel()))</b>
+<b class="fc"><i>210</i>&nbsp;                    .orElse(carFactory.createCarByInputUser(inputUser, user));</b>
+<b class="fc"><i>211</i>&nbsp;            user.setCar(car);</b>
+<b class="fc"><i>212</i>&nbsp;            return user;</b>
+<i>213</i>&nbsp;        };
+<i>214</i>&nbsp;    }
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;    private Function&lt;User, User&gt; setCarInUser(InputUpdateCarDTO inputUser) {
+<b class="fc"><i>217</i>&nbsp;        return user -&gt; {</b>
+<b class="fc"><i>218</i>&nbsp;            var car = user.car()</b>
+<b class="fc"><i>219</i>&nbsp;                    .map(updateCar(inputUser.getCarPlate(), inputUser.getCarModel()))</b>
+<b class="fc"><i>220</i>&nbsp;                    .orElse(carFactory.createCarByInputUser(inputUser, user));</b>
+<b class="fc"><i>221</i>&nbsp;            user.setCar(car);</b>
+<b class="fc"><i>222</i>&nbsp;            return user;</b>
+<i>223</i>&nbsp;        };
+<i>224</i>&nbsp;    }
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;    private Function&lt;Car, Car&gt; updateCar(String carPlate, String carModel) {
+<b class="fc"><i>227</i>&nbsp;        return mapCar -&gt; {</b>
+<b class="fc"><i>228</i>&nbsp;            mapCar.setPlate(carPlate);</b>
+<b class="fc"><i>229</i>&nbsp;            mapCar.setModel(carModel);</b>
+<b class="fc"><i>230</i>&nbsp;            return mapCar;</b>
+<i>231</i>&nbsp;        };
+<i>232</i>&nbsp;    }
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;    private Function&lt;User, User&gt; updateUser(InputUserDTO inputUser) {
+<b class="fc"><i>235</i>&nbsp;        return user -&gt; {</b>
+<b class="fc"><i>236</i>&nbsp;            user.setName(inputUser.getName());</b>
+<b class="fc"><i>237</i>&nbsp;            user.setTypeUser(TypeUser.valueOf(inputUser.getType().name()));</b>
+<i>238</i>&nbsp;
+<b class="fc"><i>239</i>&nbsp;            var roles = roleRepository.findAllById(inputUser.getAuthorities());</b>
+<i>240</i>&nbsp;
+<b class="fc"><i>241</i>&nbsp;            user.getAccessCard().setUsername(inputUser.getUsername());</b>
+<b class="fc"><i>242</i>&nbsp;            user.getAccessCard().setRoles(roles);</b>
+<i>243</i>&nbsp;
+<b class="fc"><i>244</i>&nbsp;            return userRepository.save(user);</b>
+<i>245</i>&nbsp;        };
+<i>246</i>&nbsp;    }
+<i>247</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-04-11 09:57</div>
+    <div style="float:right;">generated on 2020-04-21 10:17</div>
 </div>
 </body>
 </html>

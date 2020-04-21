@@ -1,7 +1,6 @@
 package br.edu.utfpr.tsi.utfparking.rest.erros.handler;
 
 import br.edu.utfpr.tsi.utfparking.application.exceptions.IlegalProcessDeleteException;
-import br.edu.utfpr.tsi.utfparking.application.exceptions.IlegalProcessNewUserException;
 import br.edu.utfpr.tsi.utfparking.domain.exceptions.UsernameExistException;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.ValidationErrors;
 import br.edu.utfpr.tsi.utfparking.rest.erros.exceptions.IlegalRequestBodyException;

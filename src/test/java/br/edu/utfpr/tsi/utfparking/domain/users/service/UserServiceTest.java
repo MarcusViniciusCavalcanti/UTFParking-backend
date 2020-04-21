@@ -8,6 +8,8 @@ import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
 import br.edu.utfpr.tsi.utfparking.domain.users.factory.CarFactory;
 import br.edu.utfpr.tsi.utfparking.domain.users.factory.UserFactory;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.*;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static br.edu.utfpr.tsi.utfparking.utils.CreateMock.createMockInputUpdateCarDTO;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -79,7 +82,6 @@ class UserServiceTest {
     void shouldReturnErrorWhenProfileNotAuthorities() {
         var inputUser = createMockInputUserNewDTO(TypeUser.STUDENTS);
         inputUser.setAuthorities(TypeUser.SERVICE.getAllowedProfiles());
-
 
         assertThrows(AuthoritiesNotAllowedException.class, () -> userService.saveNewUser(inputUser));
     }
@@ -139,7 +141,6 @@ class UserServiceTest {
                 .map(RoleDTO::getId)
                 .collect(Collectors.toList());
 
-
         assertEquals(anotherUser.getName(), userDTO.getName());
         assertEquals(anotherUser.getTypeUser().name(), userDTO.getTypeUser().name());
         assertEquals(roles, roleDTOS);
@@ -191,21 +192,36 @@ class UserServiceTest {
 
     @Test
     void shouldReturnPageUsersDTO() {
-        var userList = List.of(
-                createMockUser(),
-                createMockUser(),
-                createMockUser(),
-                createMockUser(),
-                createMockUser(),
-                createMockUser(),
-                createMockUser(),
-                createMockUser()
-        );
-        when(userRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(userList));
+        var userList = CreateMock.createListUser();
 
-        Page<UserDTO> users = userService.findAllPageableUsers(Pageable.unpaged());
+        when(userRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(userList));
+        when(userFactory.createUserDTOByUser(any())).thenCallRealMethod();
+        when(carFactory.createCarDTOByUser(any())).thenCallRealMethod();
+        when(accessCardFactory.createAccessCardByUser(any())).thenCallRealMethod();
+
+        var users = userService.findAllPageableUsers(Pageable.unpaged());
 
         assertEquals(userList.size(), users.getSize());
+    }
+
+    @Test
+    void shouldHaveUpdateCar() {
+        var mockInputUpdateCarDTO = createMockInputUpdateCarDTO();
+        var role = CreateMock.createRole(1L, "description");
+        var car = CreateMock.createCar(1L, "Model Car", "abc1234");
+
+        var accessCard = CreateMock.createAccessCard(1L, List.of(role), "username", "password");
+        var user = CreateMock.createUser(1L, accessCard, TypeUser.SERVICE, "name user", car);
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userFactory.createUserDTOByUser(any())).thenCallRealMethod();
+        when(carFactory.createCarDTOByUser(any())).thenCallRealMethod();
+        when(accessCardFactory.createAccessCardByUser(any())).thenCallRealMethod();
+
+        var resultDTO = userService.updateCar(mockInputUpdateCarDTO, user.getId());
+
+        assertEquals(mockInputUpdateCarDTO.getCarModel(), resultDTO.getCar().getModel());
+        assertEquals(mockInputUpdateCarDTO.getCarPlate(), resultDTO.getCar().getPlate());
     }
 
     private User createMockUser() {
@@ -220,5 +236,4 @@ class UserServiceTest {
                 .id(ID_USER)
                 .build();
     }
-
 }

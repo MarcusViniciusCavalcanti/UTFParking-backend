@@ -39,29 +39,29 @@
   <td class="name">UsersController</td>
 <td class="coverageStat">
   <span class="percent">
-    33,3%
+    88,9%
   </span>
   <span class="absValue">
-    (2/ 6)
+    (8/ 9)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    30%
+    82,6%
   </span>
   <span class="absValue">
-    (3/ 10)
+    (19/ 23)
   </span>
 </td>
 </tr>
   <tr>
-    <td class="name">UsersController$$EnhancerBySpringCGLIB$$280d8e67</td>
+    <td class="name">UsersController$$EnhancerBySpringCGLIB$$e590731e</td>
   </tr>
   <tr>
-    <td class="name">UsersController$$EnhancerBySpringCGLIB$$280d8e67_2</td>
+    <td class="name">UsersController$$EnhancerBySpringCGLIB$$e590731e_2</td>
   </tr>
   <tr>
-    <td class="name">UsersController$$EnhancerBySpringCGLIB$$280d8e67_2$$FastClassBySpringCGLIB$$8a699a9c</td>
+    <td class="name">UsersController$$EnhancerBySpringCGLIB$$e590731e_2$$FastClassBySpringCGLIB$$5bed586b</td>
   </tr>
   <tr>
     <td class="name">UsersController$$FastClassBySpringCGLIB$$f3bf8eb8</td>
@@ -70,18 +70,18 @@
   <td class="name"><strong>total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    33,3%
+    88,9%
   </span>
   <span class="absValue">
-    (2/ 6)
+    (8/ 9)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    30%
+    82,6%
   </span>
   <span class="absValue">
-    (3/ 10)
+    (19/ 23)
   </span>
 </td>
 </tr>
@@ -97,67 +97,109 @@
 <i>4</i>&nbsp;import br.edu.utfpr.tsi.utfparking.rest.annotations.IsAdmin;
 <i>5</i>&nbsp;import br.edu.utfpr.tsi.utfparking.rest.annotations.IsEqualsUser;
 <i>6</i>&nbsp;import br.edu.utfpr.tsi.utfparking.rest.annotations.IsOperatorOrAdmin;
-<i>7</i>&nbsp;import br.edu.utfpr.tsi.utfparking.rest.factories.UserRepresentationFactory;
-<i>8</i>&nbsp;import br.edu.utfpr.tsi.utfparking.rest.representations.UserRepresentation;
-<i>9</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
-<i>10</i>&nbsp;import lombok.RequiredArgsConstructor;
-<i>11</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
-<i>12</i>&nbsp;import org.springframework.data.domain.Pageable;
-<i>13</i>&nbsp;import org.springframework.data.web.PagedResourcesAssembler;
-<i>14</i>&nbsp;import org.springframework.hateoas.PagedModel;
-<i>15</i>&nbsp;import org.springframework.http.ResponseEntity;
-<i>16</i>&nbsp;import org.springframework.web.bind.annotation.*;
-<i>17</i>&nbsp;
-<i>18</i>&nbsp;@RestController
-<i>19</i>&nbsp;@RequestMapping(&quot;/users&quot;)
-<b class="fc"><i>20</i>&nbsp;@RequiredArgsConstructor(onConstructor = @__(@Autowired))</b>
-<i>21</i>&nbsp;public class UsersController {
+<i>7</i>&nbsp;import br.edu.utfpr.tsi.utfparking.rest.erros.exceptions.IlegalRequestBodyException;
+<i>8</i>&nbsp;import br.edu.utfpr.tsi.utfparking.rest.factories.UserRepresentationFactory;
+<i>9</i>&nbsp;import br.edu.utfpr.tsi.utfparking.rest.representations.UserRepresentation;
+<i>10</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
+<i>11</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
+<i>12</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
+<i>13</i>&nbsp;import lombok.RequiredArgsConstructor;
+<i>14</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>15</i>&nbsp;import org.springframework.data.domain.Pageable;
+<i>16</i>&nbsp;import org.springframework.data.web.PagedResourcesAssembler;
+<i>17</i>&nbsp;import org.springframework.hateoas.PagedModel;
+<i>18</i>&nbsp;import org.springframework.http.HttpStatus;
+<i>19</i>&nbsp;import org.springframework.http.ResponseEntity;
+<i>20</i>&nbsp;import org.springframework.validation.BindingResult;
+<i>21</i>&nbsp;import org.springframework.web.bind.annotation.*;
 <i>22</i>&nbsp;
-<i>23</i>&nbsp;    private final UserRepresentationFactory userRepresentationFactory;
+<i>23</i>&nbsp;import javax.validation.Valid;
 <i>24</i>&nbsp;
-<i>25</i>&nbsp;    private final PagedResourcesAssembler&lt;UserDTO&gt; pagedResourcesAssembler;
-<i>26</i>&nbsp;
-<i>27</i>&nbsp;    private final UserApplicationService userApplicationService;
-<i>28</i>&nbsp;
-<i>29</i>&nbsp;    @IsEqualsUser
-<i>30</i>&nbsp;    @GetMapping(value = &quot;/by-access-card&quot;)
-<i>31</i>&nbsp;    public ResponseEntity&lt;UserRepresentation&gt; getUserByAccessCard() {
-<b class="nc"><i>32</i>&nbsp;        return unwrap(userApplicationService.getUserRequest());</b>
-<i>33</i>&nbsp;    }
-<i>34</i>&nbsp;
-<i>35</i>&nbsp;    @IsAdmin
-<i>36</i>&nbsp;    @GetMapping
-<i>37</i>&nbsp;    public ResponseEntity&lt;PagedModel&lt;UserRepresentation&gt;&gt; findAll(Pageable pageable) {
-<b class="nc"><i>38</i>&nbsp;        var page = userApplicationService.findAllPageableUsers(pageable);</b>
-<b class="nc"><i>39</i>&nbsp;        var userRepresentations = pagedResourcesAssembler.toModel(page, userRepresentationFactory);</b>
+<i>25</i>&nbsp;@RestController
+<i>26</i>&nbsp;@RequestMapping(&quot;/users&quot;)
+<b class="fc"><i>27</i>&nbsp;@RequiredArgsConstructor(onConstructor = @__(@Autowired))</b>
+<i>28</i>&nbsp;public class UsersController {
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    private final UserRepresentationFactory userRepresentationFactory;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;    private final PagedResourcesAssembler&lt;UserDTO&gt; pagedResourcesAssembler;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    private final UserApplicationService userApplicationService;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    @GetMapping(value = &quot;/me&quot;)
+<i>37</i>&nbsp;    public ResponseEntity&lt;UserRepresentation&gt; getUserByAccessCard() {
+<b class="fc"><i>38</i>&nbsp;        return unwrap(userApplicationService.getUserRequest());</b>
+<i>39</i>&nbsp;    }
 <i>40</i>&nbsp;
-<b class="nc"><i>41</i>&nbsp;        return ResponseEntity.ok(userRepresentations);</b>
-<i>42</i>&nbsp;    }
-<i>43</i>&nbsp;
-<i>44</i>&nbsp;    @IsAdmin
-<i>45</i>&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
-<i>46</i>&nbsp;    public ResponseEntity&lt;Void&gt; deleteById(@PathVariable(&quot;id&quot;) Long id) {
-<b class="fc"><i>47</i>&nbsp;        userApplicationService.deleteById(id);</b>
-<b class="fc"><i>48</i>&nbsp;        return ResponseEntity.noContent().build();</b>
-<i>49</i>&nbsp;    }
-<i>50</i>&nbsp;
-<i>51</i>&nbsp;    @IsOperator
-<i>52</i>&nbsp;    @GetMapping(&quot;/{id}&quot;)
-<i>53</i>&nbsp;    public ResponseEntity&lt;UserRepresentation&gt; findById(@PathVariable(&quot;id&quot;) Long id) {
-<b class="nc"><i>54</i>&nbsp;        return unwrap(userApplicationService.findUserById(id));</b>
+<i>41</i>&nbsp;    @IsAdmin
+<i>42</i>&nbsp;    @GetMapping
+<i>43</i>&nbsp;    public ResponseEntity&lt;PagedModel&lt;UserRepresentation&gt;&gt; findAll(Pageable pageable) {
+<b class="nc"><i>44</i>&nbsp;        var page = userApplicationService.findAllPageableUsers(pageable);</b>
+<b class="nc"><i>45</i>&nbsp;        var userRepresentations = pagedResourcesAssembler.toModel(page, userRepresentationFactory);</b>
+<i>46</i>&nbsp;
+<b class="nc"><i>47</i>&nbsp;        return ResponseEntity.ok(userRepresentations);</b>
+<i>48</i>&nbsp;    }
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    @IsAdmin
+<i>51</i>&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+<i>52</i>&nbsp;    public ResponseEntity&lt;Void&gt; deleteById(@PathVariable(&quot;id&quot;) Long id) {
+<b class="fc"><i>53</i>&nbsp;        userApplicationService.deleteById(id);</b>
+<b class="fc"><i>54</i>&nbsp;        return ResponseEntity.noContent().build();</b>
 <i>55</i>&nbsp;    }
 <i>56</i>&nbsp;
-<i>57</i>&nbsp;    private ResponseEntity&lt;UserRepresentation&gt; unwrap(UserDTO user) {
-<b class="nc"><i>58</i>&nbsp;        var userRepresentation = userRepresentationFactory.toModel(user);</b>
-<b class="nc"><i>59</i>&nbsp;        return ResponseEntity.ok(userRepresentation);</b>
-<i>60</i>&nbsp;    }
-<i>61</i>&nbsp;}
+<i>57</i>&nbsp;    @IsOperatorOrAdmin
+<i>58</i>&nbsp;    @GetMapping(&quot;/{id}&quot;)
+<i>59</i>&nbsp;    public ResponseEntity&lt;UserRepresentation&gt; findById(@PathVariable(&quot;id&quot;) Long id) {
+<b class="fc"><i>60</i>&nbsp;        return unwrap(userApplicationService.findUserById(id));</b>
+<i>61</i>&nbsp;    }
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    @IsAdmin
+<i>64</i>&nbsp;    @PostMapping
+<i>65</i>&nbsp;    public ResponseEntity&lt;UserRepresentation&gt; createNew(@Valid @RequestBody InputUserDTO inputUserDTO, BindingResult resultSet) {
+<b class="fc"><i>66</i>&nbsp;        if (resultSet.hasErrors()) {</b>
+<b class="fc"><i>67</i>&nbsp;            throw new IlegalRequestBodyException(&quot;New User&quot;, resultSet);</b>
+<i>68</i>&nbsp;        }
+<i>69</i>&nbsp;
+<b class="fc"><i>70</i>&nbsp;        var userDTO = userApplicationService.saveNewUser(inputUserDTO);</b>
+<b class="fc"><i>71</i>&nbsp;        var userRepresentation = userRepresentationFactory.toModel(userDTO);</b>
+<i>72</i>&nbsp;
+<b class="fc"><i>73</i>&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(userRepresentation);</b>
+<i>74</i>&nbsp;    }
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    @IsAdmin
+<i>77</i>&nbsp;    @PutMapping(&quot;/{id}&quot;)
+<i>78</i>&nbsp;    public ResponseEntity&lt;UserRepresentation&gt; editUser(@PathVariable(&quot;id&quot;) Long id, @Valid @RequestBody InputUserDTO inputUserDTO, BindingResult resultSet) {
+<b class="fc"><i>79</i>&nbsp;        if (resultSet.hasErrors()) {</b>
+<b class="nc"><i>80</i>&nbsp;            throw new IlegalRequestBodyException(&quot;Edit User&quot;, resultSet);</b>
+<i>81</i>&nbsp;        }
+<i>82</i>&nbsp;
+<b class="fc"><i>83</i>&nbsp;        var userDTO = userApplicationService.updateUser(inputUserDTO, id);</b>
+<b class="fc"><i>84</i>&nbsp;        return unwrap(userDTO);</b>
+<i>85</i>&nbsp;    }
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    @IsEqualsUser
+<i>88</i>&nbsp;    @PatchMapping(&quot;/{id}/update-car&quot;)
+<i>89</i>&nbsp;    public ResponseEntity&lt;UserRepresentation&gt; changePlate(@PathVariable(&quot;id&quot;) Long id, @Valid @RequestBody InputUpdateCarDTO inputUpdateCarDTO, BindingResult resultSet) {
+<b class="fc"><i>90</i>&nbsp;        if (resultSet.hasErrors()) {</b>
+<b class="fc"><i>91</i>&nbsp;            throw new IlegalRequestBodyException(&quot;Update Car&quot;, resultSet);</b>
+<i>92</i>&nbsp;        }
+<i>93</i>&nbsp;
+<b class="fc"><i>94</i>&nbsp;        var userDto = userApplicationService.updateCar(inputUpdateCarDTO, id);</b>
+<i>95</i>&nbsp;
+<b class="fc"><i>96</i>&nbsp;        return unwrap(userDto);</b>
+<i>97</i>&nbsp;    }
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    private ResponseEntity&lt;UserRepresentation&gt; unwrap(UserDTO user) {
+<b class="fc"><i>100</i>&nbsp;        var userRepresentation = userRepresentationFactory.toModel(user);</b>
+<b class="fc"><i>101</i>&nbsp;        return ResponseEntity.ok(userRepresentation);</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-04-11 09:57</div>
+    <div style="float:right;">generated on 2020-04-21 10:17</div>
 </div>
 </body>
 </html>

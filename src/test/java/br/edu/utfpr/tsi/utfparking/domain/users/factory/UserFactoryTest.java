@@ -1,12 +1,9 @@
 package br.edu.utfpr.tsi.utfparking.domain.users.factory;
 
-import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
-import br.edu.utfpr.tsi.utfparking.domain.security.entity.Role;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

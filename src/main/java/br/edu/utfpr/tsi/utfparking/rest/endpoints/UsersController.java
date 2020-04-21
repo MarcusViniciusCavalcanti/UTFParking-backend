@@ -7,8 +7,9 @@ import br.edu.utfpr.tsi.utfparking.rest.annotations.IsOperatorOrAdmin;
 import br.edu.utfpr.tsi.utfparking.rest.erros.exceptions.IlegalRequestBodyException;
 import br.edu.utfpr.tsi.utfparking.rest.factories.UserRepresentationFactory;
 import br.edu.utfpr.tsi.utfparking.rest.representations.UserRepresentation;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -81,6 +82,18 @@ public class UsersController {
 
         var userDTO = userApplicationService.updateUser(inputUserDTO, id);
         return unwrap(userDTO);
+    }
+
+    @IsEqualsUser
+    @PatchMapping("/{id}/update-car")
+    public ResponseEntity<UserRepresentation> changePlate(@PathVariable("id") Long id, @Valid @RequestBody InputUpdateCarDTO inputUpdateCarDTO, BindingResult resultSet) {
+        if (resultSet.hasErrors()) {
+            throw new IlegalRequestBodyException("Update Car", resultSet);
+        }
+
+        var userDto = userApplicationService.updateCar(inputUpdateCarDTO, id);
+
+        return unwrap(userDto);
     }
 
     private ResponseEntity<UserRepresentation> unwrap(UserDTO user) {

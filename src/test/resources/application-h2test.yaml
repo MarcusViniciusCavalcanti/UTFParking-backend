@@ -1,4 +1,6 @@
 spring:
+  main:
+    banner-mode: "off"
   liquibase:
     change-log: classpath:/db/changelog/databaseChangelog.xml
     database-change-log-table: AD_DB_CHANGELOG
@@ -24,3 +26,4 @@ logging:
     org:
       hibernate:
         SQL: DEBUG
+    org.springframework.boot: "off"

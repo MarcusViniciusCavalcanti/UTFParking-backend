@@ -1,9 +1,9 @@
 package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,8 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 import static org.springframework.restdocs.snippet.Attributes.key;
 
@@ -237,6 +236,49 @@ public class UserIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void shouldReturnPageUser() {
+        CreateMock.createListInputUsersDTO().forEach(userService::saveNewUser);
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/get/page", getRequestPreprocessor(), getResponsePreprocessor(),
+                        links(halLinks(),
+                                linkWithRel("first").description("Uri da primeira página."),
+                                linkWithRel("self").description("Uri da página corrente."),
+                                linkWithRel("next").description("Uri da próxima página."),
+                                linkWithRel("last").description("Uri da última página.")
+                        ),
+                        requestParameters(
+                                parameterWithName("page").description("Número da página de início"),
+                                parameterWithName("size").description("Quantidade de recursos a ser exibidos por página"),
+                                parameterWithName("sort").description("Referencia do atributo de ordenação.")
+                        ),
+                        responseFields(
+                                beneathPath("page"),
+                                fieldWithPath("size").description("Quantidade de recursos retornados na página"),
+                                fieldWithPath("totalElements").description("Total de recursos encontrados"),
+                                fieldWithPath("totalPages").description("Total de páginas"),
+                                fieldWithPath("number").description("Número da página corrente")
+                        ),
+                        responseBody(
+                                beneathPath("_embedded")
+                        ))
+                )
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .queryParams(
+                        "page", 0,
+                        "size", 2,
+                        "sort", "name,DESC"
+                )
+                .get(URI_USERS)
+                .then()
+                .log().body()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
     void shouldUpdateUser() {
         var mockInputUserDTO = createMockInputUserDTO();
         var fields = new ConstrainedFields(InputUserDTO.class);
@@ -339,6 +381,89 @@ public class UserIntegrationTest extends IntegrationTest {
                 .delete(URI_USERS + "/" + currentUserDTO.getId())
                 .then()
                 .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
+    void shouldReturnErrorWhenUpdateCarWithIdIsDiffSessionRequest() {
+        InputUpdateCarDTO mockInputUpdateCarDTO = CreateMock.createMockInputUpdateCarDTO();
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/update/car/forbidden", getRequestPreprocessor(), getResponsePreprocessor(),
+                        pathParameters(
+                                parameterWithName("id").description("id do recurso que será alterado")
+                        ),
+                        responseFields(
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("Titulo do error."),
+                                fieldWithPath("statusCode").type(JsonFieldType.NUMBER).description("Código de status HTTP."),
+                                fieldWithPath("timestamp").type(JsonFieldType.NUMBER).description("Timestamp do error."),
+                                fieldWithPath("error").type(JsonFieldType.STRING).description("Definição do error."),
+                                fieldWithPath("path").type(JsonFieldType.STRING).description("Uri que gerou o error.")
+                        ))
+                )
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(mockInputUpdateCarDTO)
+                .when()
+                .patch(URI_USERS + "/{id}/update-car", 10000)
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    void shouldReturnErrorOfValidationWhenUpdateCar() {
+        var mockInputUpdateCarDTO = CreateMock.createMockInputUpdateCarDTO();
+
+        mockInputUpdateCarDTO.setCarModel(null);
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/car/error/validation", getRequestPreprocessor(), getResponsePreprocessor(),
+                        responseFields(
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("Titulo do error."),
+                                fieldWithPath("statusCode").type(JsonFieldType.NUMBER).description("Código de status HTTP."),
+                                fieldWithPath("timestamp").type(JsonFieldType.NUMBER).description("Timestamp do error."),
+                                fieldWithPath("error").type(JsonFieldType.OBJECT).description("Definição do error."),
+                                fieldWithPath("error.fieldErrors[].message").ignored(),
+                                fieldWithPath("error.fieldErrors[].field").ignored(),
+                                fieldWithPath("error.fieldErrors[].code").ignored(),
+                                fieldWithPath("path").type(JsonFieldType.STRING).description("Uri que gerou o error."))
+                        )
+                ).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(mockInputUpdateCarDTO)
+                .when()
+                .patch(URI_USERS + "/{id}/update-car", currentUserDTO.getId())
+                .then()
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
+    void shouldReturnSuccessWhenUpdateCar() {
+        var mockInputUpdateCarDTO = CreateMock.createMockInputUpdateCarDTO();
+
+        mockInputUpdateCarDTO.setCarPlate("efg0987");
+        mockInputUpdateCarDTO.setCarModel("other model");
+
+        var fields = new ConstrainedFields(InputUpdateCarDTO.class);
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/update/car/forbidden", getRequestPreprocessor(), getResponsePreprocessor(),
+                        pathParameters(
+                                parameterWithName("id").description("id do recurso que será alterado")
+                        ),
+                        requestFields(
+                             fields.withPath("carModel").type(JsonFieldType.STRING).description("Valor de alteração do modelo do carro")  ,
+                             fields.withPath("carPlate").type(JsonFieldType.STRING).description("Valor de alteração do placa do carro")
+                        ))
+                ).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(mockInputUpdateCarDTO)
+                .when()
+                .patch(URI_USERS + "/{id}/update-car", currentUserDTO.getId())
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .body("car.plate", is(mockInputUpdateCarDTO.getCarPlate()))
+                .body("car.model", is(mockInputUpdateCarDTO.getCarModel()));
     }
 
     private InputUserDTO createMockInputUserDTO() {

@@ -42,7 +42,10 @@ possíveis as suas conveções em seu uso dos verbos HTTP
 | Usado para crear um recurso
 
 | `PUT`
-| Usado para atualizar, parcialmente ou completamente.
+| Usado para atualizar um recurso
+
+| `PATCH`
+| Usado para atualizar um parcialmente um recurso
 
 | `DELETE`
 | Usado para remover um recurso existente.
@@ -82,6 +85,34 @@ a falta de um atributo, no corpo da mensagem.
 ultrapassou o limite de caracteres, são exemplos.
 |===
 
+[[overview-pagination]]
+=== Lista de Recursos (Paginação)
+
+Toda requisição que retorna uma lista de recursos, exemplo <<users-get-all>>, retornar um objeto, que contém: **__Page__, __Link__, __embedded__**.
+Esta estrutura e útil para navegar entre uma lista de recursos.
+
+### Objeto Page.
+O objeto __Page__ contém as informações da página de recursos, contem a seguinte estrutura:
+include::{snippets}/user/get/page/response-fields-beneath-page.adoc[]
+
+Seguinte o objeto __Link__ contém os uris da página, como por exemplo a uri da última página, contém a seguinte estrutura:
+include::{snippets}/user/get/page/links.adoc[]
+
+Por fim o objeto __Embedded, contém um lista de recursos, exemplo:
+include::{snippets}/user/get/page/response-body-beneath-_embedded.adoc[]
+
+Observe que este objeto retorna uma lista do recurso usuários, sendo representado pelo __Array__ ``userRepresentationList``
+
+IMPORTANT:: Fique atento para o tipo de lista de recurso em cada url de páginação, este é apenas um exemplo
+cada lista de recurso será representando por um tipo especifico consulte cada sessão para saber qual.
+
+### Navegação entre páginas
+Cada url que retorna uma lista de recursos, pode receber parâmetros que será utilizado para definir a quantidade
+de recursos exibidos ou qual página será recuperada
+include::{snippets}/user/get/page/request-parameters.adoc[]
+
+Também pode ser utilizado as uris do objeto __Links__ que é encontrado no corpo da requisição,
+consulte as informações na sessão anterior, o atributo **_links**, do objeto __Page__..
 
 [[security]]
 == Segurança
@@ -112,7 +143,6 @@ de error com **status code** `401`.
 Exemplo:
 include::{snippets}/authenticate/Login/failure/unauthorized/http-response.adoc[]
 
----
 ==== Não Autorizado
 Para os casos de não autorizado, a mensagem de erro retornada será com **status code** `403`.
 
@@ -146,7 +176,7 @@ TIP: Para recuperar o usuário da do token clique <<users-get-me, aqui>> para te
 [[users]]
 == Usuários
 
-Usuário e um recurso da api, que representa quem utiliza do sistema, seja ele operador, motorista, ou administrador
+Usuário e um recurso da api, que representa quem utiliza o sistema, seja ele operador, motorista, ou administrador
 
 Os tipos de usuário será definido no campo `type`, este campo defini o comportamento do sistema para atribuição de perfils.
 
@@ -172,7 +202,6 @@ include::{snippets}/user/create/success/response-fields.adoc[]
 Links:
 include::{snippets}/user/create/success/links.adoc[]
 
-___
 [[users-delete]]
 === Criando Usuários
 |===
@@ -205,8 +234,6 @@ include::{snippets}/user/create/error/validation/http-response.adoc[]
 `409`
 Para username já existe:
 include::{snippets}/user/create/error/username/http-response.adoc[]
-
-___
 
 [[users-get]]
 === Recuperando Usuários
@@ -250,7 +277,21 @@ include::{snippets}/user/me/success/http-request.adoc[]
 Resposta:
 include::{snippets}/user/me/success/http-response.adoc[]
 
----
+[[users-get-all]]
+=== Todos Usuários
+|===
+|METHOD|URI|ROLE
+
+|GET
+|`/ap/v1/users/me`
+|**ADMIN**
+|===
+
+Retorna um objeto <<overview-pagination, __Page__>> **userRepresentationList** nome da lista.
+que contém uma lista de <<users>>.
+
+Caso não for encontrados recursos na base de dados, o objeto de representação estará **VAZIO**.
+
 [[users-delete]]
 === Deletando Usuários
 |===
@@ -270,7 +311,7 @@ Resposta:
 include::{snippets}/user/delete/success/http-response.adoc[]
 
 IMPORTANT: Não é possível remover o usuário da mesma sessão,
-caso isso ocorra um error será lançado com código de status`422`
+caso isso ocorra um error será lançado com código de status ``422``. consulte <<overview-http-status-codes>>
 
 ---
 ##### Respostas de error

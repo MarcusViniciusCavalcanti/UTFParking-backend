@@ -42,26 +42,26 @@
   <td class="name">UserRepresentation</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/ 1)
+    (1/ 1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    88,9%
   </span>
   <span class="absValue">
-    (0/ 6)
+    (8/ 9)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    94,4%
   </span>
   <span class="absValue">
-    (0/ 11)
+    (17/ 18)
   </span>
 </td>
 </tr>
@@ -82,31 +82,42 @@
 <i>8</i>&nbsp;import java.util.List;
 <i>9</i>&nbsp;import java.util.stream.Collectors;
 <i>10</i>&nbsp;
-<b class="nc"><i>11</i>&nbsp;@Data</b>
+<b class="fc"><i>11</i>&nbsp;@Data</b>
 <b class="nc"><i>12</i>&nbsp;@EqualsAndHashCode(callSuper = true)</b>
 <i>13</i>&nbsp;public class UserRepresentation extends RepresentationModel&lt;UserRepresentation&gt; {
 <i>14</i>&nbsp;
-<b class="nc"><i>15</i>&nbsp;    private Long userId;</b>
+<b class="fc"><i>15</i>&nbsp;    private Long userId;</b>
 <i>16</i>&nbsp;
-<b class="nc"><i>17</i>&nbsp;    private String name;</b>
+<b class="fc"><i>17</i>&nbsp;    private String name;</b>
 <i>18</i>&nbsp;
-<b class="nc"><i>19</i>&nbsp;    private List&lt;RoleRepresentation&gt; roles;</b>
+<b class="fc"><i>19</i>&nbsp;    private String type;</b>
 <i>20</i>&nbsp;
-<i>21</i>&nbsp;    public void copyAttributeBy(UserDTO user) {
-<b class="nc"><i>22</i>&nbsp;        this.userId = user.getId();</b>
-<b class="nc"><i>23</i>&nbsp;        this.name = user.getName();</b>
-<b class="nc"><i>24</i>&nbsp;        this.roles = user.getAccessCard().getRoles().stream()</b>
-<b class="nc"><i>25</i>&nbsp;            .map(role -&gt; new RoleRepresentation(role.getId(), role.getName(), role.getDescription()))</b>
-<b class="nc"><i>26</i>&nbsp;            .collect(Collectors.toList());</b>
-<i>27</i>&nbsp;
-<b class="nc"><i>28</i>&nbsp;    }</b>
-<i>29</i>&nbsp;}
+<b class="fc"><i>21</i>&nbsp;    private List&lt;RoleRepresentation&gt; roles;</b>
+<i>22</i>&nbsp;
+<b class="fc"><i>23</i>&nbsp;    private CarRepresentation car;</b>
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    public void copyAttributeBy(UserDTO user) {
+<b class="fc"><i>26</i>&nbsp;        this.userId = user.getId();</b>
+<b class="fc"><i>27</i>&nbsp;        this.name = user.getName();</b>
+<b class="fc"><i>28</i>&nbsp;        this.type = user.getTypeUser().name();</b>
+<i>29</i>&nbsp;
+<b class="fc"><i>30</i>&nbsp;        user.car().ifPresent(carDTO -&gt; {</b>
+<b class="fc"><i>31</i>&nbsp;            this.car = new CarRepresentation();</b>
+<b class="fc"><i>32</i>&nbsp;            this.car.copyAttributeBy(carDTO);</b>
+<b class="fc"><i>33</i>&nbsp;        });</b>
+<i>34</i>&nbsp;
+<b class="fc"><i>35</i>&nbsp;        this.roles = user.getAccessCard().getRoles().stream()</b>
+<b class="fc"><i>36</i>&nbsp;            .map(role -&gt; new RoleRepresentation(role.getId(), role.getName(), role.getDescription()))</b>
+<b class="fc"><i>37</i>&nbsp;            .collect(Collectors.toList());</b>
+<i>38</i>&nbsp;
+<b class="fc"><i>39</i>&nbsp;    }</b>
+<i>40</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-04-11 09:57</div>
+    <div style="float:right;">generated on 2020-04-21 10:17</div>
 </div>
 </body>
 </html>
