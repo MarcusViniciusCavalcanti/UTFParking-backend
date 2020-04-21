@@ -3,8 +3,7 @@ package br.edu.utfpr.tsi.utfparking.domain.users.factory;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import org.springframework.stereotype.Component;
 
 

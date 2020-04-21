@@ -3,9 +3,8 @@ package br.edu.utfpr.tsi.utfparking.domain.users.factory;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.Car;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.CarDTO;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,8 +13,19 @@ public class CarFactory {
     public static final String AUSENTE = "ausente";
 
     public Car createCarByInputUser(InputUserDTO dto, User user) {
-        String carPlate = dto.getCarPlate() == null || dto.getCarPlate().isBlank() ? AUSENTE : dto.getCarPlate();
-        String carModel = dto.getCarModel() == null ||  dto.getCarModel().isBlank() ? AUSENTE :  dto.getCarModel();
+        var carPlate = setCarPlate(dto.getCarPlate());
+        var carModel = setCarModel(dto.getCarModel());
+
+        return Car.builder()
+                .user(user)
+                .plate(carPlate)
+                .model(carModel)
+                .build();
+    }
+
+    public Car createCarByInputUser(InputUpdateCarDTO dto, User user) {
+        var carPlate = setCarPlate(dto.getCarPlate());
+        var carModel = setCarModel(dto.getCarModel());
 
         return Car.builder()
                 .user(user)
@@ -30,6 +40,14 @@ public class CarFactory {
                 .model(car.getModel())
                 .plate(car.getPlate())
                 .build();
+    }
+
+    private String setCarModel(String carModel) {
+        return carModel == null || carModel.isBlank() ? AUSENTE : carModel;
+    }
+
+    private String setCarPlate(String plate) {
+        return plate == null || plate.isBlank() ? AUSENTE : plate;
     }
 
     public CarDTO createCarDTOByUser(User user) {

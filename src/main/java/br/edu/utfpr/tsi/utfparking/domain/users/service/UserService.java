@@ -1,15 +1,21 @@
 package br.edu.utfpr.tsi.utfparking.domain.users.service;
 
+import br.edu.utfpr.tsi.utfparking.application.exceptions.IlegalProcessNewUserException;
 import br.edu.utfpr.tsi.utfparking.domain.exceptions.AuthoritiesNotAllowedException;
 import br.edu.utfpr.tsi.utfparking.domain.exceptions.UsernameExistException;
 import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
 import br.edu.utfpr.tsi.utfparking.domain.security.factory.AccessCardFactory;
+import br.edu.utfpr.tsi.utfparking.domain.users.entity.Car;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
 import br.edu.utfpr.tsi.utfparking.domain.users.factory.CarFactory;
-import br.edu.utfpr.tsi.utfparking.domain.users.factory.RolesFactory;
 import br.edu.utfpr.tsi.utfparking.domain.users.factory.UserFactory;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.*;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.AccessCardDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.CarDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +52,6 @@ public class UserService {
 
     private final CarFactory carFactory;
 
-    private final RolesFactory rolesFactory;
-
     private final BCryptPasswordEncoder encoder;
 
     public UserDTO getUserRequest() {
@@ -66,14 +70,14 @@ public class UserService {
         setCarIfExist(inputUser, user);
 
         try {
-            User newUser = saveOrUpdate(user);
+            var newUser = saveOrUpdate(user);
             return CompletableFuture
                     .supplyAsync(() -> userFactory.createUserDTOByUser(newUser))
                     .thenCombineAsync(executorCreateAccessCardDTO(newUser), executorSetAccessCardToUserDTO())
                     .thenCombineAsync(executorCreateCarDTO(newUser), executorSetCarToUserDTO())
                     .handle((dto, exception) -> {
                         if (exception != null) {
-                            throw new RuntimeException(exception);
+                            throw new IlegalProcessNewUserException(exception);
                         }
 
                         return dto;
@@ -82,7 +86,7 @@ public class UserService {
 
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new IlegalProcessNewUserException(e);
         }
     }
 
@@ -96,10 +100,18 @@ public class UserService {
     }
 
     @Transactional
+    public UserDTO updateCar(InputUpdateCarDTO inputUpdateCarDTO, Long id) {
+        return userRepository.findById(id)
+                .map(setCarInUser(inputUpdateCarDTO))
+                .map(createUserDTO())
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Transactional
     public Page<UserDTO> findAllPageableUsers(Pageable pageable) {
         var userPage = userRepository.findAll(pageable);
         var userDTOS = userPage.stream()
-                .map(userFactory::createUserDTOByUser)
+                .map(createUserDTO())
                 .collect(Collectors.toList());
 
         return new PageImpl<>(userDTOS, pageable, userPage.getTotalElements());
@@ -195,14 +207,28 @@ public class UserService {
     private Function<User, User> setCarInUser(InputUserDTO inputUser) {
         return user -> {
             var car = user.car()
-                    .map(mapCar -> {
-                        mapCar.setPlate(inputUser.getCarPlate());
-                        mapCar.setModel(inputUser.getCarModel());
-                        return mapCar;
-                    })
+                    .map(updateCar(inputUser.getCarPlate(), inputUser.getCarModel()))
                     .orElse(carFactory.createCarByInputUser(inputUser, user));
             user.setCar(car);
             return user;
+        };
+    }
+
+    private Function<User, User> setCarInUser(InputUpdateCarDTO inputUser) {
+        return user -> {
+            var car = user.car()
+                    .map(updateCar(inputUser.getCarPlate(), inputUser.getCarModel()))
+                    .orElse(carFactory.createCarByInputUser(inputUser, user));
+            user.setCar(car);
+            return user;
+        };
+    }
+
+    private Function<Car, Car> updateCar(String carPlate, String carModel) {
+        return mapCar -> {
+            mapCar.setPlate(carPlate);
+            mapCar.setModel(carModel);
+            return mapCar;
         };
     }
 

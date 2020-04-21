@@ -4,4 +4,8 @@ public class IlegalProcessNewUserException extends RuntimeException {
     public IlegalProcessNewUserException(String msg) {
         super(msg);
     }
+
+    public IlegalProcessNewUserException(Throwable exception) {
+        super(exception);
+    }
 }

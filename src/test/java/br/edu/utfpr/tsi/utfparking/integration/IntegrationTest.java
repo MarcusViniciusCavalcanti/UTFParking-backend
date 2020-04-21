@@ -2,7 +2,6 @@ package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
 import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.LoginDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
@@ -62,7 +61,6 @@ public abstract class IntegrationTest {
     protected UserDTO currentUserDTO;
 
     private String token;
-
 
     public void setUp(RestDocumentationContextProvider restDocumentation) {
         this.configurer = documentationConfiguration(restDocumentation).operationPreprocessors();

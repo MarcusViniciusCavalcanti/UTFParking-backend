@@ -39,18 +39,18 @@
   <td class="name">UserDTO</td>
 <td class="coverageStat">
   <span class="percent">
-    40%
+    100%
   </span>
   <span class="absValue">
-    (2/ 5)
+    (8/ 8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    40%
+    100%
   </span>
   <span class="absValue">
-    (2/ 5)
+    (8/ 8)
   </span>
 </td>
 </tr>
@@ -77,18 +77,18 @@
   <td class="name"><strong>total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    50%
+    100%
   </span>
   <span class="absValue">
-    (3/ 6)
+    (9/ 9)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    50%
+    100%
   </span>
   <span class="absValue">
-    (3/ 6)
+    (9/ 9)
   </span>
 </td>
 </tr>
@@ -103,21 +103,31 @@
 <i>3</i>&nbsp;import lombok.Builder;
 <i>4</i>&nbsp;import lombok.Data;
 <i>5</i>&nbsp;
-<b class="nc"><i>6</i>&nbsp;@Data</b>
-<b class="fc"><i>7</i>&nbsp;@Builder</b>
-<i>8</i>&nbsp;public class UserDTO {
-<b class="fc"><i>9</i>&nbsp;    private Long id;</b>
-<i>10</i>&nbsp;
-<b class="nc"><i>11</i>&nbsp;    private String name;</b>
+<i>6</i>&nbsp;import java.util.Optional;
+<i>7</i>&nbsp;
+<b class="fc"><i>8</i>&nbsp;@Data</b>
+<b class="fc"><i>9</i>&nbsp;@Builder</b>
+<i>10</i>&nbsp;public class UserDTO {
+<b class="fc"><i>11</i>&nbsp;    private Long id;</b>
 <i>12</i>&nbsp;
-<b class="nc"><i>13</i>&nbsp;    private AccessCardDTO accessCard;</b>
-<i>14</i>&nbsp;}
+<b class="fc"><i>13</i>&nbsp;    private String name;</b>
+<i>14</i>&nbsp;
+<b class="fc"><i>15</i>&nbsp;    private TypeUserDTO typeUser;</b>
+<i>16</i>&nbsp;
+<b class="fc"><i>17</i>&nbsp;    private AccessCardDTO accessCard;</b>
+<i>18</i>&nbsp;
+<b class="fc"><i>19</i>&nbsp;    private CarDTO car;</b>
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    public Optional&lt;CarDTO&gt; car() {
+<b class="fc"><i>22</i>&nbsp;        return Optional.ofNullable(car);</b>
+<i>23</i>&nbsp;    }
+<i>24</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-04-11 09:57</div>
+    <div style="float:right;">generated on 2020-04-21 10:17</div>
 </div>
 </body>
 </html>

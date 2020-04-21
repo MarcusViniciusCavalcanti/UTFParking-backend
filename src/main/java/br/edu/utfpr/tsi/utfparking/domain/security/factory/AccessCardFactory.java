@@ -4,7 +4,7 @@ import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
 import br.edu.utfpr.tsi.utfparking.domain.security.entity.Role;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.AccessCardDTO;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.RoleDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import org.springframework.stereotype.Component;
