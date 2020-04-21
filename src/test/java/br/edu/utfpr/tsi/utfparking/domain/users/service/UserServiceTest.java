@@ -192,19 +192,14 @@ class UserServiceTest {
 
     @Test
     void shouldReturnPageUsersDTO() {
-        var userList = List.of(
-                createMockUser(),
-                createMockUser(),
-                createMockUser(),
-                createMockUser(),
-                createMockUser(),
-                createMockUser(),
-                createMockUser(),
-                createMockUser()
-        );
-        when(userRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(userList));
+        var userList = CreateMock.createListUser();
 
-        Page<UserDTO> users = userService.findAllPageableUsers(Pageable.unpaged());
+        when(userRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(userList));
+        when(userFactory.createUserDTOByUser(any())).thenCallRealMethod();
+        when(carFactory.createCarDTOByUser(any())).thenCallRealMethod();
+        when(accessCardFactory.createAccessCardByUser(any())).thenCallRealMethod();
+
+        var users = userService.findAllPageableUsers(Pageable.unpaged());
 
         assertEquals(userList.size(), users.getSize());
     }

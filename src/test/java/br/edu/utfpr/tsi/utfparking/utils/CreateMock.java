@@ -147,7 +147,19 @@ public class CreateMock {
         return createUser(1L, accessCard, TypeUser.STUDENTS, "name", car);
     }
 
-    public static List<InputUserDTO> createListUser() {
+    public static List<User> createListUser() {
+        return LongStream.rangeClosed(0, 10)
+                .boxed()
+                .map(index -> {
+                    var car = CreateMock.createCar(index, MODEL_CARS[new Random().nextInt(MODEL_CARS.length - 1)], "abc123" + index);
+                    var role = createRole(index, "name");
+                    var accessCard = createAccessCard(index, List.of(role), "username", "password");
+
+                    return createUser(index, accessCard, TypeUser.STUDENTS, NAMES[new Random().nextInt(NAMES.length - 1)], car);
+                }).collect(Collectors.toList());
+    }
+
+    public static List<InputUserDTO> createListInputUsersDTO() {
         return LongStream.rangeClosed(0, 10)
                 .boxed()
                 .map(index -> {

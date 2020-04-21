@@ -1,0 +1,23 @@
+language: java
+jdk: oraclejdk14
+
+#env:
+#  global:
+#    - CC_TEST_REPORTER_ID=[YOUR CODE COVERAGE]
+
+addons:
+  code_climate:
+    repo_token:
+      secure: ae0c6cf7251bc55a2ed32782c8eeae41c21ddf87
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+script:
+  - mvn test
+after_script:
+  - ./cc-test-reporter format-coverage -d -t jacoco ./target/jacoco-ut/jacoco.xml
+  - ./cc-test-reporter upload-coverage -d
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
