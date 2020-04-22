@@ -13,9 +13,7 @@ services:
     tty: true
   api:
     container_name: api
-    build:
-      context: ./
-    image: api_utfparking
+    image: cavalcanti16/utfparking:develop
     user: application
     links:
       - postgres

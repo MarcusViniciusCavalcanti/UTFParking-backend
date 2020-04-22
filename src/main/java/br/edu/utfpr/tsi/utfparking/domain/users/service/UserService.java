@@ -195,7 +195,9 @@ public class UserService {
         return user -> {
             var userDTO = userFactory.createUserDTOByUser(user);
             var accessCardDTO = accessCardFactory.createAccessCardByUser(user);
-            var carDTO = carFactory.createCarDTOByUser(user);
+            var carDTO = user.car()
+                    .map(car -> carFactory.createCarDTOByUser(car.getUser()))
+                    .orElse(null);
 
             userDTO.setAccessCard(accessCardDTO);
             userDTO.setCar(carDTO);

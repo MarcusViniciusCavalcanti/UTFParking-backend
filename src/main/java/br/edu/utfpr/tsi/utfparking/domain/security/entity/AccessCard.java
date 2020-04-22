@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Entity
-@Table
+@Table(name = "access_card")
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter

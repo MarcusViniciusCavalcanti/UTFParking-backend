@@ -27,6 +27,7 @@ public class User implements Serializable {
 
     @OneToOne
     @MapsId
+    @JoinColumn(name = "access_card_id")
     private AccessCard accessCard;
 
     @Column(name = "created_at")

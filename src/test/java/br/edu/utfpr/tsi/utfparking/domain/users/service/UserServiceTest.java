@@ -87,7 +87,7 @@ class UserServiceTest {
     }
 
     @Test
-    void shouldHaveCreateNewUser() {
+    void shouldHaveCreateNewUserWhitCar() {
         var inputUser = createMockInputUserNewDTO(TypeUser.SERVICE);
         var role = CreateMock.createRole(1L, "description");
         var accessCard = CreateMock.createAccessCard(1L, List.of(role), "username", "password");
@@ -100,6 +100,26 @@ class UserServiceTest {
         when(userFactory.createUserByUserDTO(any())).thenCallRealMethod();
         when(userFactory.createUserDTOByUser(any())).thenCallRealMethod();
         when(carFactory.createCarDTOByUser(any())).thenCallRealMethod();
+        when(accessCardFactory.createAccessCardByInputUser(any(), any())).thenCallRealMethod();
+        when(accessCardFactory.createAccessCardByUser(any())).thenCallRealMethod();
+
+        userService.saveNewUser(inputUser);
+
+        verify(userRepository, times(1)).save(any());
+    }
+
+    @Test
+    void shouldHaveCreateNewUserWithoutCar() {
+        var inputUser = createMockInputUserNewDTO(TypeUser.SERVICE);
+        var role = CreateMock.createRole(1L, "description");
+        var accessCard = CreateMock.createAccessCard(1L, List.of(role), "username", "password");
+        var user = CreateMock.createUser(1L, accessCard, TypeUser.SERVICE, "name user", null);
+
+        when(roleRepository.findAllById(any())).thenReturn(List.of(role));
+        when(userRepository.save(any())).thenReturn(user);
+        when(bCryptPasswordEncoder.encode(any())).thenReturn("1231231231231");
+        when(userFactory.createUserByUserDTO(any())).thenCallRealMethod();
+        when(userFactory.createUserDTOByUser(any())).thenCallRealMethod();
         when(accessCardFactory.createAccessCardByInputUser(any(), any())).thenCallRealMethod();
         when(accessCardFactory.createAccessCardByUser(any())).thenCallRealMethod();
 
