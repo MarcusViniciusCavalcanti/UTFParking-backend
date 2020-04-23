@@ -273,7 +273,6 @@ public class UserIntegrationTest extends IntegrationTest {
                 )
                 .get(URI_USERS)
                 .then()
-                .log().body()
                 .assertThat()
                 .statusCode(HttpStatus.OK.value());
     }

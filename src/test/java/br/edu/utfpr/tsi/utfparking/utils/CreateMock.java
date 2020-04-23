@@ -130,13 +130,18 @@ public class CreateMock {
     }
 
     public static User createUser(Long id, AccessCard accessCard, TypeUser typeUser, String name, Car car) {
-        return User.builder()
+        var user = User.builder()
                 .accessCard(accessCard)
                 .typeUser(typeUser)
                 .name(name)
                 .id(id)
                 .car(car)
                 .build();
+
+        if (car != null) {
+            car.setUser(user);
+        }
+        return user;
     }
 
     public static User createUserDefaultUser() {
