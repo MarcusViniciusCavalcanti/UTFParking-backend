@@ -12,13 +12,17 @@ import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -38,12 +42,23 @@ public class UsersController {
         return unwrap(userApplicationService.getUserRequest());
     }
 
+    @PostMapping("/{id}/avatar")
+    public ResponseEntity<Resource> upload(@RequestParam("files") MultipartFile file, @PathVariable("id") Long id) {
+        var avatar =  userApplicationService.uploadAvatar(file, id);
+        return getResponseEntityToFile(avatar);
+    }
+
+    @GetMapping("/{id}/avatar")
+    public ResponseEntity<Resource> downloadAvatar(@PathVariable("id") Long id) {
+        var avatar = userApplicationService.getAvatar(id);
+        return getResponseEntityToFile(avatar);
+    }
+
     @IsAdmin
     @GetMapping
     public ResponseEntity<PagedModel<UserRepresentation>> findAll(Pageable pageable) {
         var page = userApplicationService.findAllPageableUsers(pageable);
         var userRepresentations = pagedResourcesAssembler.toModel(page, userRepresentationFactory);
-
         return ResponseEntity.ok(userRepresentations);
     }
 
@@ -69,7 +84,6 @@ public class UsersController {
 
         var userDTO = userApplicationService.saveNewUser(inputUserDTO);
         var userRepresentation = userRepresentationFactory.toModel(userDTO);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(userRepresentation);
     }
 
@@ -86,18 +100,24 @@ public class UsersController {
 
     @IsEqualsUser
     @PatchMapping("/{id}/update-car")
-    public ResponseEntity<UserRepresentation> changePlate(@PathVariable("id") Long id, @Valid @RequestBody InputUpdateCarDTO inputUpdateCarDTO, BindingResult resultSet) {
+    public ResponseEntity<UserRepresentation> changeCar(@PathVariable("id") Long id, @Valid @RequestBody InputUpdateCarDTO inputUpdateCarDTO, BindingResult resultSet) {
         if (resultSet.hasErrors()) {
             throw new IlegalRequestBodyException("Update Car", resultSet);
         }
 
         var userDto = userApplicationService.updateCar(inputUpdateCarDTO, id);
-
         return unwrap(userDto);
     }
 
     private ResponseEntity<UserRepresentation> unwrap(UserDTO user) {
         var userRepresentation = userRepresentationFactory.toModel(user);
         return ResponseEntity.ok(userRepresentation);
+    }
+
+    private ResponseEntity<Resource> getResponseEntityToFile(Resource avatar) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + avatar.getFilename() + "\"")
+                .body(avatar);
     }
 }

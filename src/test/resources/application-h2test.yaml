@@ -27,3 +27,6 @@ logging:
       hibernate:
         SQL: DEBUG
     org.springframework.boot: "off"
+
+files:
+  path: ${user.home}/development/person/tcc-utfparking-app/backend/utfparking/usersFiles/avatar

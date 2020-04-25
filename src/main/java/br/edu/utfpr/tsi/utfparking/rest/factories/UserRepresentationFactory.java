@@ -18,6 +18,7 @@ public class UserRepresentationFactory extends RepresentationModelAssemblerSuppo
     public UserRepresentation toModel(UserDTO entity) {
         var representation = createModelWithId(entity.getId(), entity);
         representation.copyAttributeBy(entity);
+
         return representation;
     }
 }

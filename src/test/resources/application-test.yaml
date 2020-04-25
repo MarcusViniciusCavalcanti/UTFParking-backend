@@ -2,3 +2,6 @@ spring:
   servlet:
     port: 8080
     context-path: /api/v1
+
+files:
+  path: ${user.home}/development/person/tcc-utfparking-app/backend/utfparking/test/usersFiles/avatar
