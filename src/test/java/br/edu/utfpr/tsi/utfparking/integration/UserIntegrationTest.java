@@ -1,10 +1,11 @@
 package br.edu.utfpr.tsi.utfparking.integration;
 
+import br.edu.utfpr.tsi.utfparking.domain.users.entity.Car;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
-import br.edu.utfpr.tsi.utfparking.structure.disk.properties.DiskProperties;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.repositories.CarRepository;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,11 +18,8 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasSize;
@@ -40,7 +38,7 @@ public class UserIntegrationTest extends IntegrationTest {
     private static final String PASSWORD = "12345678";
 
     @Autowired
-    private DiskProperties diskProperties;
+    private CarRepository carRepository;
 
     @BeforeEach
     void setup(RestDocumentationContextProvider restDocumentation) {
@@ -411,7 +409,7 @@ public class UserIntegrationTest extends IntegrationTest {
 
     @Test
     void shouldReturnErrorWhenUpdateCarWithIdIsDiffSessionRequest() {
-        InputUpdateCarDTO mockInputUpdateCarDTO = CreateMock.createMockInputUpdateCarDTO();
+        var mockInputUpdateCarDTO = CreateMock.createMockInputUpdateCarDTO();
 
         given(specAuthentication)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -492,6 +490,9 @@ public class UserIntegrationTest extends IntegrationTest {
     @Test
     void shouldReturnSuccessWhenUpdateCar() {
         var mockInputUpdateCarDTO = CreateMock.createMockInputUpdateCarDTO();
+        var car = carRepository.findById(currentUserDTO.getCar().getId()).orElseThrow();
+        car.setUpdatedAt(LocalDate.now().minusDays(10L));
+        carRepository.saveAndFlush(car);
 
         mockInputUpdateCarDTO.setCarPlate("efg0987");
         mockInputUpdateCarDTO.setCarModel("other model");
@@ -500,12 +501,12 @@ public class UserIntegrationTest extends IntegrationTest {
 
         given(specAuthentication)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .filter(document("user/update/car/forbidden", getRequestPreprocessor(), getResponsePreprocessor(),
+                .filter(document("user/update/car/success", getRequestPreprocessor(), getResponsePreprocessor(),
                         pathParameters(
                                 parameterWithName("id").description("id do recurso que será alterado")
                         ),
                         requestFields(
-                             fields.withPath("carModel").type(JsonFieldType.STRING).description("Valor de alteração do modelo do carro")  ,
+                             fields.withPath("carModel").type(JsonFieldType.STRING).description("Valor de alteração do modelo do carro"),
                              fields.withPath("carPlate").type(JsonFieldType.STRING).description("Valor de alteração do placa do carro")
                         ))
                 ).contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -517,6 +518,25 @@ public class UserIntegrationTest extends IntegrationTest {
                 .statusCode(HttpStatus.OK.value())
                 .body("car.plate", is(mockInputUpdateCarDTO.getCarPlate()))
                 .body("car.model", is(mockInputUpdateCarDTO.getCarModel()));
+    }
+
+    @Test
+    void shouldReturnErrorWhenUpdateCarOnLimit() {
+        var mockInputUpdateCarDTO = CreateMock.createMockInputUpdateCarDTO();
+
+        mockInputUpdateCarDTO.setCarPlate("efg0987");
+        mockInputUpdateCarDTO.setCarModel("other model");
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/update/car/error", getRequestPreprocessor(), getResponsePreprocessor()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(mockInputUpdateCarDTO)
+                .when()
+                .patch(URI_USERS + "/{id}/update-car", currentUserDTO.getId())
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     private InputUserDTO createMockInputUserDTO() {

@@ -213,8 +213,8 @@ Ostipos definem quais possíveis perfils serão atribuido a um usuário, as rest
 
 Para mais informações dos perfil consulte a sessão de Perfils, <<roles>>
 
-Para controle do acesso, cada usuário poderá ter apenas um <<cars>> cadastrado no sistema, porém cada usuário
-podera alterar o carro quando lhe for conveniente.
+Para controle do acesso, cada usuário poderá ter apenas um <<users-edit-car, carro>> cadastrado no sistema, porém podera alterar o carro quando lhe for conveniente
+respeitando o limite de alterações.
 
 Campos:
 include::{snippets}/user/create/success/response-fields.adoc[]
@@ -345,6 +345,8 @@ um error será retornado com status `422`, consulte <<erros-unprocess>> para mai
 |**ADMIN**
 |===
 
+O administrador poderá alterar completamente os dados do usuário sem limite.
+
 include::{snippets}/user/update/success/path-parameters.adoc[]
 
 Requisição:
@@ -358,6 +360,34 @@ include::{snippets}/user/update/success/http-response.adoc[]
 `404`
 Para usuário não existe:
 include::{snippets}/user/get/error/http-response.adoc[]
+
+[[users-edit-car]]
+=== Atualizar Carro do Usuário
+
+|===
+|METHOD|URI|ROLE
+
+|PATCH
+|`/ap/v1/users/{id}/update-car`
+|**ADMIN**
+|===
+
+include::{snippets}/user/update/car/success/path-parameters.adoc[]
+
+Requisição:
+include::{snippets}/user/update/car/success/curl-request.adoc[]
+
+Resposta:
+include::{snippets}/user/update/success/http-response.adoc[]
+
+IMPORTANT: Cada usuário poderá atualizar os dados do seu carro quando lhe for mais conveniente respeitando o limite estabelecido
+para tal.
+Caso isso ocorra um erro será retornado com status code `422`, como demonstrado abaixo:
+
+include::{snippets}/user/update/car/error/http-response.adoc[]
+
+IMPORTANT: Apenas o usuário corrente poderá acessar esta URL, caso contrário o será retornado um erro
+com status code `403`
 
 [[users-delete]]
 === Deletando Usuários

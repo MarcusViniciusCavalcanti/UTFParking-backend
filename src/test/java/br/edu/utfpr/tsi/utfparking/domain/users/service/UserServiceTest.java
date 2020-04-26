@@ -12,6 +12,7 @@ import br.edu.utfpr.tsi.utfparking.structure.dtos.RoleDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.exceptions.UpdateCarException;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -202,6 +204,27 @@ class UserServiceTest {
     }
 
     @Test
+    void shouldHaveUpdateCar() {
+        var mockInputUpdateCarDTO = createMockInputUpdateCarDTO();
+        var role = CreateMock.createRole(1L, "description");
+        var car = CreateMock.createCar(1L, "Model Car", "abc1234");
+        car.setUpdatedAt(LocalDate.now().minusDays(10L));
+
+        var accessCard = CreateMock.createAccessCard(1L, List.of(role), "username", "password");
+        var user = CreateMock.createUser(1L, accessCard, TypeUser.SERVICE, "name user", car);
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userFactory.createUserDTOByUser(any())).thenCallRealMethod();
+        when(carFactory.createCarDTOByUser(any())).thenCallRealMethod();
+        when(accessCardFactory.createAccessCardByUser(any())).thenCallRealMethod();
+
+        var resultDTO = userService.updateCar(mockInputUpdateCarDTO, user.getId());
+
+        assertEquals(mockInputUpdateCarDTO.getCarModel(), resultDTO.getCar().getModel());
+        assertEquals(mockInputUpdateCarDTO.getCarPlate(), resultDTO.getCar().getPlate());
+    }
+
+    @Test
     void shouldReturnErrorWheUserNotExist() {
         when(userRepository.findById(eq(ID_USER))).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> userService.findById(ID_USER));
@@ -222,29 +245,7 @@ class UserServiceTest {
     }
 
     @Test
-    void shouldHaveUpdateCar() {
-        var mockInputUpdateCarDTO = createMockInputUpdateCarDTO();
-        var role = CreateMock.createRole(1L, "description");
-        var car = CreateMock.createCar(1L, "Model Car", "abc1234");
-
-        var accessCard = CreateMock.createAccessCard(1L, List.of(role), "username", "password");
-        var user = CreateMock.createUser(1L, accessCard, TypeUser.SERVICE, "name user", car);
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userFactory.createUserDTOByUser(any())).thenCallRealMethod();
-        when(carFactory.createCarDTOByUser(any())).thenCallRealMethod();
-        when(accessCardFactory.createAccessCardByUser(any())).thenCallRealMethod();
-
-        var resultDTO = userService.updateCar(mockInputUpdateCarDTO, user.getId());
-
-        assertEquals(mockInputUpdateCarDTO.getCarModel(), resultDTO.getCar().getModel());
-        assertEquals(mockInputUpdateCarDTO.getCarPlate(), resultDTO.getCar().getPlate());
-    }
-
-    @Test
     void shouldReturnException() {
-        // userFactory.createUserDTOByUser(newUser))
-
         var inputUser = createMockInputUserNewDTO(TypeUser.SERVICE);
         var role = CreateMock.createRole(1L, "description");
         var accessCard = CreateMock.createAccessCard(1L, List.of(role), "username", "password");
@@ -261,6 +262,21 @@ class UserServiceTest {
         when(accessCardFactory.createAccessCardByUser(any())).thenCallRealMethod();
 
         assertThrows(IlegalProcessNewUserException.class, () -> userService.saveNewUser(inputUser));
+    }
+
+    @Test
+    void shouldReturnExceptionWhenAttemptUpdateCarOnLimit() {
+        var mockInputUpdateCarDTO = createMockInputUpdateCarDTO();
+        var role = CreateMock.createRole(1L, "description");
+        var car = CreateMock.createCar(1L, "Model Car", "abc1234");
+        car.setUpdatedAt(LocalDate.now());
+
+        var accessCard = CreateMock.createAccessCard(1L, List.of(role), "username", "password");
+        var user = CreateMock.createUser(1L, accessCard, TypeUser.SERVICE, "name user", car);
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        assertThrows(UpdateCarException.class, () -> userService.updateCar(mockInputUpdateCarDTO, 1L));
     }
 
     private InputUserDTO createMockInputUserNewDTO(TypeUser service) {
