@@ -13,7 +13,10 @@ services:
     tty: true
   api:
     container_name: api
-    image: cavalcanti16/utfparking:develop
+#    image: cavalcanti16/utfparking:develop
+    build:
+      context: ./
+    image: api_utfparking
     user: application
     links:
       - postgres
@@ -22,4 +25,7 @@ services:
     network_mode: bridge
     expose:
       - 8080
-
+    volumes:
+      - ./avatar:/backend/avatar
+volumes:
+  avatar:
