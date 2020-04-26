@@ -8,6 +8,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ResponseJWEDTO {
-    private String token;
+    private String value;
     private Long expiration;
 }

@@ -107,7 +107,6 @@ public class UserService {
                 .orElseThrow(EntityNotFoundException::new);
     }
 
-    @Transactional
     public Page<UserDTO> findAllPageableUsers(Pageable pageable) {
         var userPage = userRepository.findAll(pageable);
         var userDTOS = userPage.stream()
@@ -117,7 +116,6 @@ public class UserService {
         return new PageImpl<>(userDTOS, pageable, userPage.getTotalElements());
     }
 
-    @Transactional
     public void delete(Long id) {
         userRepository.deleteById(id);
     }

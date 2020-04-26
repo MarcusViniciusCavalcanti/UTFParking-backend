@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="true">
     <include resource="org/springframework/boot/logging/logback/base.xml" />
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <logger name="ch.erni.community.ideasboard" level="OFF"/>
+    <logger name="org.apache.catalina.startup.DigesterFactory" level="OFF"/>
     <logger name="root" level="OFF"/>
     <logger name="br.edu.utfpr.tsi.utfparking" level="OFF"/>
     <logger name="org.springframework" level="OFF"/>
+    <logger name="org.liquibase.executor" level="OFF"/>
+    <logger name="liquibase.changelog" level="OFF"/>
     <logger name="org.springframework.boot" level="OFF"/>
     <logger name="org.springframework.web.servlet" level="OFF"/>
     <logger name="org.springframework.boot.security" level="OFF"/>

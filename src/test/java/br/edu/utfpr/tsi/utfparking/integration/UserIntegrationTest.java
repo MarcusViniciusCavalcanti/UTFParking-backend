@@ -1,17 +1,27 @@
 package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
+import br.edu.utfpr.tsi.utfparking.structure.disk.properties.DiskProperties;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.payload.JsonFieldType;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasSize;
@@ -23,10 +33,14 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 import static org.springframework.restdocs.snippet.Attributes.key;
 
 public class UserIntegrationTest extends IntegrationTest {
+
     private static final String URI_USERS = "/api/v1/users";
     private static final String NAME_USER = "Fulano de Tal";
     private static final String USERNAME = "fulano_username";
     private static final String PASSWORD = "12345678";
+
+    @Autowired
+    private DiskProperties diskProperties;
 
     @BeforeEach
     void setup(RestDocumentationContextProvider restDocumentation) {
@@ -47,7 +61,10 @@ public class UserIntegrationTest extends IntegrationTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .filter(document("user/create/success", getRequestPreprocessor(), getResponsePreprocessor(),
                         links(halLinks(),
-                                linkWithRel("self").description("Uri do recurso criado. ")
+                                linkWithRel("self").description("Uri do recurso criado."),
+                                linkWithRel("avatar").description("Uri do avatar."),
+                                linkWithRel("updateCar").description("Url para alterar os dados do carro do usuário."),
+                                linkWithRel("me").description("Uri do recurso criado.")
                         ),
                         requestFields(
                                 fields.withPath("name")
@@ -99,7 +116,10 @@ public class UserIntegrationTest extends IntegrationTest {
                                 fieldWithPath("car.plate").ignored(),
                                 fieldWithPath("car.model").ignored(),
                                 fieldWithPath("_links").type(JsonFieldType.OBJECT).description("Uris relacionadas ao recurso."),
-                                fieldWithPath("_links.self.href").type(JsonFieldType.STRING).description("Uri recurso.")
+                                fieldWithPath("_links.self.href").ignored(),
+                                fieldWithPath("_links.avatar.href").ignored(),
+                                fieldWithPath("_links.updateCar.href").ignored(),
+                                fieldWithPath("_links.me.href").ignored()
                         )
                 ))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -169,7 +189,10 @@ public class UserIntegrationTest extends IntegrationTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .filter(document("user/get/success", getRequestPreprocessor(), getResponsePreprocessor(),
                         links(halLinks(),
-                                linkWithRel("self").description("Uri do recurso criado.")
+                                linkWithRel("self").description("Uri do recurso criado."),
+                                linkWithRel("avatar").description("Uri do avatar."),
+                                linkWithRel("updateCar").description("Url para alterar os dados do carro do usuário."),
+                                linkWithRel("me").description("Uri do recurso criado.")
                         ),
                         pathParameters(
                                 parameterWithName("id").description("id do recurso que será recuperado")
@@ -194,7 +217,10 @@ public class UserIntegrationTest extends IntegrationTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .filter(document("user/me/success", getRequestPreprocessor(), getResponsePreprocessor(),
                         links(halLinks(),
-                                linkWithRel("self").description("Uri do recurso criado.")
+                                linkWithRel("self").description("Uri do recurso criado."),
+                                linkWithRel("avatar").description("Uri do avatar."),
+                                linkWithRel("updateCar").description("Uri para alterar os dados do carro."),
+                                linkWithRel("me").description("Uri do recurso criado.")
                         ))
                 )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -296,9 +322,6 @@ public class UserIntegrationTest extends IntegrationTest {
         given(specAuthentication)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .filter(document("user/update/success", getRequestPreprocessor(), getResponsePreprocessor(),
-                        links(halLinks(),
-                                linkWithRel("self").description("Uri do recurso criado.")
-                        ),
                         pathParameters(
                                 parameterWithName("id").description("id do recurso que será atualizado")
                         ),
@@ -433,6 +456,33 @@ public class UserIntegrationTest extends IntegrationTest {
                 .patch(URI_USERS + "/{id}/update-car", currentUserDTO.getId())
                 .then()
                 .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Order(1)
+    @Test
+    void shouldHaveUploadAvatar() throws URISyntaxException {
+        var resource = this.getClass().getResource("/avatar/1.png");
+        var file = new File(resource.toURI());
+
+        given(specAuthentication)
+                .filter(document("user/upload", getRequestPreprocessor(), getResponsePreprocessor()))
+                .accept(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .multiPart("files", file)
+                .post(URI_USERS + "/{id}/avatar", currentUserDTO.getId())
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Order(2)
+    @Test
+    void shouldHaveDownloadAvatar() {
+        given(specAuthentication)
+                .filter(document("user/download", getRequestPreprocessor(), getResponsePreprocessor()))
+                .accept(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .get(URI_USERS + "/{id}/avatar", currentUserDTO.getId())
+                .then()
+                .statusCode(HttpStatus.OK.value());
     }
 
     @Test

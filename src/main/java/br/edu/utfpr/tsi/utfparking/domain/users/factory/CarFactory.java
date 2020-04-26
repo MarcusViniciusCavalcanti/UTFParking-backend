@@ -34,14 +34,6 @@ public class CarFactory {
                 .build();
     }
 
-    public CarDTO createCarDTOByCar(Car car) {
-        return CarDTO.builder()
-                .id(car.getId())
-                .model(car.getModel())
-                .plate(car.getPlate())
-                .build();
-    }
-
     private String setCarModel(String carModel) {
         return carModel == null || carModel.isBlank() ? AUSENTE : carModel;
     }

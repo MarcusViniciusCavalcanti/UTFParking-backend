@@ -16,7 +16,7 @@ Api para o sistema UTFParking, de alunos para alunos.
 Esta api está agnostica de clientes deste que uso protocolos **HTTP**, seja ele a aplicação de reconhecimento
 ou web.
 
-## Começando
+== Começando
 Esta documentação ira auxiliar novas implementações de __clients sides__, dando uma base
 de como manipular os recursos que a API provem.
 
@@ -39,7 +39,7 @@ possíveis as suas conveções em seu uso dos verbos HTTP
 | Usado para recuperar recursos
 
 | `POST`
-| Usado para crear um recurso
+| Usado para criar um recurso
 
 | `PUT`
 | Usado para atualizar um recurso
@@ -83,7 +83,12 @@ a falta de um atributo, no corpo da mensagem.
 | `422 Unprocessable Entity`
 | Requisição negada, pois não passou na validação da requisição, um atributo nulo ou
 ultrapassou o limite de caracteres, são exemplos.
+
+| `500 Internal Server Error`
+| Houve um problema de processamento interno.
 |===
+
+TIP: consulte a <<erros, sessão de erros>> para avaliar as respostas de error e obter mais informações sobre os campos
 
 [[overview-pagination]]
 === Lista de Recursos (Paginação)
@@ -91,7 +96,7 @@ ultrapassou o limite de caracteres, são exemplos.
 Toda requisição que retorna uma lista de recursos, exemplo <<users-get-all>>, retornar um objeto, que contém: **__Page__, __Link__, __embedded__**.
 Esta estrutura e útil para navegar entre uma lista de recursos.
 
-### Objeto Page.
+== Objeto Page.
 O objeto __Page__ contém as informações da página de recursos, contem a seguinte estrutura:
 include::{snippets}/user/get/page/response-fields-beneath-page.adoc[]
 
@@ -103,12 +108,12 @@ include::{snippets}/user/get/page/response-body-beneath-_embedded.adoc[]
 
 Observe que este objeto retorna uma lista do recurso usuários, sendo representado pelo __Array__ ``userRepresentationList``
 
-IMPORTANT:: Fique atento para o tipo de lista de recurso em cada url de páginação, este é apenas um exemplo
+IMPORTANT: Fique atento para o tipo de lista de recurso em cada url de paginação, este é apenas um exemplo
 cada lista de recurso será representando por um tipo especifico consulte cada sessão para saber qual.
 
-### Navegação entre páginas
-Cada url que retorna uma lista de recursos, pode receber parâmetros que será utilizado para definir a quantidade
-de recursos exibidos ou qual página será recuperada
+== Navegação entre páginas
+Cada url que retorna uma lista de recursos, pode receber parâmetros que será utilizado para refinar a lista
+de recursos, por exemplo a quantidade de recursos na lista ou qual página será recuperada
 include::{snippets}/user/get/page/request-parameters.adoc[]
 
 Também pode ser utilizado as uris do objeto __Links__ que é encontrado no corpo da requisição,
@@ -141,16 +146,15 @@ Caso a requisição não contenha o header acima, excluido as que não carece de
 de error com **status code** `401`.
 
 Exemplo:
-include::{snippets}/authenticate/Login/failure/unauthorized/http-response.adoc[]
+include::{snippets}/security/authenticate/Login/failure/unauthorized/http-response.adoc[]
 
 ==== Não Autorizado
 Para os casos de não autorizado, a mensagem de erro retornada será com **status code** `403`.
 
 Exemplo:
-include::{snippets}/authenticate/Login/failure/forbidden/http-response.adoc[]
+include::{snippets}/security/authenticate/Login/failure/forbidden/http-response.adoc[]
 
-
-##Consute sessão de errors para mais informações sobre os campos da mensagem.##
+##Consute <<erros, sessão de errors>> para mais informações sobre os campos da mensagem.##
 
 [[security-autehtntication-login]]
 === Login
@@ -161,14 +165,30 @@ include::{snippets}/authenticate/Login/failure/forbidden/http-response.adoc[]
 
 Para criar um token **/api/v1/login** passando as credenciais, username e password.
 
-IMPORTANT: As requisições para login, serão validadas, consulte: <<erros-badrequest>> para mais informações
+IMPORTANT: As requisições para login, serão validadas, consulte: <<erros-unprocess>> para mais informações
 
 Exemplo:
-include::{snippets}/authenticate/Login/success/http-request.adoc[]
+include::{snippets}/security/authenticate/Login/success/curl-request.adoc[]
 
-include::{snippets}/authenticate/Login/success/response-fields.adoc[]
+include::{snippets}/security/authenticate/Login/success/response-fields.adoc[]
 
-TIP: Para recuperar o usuário da do token clique <<users-get-me, aqui>> para ter informações.
+TIP: A Api dispõe de um endpoint para recuperar usuário dono do token, clique <<users-get-me, aqui>> para ter informações.
+
+[[security-authorization]]
+
+Algumas urls ou uris tem regras distintas para acesso, a qual será informada no campo `ROLE`, de cada requisição
+
+[[roles]]
+== Perfils
+
+A api dispõe de 3 (três) perfils que são eles:
+
+|===
+|**ADMIN** |Administrador do sistema, tem total acesso aos recursos
+|**OPERATOR** |Operador do sistema, tem acesso ver os reconhecimentos, liberar ou não o acesso.
+|**DRIVE** |Motorista do sistema, tem acesso ao seu canal de acesso: ver seu dados, e alterar os dados
+do seu carro de acesso.
+|===
 
 [[security-device]]
 === Autorizando Dispositivo
@@ -176,15 +196,15 @@ TIP: Para recuperar o usuário da do token clique <<users-get-me, aqui>> para te
 [[users]]
 == Usuários
 
-Usuário e um recurso da api, que representa quem utiliza o sistema, seja ele operador, motorista, ou administrador
+Usuário e um recurso da api, que representa quem utiliza o sistema, seja ele operador, motorista, ou administrador.
 
 Os tipos de usuário será definido no campo `type`, este campo defini o comportamento do sistema para atribuição de perfils.
 
-**SERVICE**: Servidores, professores, colaboradores em geral
+**SERVICE**: Servidores, professores, colaboradores em geral.
 
-**STUDENT**: Alunos do campus:
+**STUDENT**: Alunos do campus.
 
-Os tipos definem quais possíveis perfils serão atribuido a um usuário, as restrições serão:
+Ostipos definem quais possíveis perfils serão atribuido a um usuário, as restrições serão:
 
 |===
 |**SERVICE** |Podera ter perfil de ADMIN, OPERATOR, DRIVE
@@ -202,7 +222,7 @@ include::{snippets}/user/create/success/response-fields.adoc[]
 Links:
 include::{snippets}/user/create/success/links.adoc[]
 
-[[users-delete]]
+[[users-create]]
 === Criando Usuários
 |===
 |METHOD|URI|ROLE
@@ -215,7 +235,7 @@ include::{snippets}/user/create/success/links.adoc[]
 Cria um recurso usuário.
 
 Requisição:
-include::{snippets}/user/create/success/http-request.adoc[]
+include::{snippets}/user/create/success/curl-request.adoc[]
 
 Descrição dos campos:
 include::{snippets}/user/create/success/request-fields.adoc[]
@@ -223,8 +243,8 @@ include::{snippets}/user/create/success/request-fields.adoc[]
 Resposta:
 include::{snippets}/user/create/success/http-response.adoc[]
 
----
-##### Respostas de error
+'''
+==== Respostas de error
 
 `422`
 Para error de validação de campos:
@@ -234,6 +254,24 @@ include::{snippets}/user/create/error/validation/http-response.adoc[]
 `409`
 Para username já existe:
 include::{snippets}/user/create/error/username/http-response.adoc[]
+
+[[users-create-avatar]]
+=== Adicionando Avatar
+
+|===
+|METHOD|URI|ROLE
+
+|POST
+|`/ap/v1/users/{id}/avatar`
+|**ADMIN**, **DRIVER**, **OPERATOR**
+|===
+
+Cada usuário poderá ter um um avatar, caso o usuário não faça o upload do seu avatar ele a api retornara o avatar padrão
+
+Requisição:
+include::{snippets}/user/upload/curl-request.adoc[]
+
+A resposta será o próprio arquivo .
 
 [[users-get]]
 === Recuperando Usuários
@@ -250,19 +288,19 @@ Para recuperar um determinado usuário, deve-se informar o id do usuário.
 include::{snippets}/user/get/success/path-parameters.adoc[]
 
 Requisição:
-include::{snippets}/user/get/success/http-request.adoc[]
+include::{snippets}/user/get/success/curl-request.adoc[]
 
 Resposta:
 include::{snippets}/user/get/success/http-response.adoc[]
 
----
-##### Respostas de error
+'''
+==== Respostas de error
 `404`
 Para usuário não existe:
 include::{snippets}/user/get/error/http-response.adoc[]
 
 [[users-get-me]]
-=== Recuperando Usuários da sessão
+==== Recuperando Usuários da sessão
 |===
 |METHOD|URI|ROLE
 
@@ -272,13 +310,13 @@ include::{snippets}/user/get/error/http-response.adoc[]
 |===
 
 Requisição:
-include::{snippets}/user/me/success/http-request.adoc[]
+include::{snippets}/user/me/success/curl-request.adoc[]
 
 Resposta:
 include::{snippets}/user/me/success/http-response.adoc[]
 
 [[users-get-all]]
-=== Todos Usuários
+==== Todos Usuários
 |===
 |METHOD|URI|ROLE
 
@@ -291,6 +329,35 @@ Retorna um objeto <<overview-pagination, __Page__>> **userRepresentationList** n
 que contém uma lista de <<users>>.
 
 Caso não for encontrados recursos na base de dados, o objeto de representação estará **VAZIO**.
+
+[[users-edit]]
+=== Atualizar usuário
+
+IMPORTANT: As urls para atualizar **PARCIALMENTE** ou **COMPLETAMENTE** um usuário
+também passaram pelo processo de validação, caso a requisição não passe neste processo
+um error será retornado com status `422`, consulte <<erros-unprocess>> para mais informações sobre os campos.
+
+|===
+|METHOD|URI|ROLE
+
+|PUT
+|`/ap/v1/users/{id}`
+|**ADMIN**
+|===
+
+include::{snippets}/user/update/success/path-parameters.adoc[]
+
+Requisição:
+include::{snippets}/user/update/success/curl-request.adoc[]
+
+Resposta:
+include::{snippets}/user/update/success/http-response.adoc[]
+
+'''
+==== Respostas de error
+`404`
+Para usuário não existe:
+include::{snippets}/user/get/error/http-response.adoc[]
 
 [[users-delete]]
 === Deletando Usuários
@@ -305,7 +372,7 @@ Caso não for encontrados recursos na base de dados, o objeto de representação
 Remover um determinado recurso usuário.
 
 Requisição:
-include::{snippets}/user/delete/success/http-request.adoc[]
+include::{snippets}/user/delete/success/curl-request.adoc[]
 
 Resposta:
 include::{snippets}/user/delete/success/http-response.adoc[]
@@ -313,20 +380,41 @@ include::{snippets}/user/delete/success/http-response.adoc[]
 IMPORTANT: Não é possível remover o usuário da mesma sessão,
 caso isso ocorra um error será lançado com código de status ``422``. consulte <<overview-http-status-codes>>
 
----
-##### Respostas de error
+'''
+=== Respostas de error
 `404`
 Para usuário não existe:
 include::{snippets}/user/get/error/http-response.adoc[]
 
-___
-[[roles]]
-== Perfils
+[[erros]]
 
-[[cars]]
-== Carro
+As respostas de erros da Api seguem uma estrutura padrão de campos
 
+Campos:
+include::{snippets}/security/authenticate/Login/failure/forbidden/response-fields.adoc[]
 
-[[erros-badrequest]]
-=== Bad Request
+Campo **Error** poderá ser dois tipos, uma String ou um array de Erros, Para erros de validação
+será um array de objetos erros, denominado **fieldErros** como mostra o exemplo:
+
+include::{snippets}/user/create/error/validation/response-body.adoc[]
+
+[[erros-unprocess]]
+=== Validação de campos
+
+Os objetos fieldsErrors, poderão ser os seguintes:
+
+|===
+|ERROR|DESCRIPTION
+
+|NotBlank
+|O campo não pode ser nulo ou vazio.
+
+|NotNull
+|O não pode ser nulo.
+
+|Size
+|O campo deve respeitar o tamanho definido. Verifique o tamanho do valor do campo.
+
+|===
+
 

@@ -2,21 +2,29 @@ package br.edu.utfpr.tsi.utfparking.application.service.impl;
 
 import br.edu.utfpr.tsi.utfparking.application.exceptions.IlegalProcessDeleteException;
 import br.edu.utfpr.tsi.utfparking.application.service.UserApplicationService;
+import br.edu.utfpr.tsi.utfparking.domain.users.avatar.service.FileService;
 import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.transaction.Transactional;
+import java.io.File;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserApplicationServiceImpl implements UserApplicationService {
 
     private final UserService userService;
+
+    private final FileService fileService;
 
     @Override
     public UserDTO getUserRequest() {
@@ -55,5 +63,16 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public UserDTO updateCar(InputUpdateCarDTO inputUpdateCarDTO, Long id) {
         return userService.updateCar(inputUpdateCarDTO, id);
+    }
+
+    @Override
+    public Resource getAvatar(Long id) {
+        return fileService.getFile(id);
+    }
+
+    @Transactional
+    @Override
+    public Resource uploadAvatar(MultipartFile file, Long id) {
+        return fileService.saveDisk(file, id);
     }
 }
