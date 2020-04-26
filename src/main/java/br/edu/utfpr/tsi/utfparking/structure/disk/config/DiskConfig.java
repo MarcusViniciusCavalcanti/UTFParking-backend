@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -24,6 +24,8 @@ import java.nio.file.StandardCopyOption;
 public class DiskConfig {
 
     private final DiskProperties diskProperties;
+
+    private final ResourceLoader resourceLoader;
 
     public Resource saveAvatar(MultipartFile file, Long id) {
         var path = Path.of(diskProperties.getPath() + File.separator + id + ".png");
@@ -49,9 +51,7 @@ public class DiskConfig {
                 var normalize = path.normalize();
                 return new UrlResource(normalize.toUri());
             } else {
-                var resource = getClass().getResource("/avatar/default.png").getPath();
-                var normalize = Path.of(resource).normalize();
-                return new UrlResource(normalize.toUri());
+                return resourceLoader.getResource("classpath:image/default.png");
             }
         } catch (MalformedURLException e) {
             log.error("Error ao carregar avatar", e);
