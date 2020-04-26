@@ -16,18 +16,10 @@
 
     <properties>
         <java.version>14</java.version>
-
-        <!-- TestContainers -->
-        <testcontainers.version>1.12.4</testcontainers.version>
-
         <rest-assured.version>4.2.0</rest-assured.version>
-
         <snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
-
         <jacoco.skip>${skipTests}</jacoco.skip>
-
     </properties>
-
 
     <dependencies>
         <dependency>
@@ -125,29 +117,6 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
             <version>2.2.11</version>
-        </dependency>
-
-        <!-- TestContainers -->
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- TestContainers JDBC -->
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>jdbc</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- Rest Assured -->
