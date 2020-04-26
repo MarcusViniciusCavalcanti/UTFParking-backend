@@ -35,7 +35,6 @@ public class UtfparkingApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
         var rootPathAvatar = Path.of(diskProperties.getPath());
         if(!Files.exists(rootPathAvatar)) {
             log.info("Criando diretório de avatar");
