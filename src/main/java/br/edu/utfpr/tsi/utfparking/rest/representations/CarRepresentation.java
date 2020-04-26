@@ -23,5 +23,6 @@ public class CarRepresentation extends RepresentationModel<CarRepresentation> {
         this.carId = carDTO.getId();
         this.plate = carDTO.getPlate();
         this.model = carDTO.getModel();
+        this.lastAccess = carDTO.getLastAccess();
     }
 }

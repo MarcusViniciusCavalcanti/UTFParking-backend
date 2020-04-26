@@ -158,8 +158,7 @@ public class UserService {
     }
 
     private void setCarIfExist(InputUserDTO inputUser, User user) {
-        if ((inputUser.getCarPlate() != null && !inputUser.getCarPlate().isEmpty()) ||
-                (inputUser.getCarModel() != null && !inputUser.getCarModel().isEmpty())) {
+        if ((inputUser.getCarPlate() != null && !inputUser.getCarPlate().isEmpty()) || (inputUser.getCarModel() != null && !inputUser.getCarModel().isEmpty())) {
             var car = carFactory.createCarByInputUser(inputUser, user);
             user.setCar(car);
         }

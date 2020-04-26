@@ -106,6 +106,10 @@ public class UserIntegrationTest extends IntegrationTest {
                         responseFields(
                                 fieldWithPath("userId").type(JsonFieldType.NUMBER).description("Id do usuário."),
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("Nome."),
+                                fieldWithPath("accountNonExpired").type(JsonFieldType.BOOLEAN).description("Se a conta esta expirada ou não."),
+                                fieldWithPath("accountNonLocked").type(JsonFieldType.BOOLEAN).description("Se a conta esta bloqueadaa ou não."),
+                                fieldWithPath("credentialsNonExpired").type(JsonFieldType.BOOLEAN).description("Se as credenciais expirada ou não."),
+                                fieldWithPath("enabled").type(JsonFieldType.BOOLEAN).description("Se a conta esta ativa ou não."),
                                 fieldWithPath("type").type(JsonFieldType.STRING).description("Tipo do usuário, Aluno (STUDENT) ou Servidor (SERVICE)."),
                                 fieldWithPath("roles").type(JsonFieldType.ARRAY).description("Os perfils de autorização do usuário. <<roles>>"),
                                 fieldWithPath("car").type(JsonFieldType.OBJECT).description("Carro autorizado para entrada do usuário. <<cars>>."),

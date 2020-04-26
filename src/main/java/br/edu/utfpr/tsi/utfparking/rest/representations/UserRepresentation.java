@@ -22,6 +22,14 @@ public class UserRepresentation extends RepresentationModel<UserRepresentation> 
 
     private String type;
 
+    private boolean accountNonExpired;
+
+    private boolean accountNonLocked;
+
+    private boolean credentialsNonExpired;
+
+    private boolean enabled;
+
     private List<RoleRepresentation> roles;
 
     private CarRepresentation car;
@@ -30,6 +38,10 @@ public class UserRepresentation extends RepresentationModel<UserRepresentation> 
         this.userId = user.getId();
         this.name = user.getName();
         this.type = user.getTypeUser().name();
+        this.accountNonExpired = user.getAccessCard().isAccountNonExpired();
+        this.accountNonLocked = user.getAccessCard().isAccountNonLocked();
+        this.credentialsNonExpired = user.getAccessCard().isCredentialsNonExpired();
+        this.enabled = user.getAccessCard().isEnabled();
 
         user.car().ifPresent(carDTO -> {
             this.car = new CarRepresentation();

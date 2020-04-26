@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -20,20 +22,22 @@ class UserRepositoryTest {
 
     @Test
     void shouldReturnTrueWhenUserExist() {
-        AccessCard accessCard = AccessCard.builder()
+        var accessCard = AccessCard.builder()
                 .username(USERNAME)
                 .password(PASSWORD)
                 .build();
 
-        User user = User.builder()
+        var user = User.builder()
                 .name("Name")
                 .typeUser(TypeUser.SERVICE)
                 .accessCard(accessCard)
                 .build();
 
-        userRepository.saveAndFlush(user);
+        var result = userRepository.saveAndFlush(user);
 
         assertTrue(userRepository.existsUserByAccessCardUsername(USERNAME));
+        assertEquals(LocalDate.now(), result.getCreatedAt());
+        assertEquals(LocalDate.now(), result.getUpdatedAt());
     }
 
     @Test

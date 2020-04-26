@@ -1,5 +1,6 @@
 package br.edu.utfpr.tsi.utfparking.domain.users.service;
 
+import br.edu.utfpr.tsi.utfparking.application.exceptions.IlegalProcessNewUserException;
 import br.edu.utfpr.tsi.utfparking.domain.exceptions.AuthoritiesNotAllowedException;
 import br.edu.utfpr.tsi.utfparking.domain.security.entity.Role;
 import br.edu.utfpr.tsi.utfparking.domain.security.factory.AccessCardFactory;
@@ -200,10 +201,6 @@ class UserServiceTest {
         assertEquals(carAnother.getPlate(), carDTO.getPlate());
     }
 
-    private InputUserDTO createMockInputUserNewDTO(TypeUser service) {
-        return CreateMock.createMockInputUserDTO("use name", "username", "1232312",  TypeUserDTO.valueOf(service.name()), service.getAllowedProfiles());
-    }
-
     @Test
     void shouldReturnErrorWheUserNotExist() {
         when(userRepository.findById(eq(ID_USER))).thenReturn(Optional.empty());
@@ -242,6 +239,32 @@ class UserServiceTest {
 
         assertEquals(mockInputUpdateCarDTO.getCarModel(), resultDTO.getCar().getModel());
         assertEquals(mockInputUpdateCarDTO.getCarPlate(), resultDTO.getCar().getPlate());
+    }
+
+    @Test
+    void shouldReturnException() {
+        // userFactory.createUserDTOByUser(newUser))
+
+        var inputUser = createMockInputUserNewDTO(TypeUser.SERVICE);
+        var role = CreateMock.createRole(1L, "description");
+        var accessCard = CreateMock.createAccessCard(1L, List.of(role), "username", "password");
+        var car = CreateMock.createCar(1L, "Model Car", "abc1234");
+        var user = CreateMock.createUser(1L, accessCard, TypeUser.SERVICE, "name user", car);
+
+        when(roleRepository.findAllById(any())).thenReturn(List.of(role));
+        when(userRepository.save(any())).thenReturn(user);
+        when(bCryptPasswordEncoder.encode(any())).thenReturn("1231231231231");
+        when(userFactory.createUserByUserDTO(any())).thenCallRealMethod();
+        when(userFactory.createUserDTOByUser(any())).thenThrow(new RuntimeException());
+        when(carFactory.createCarDTOByUser(any())).thenCallRealMethod();
+        when(accessCardFactory.createAccessCardByInputUser(any(), any())).thenCallRealMethod();
+        when(accessCardFactory.createAccessCardByUser(any())).thenCallRealMethod();
+
+        assertThrows(IlegalProcessNewUserException.class, () -> userService.saveNewUser(inputUser));
+    }
+
+    private InputUserDTO createMockInputUserNewDTO(TypeUser service) {
+        return CreateMock.createMockInputUserDTO("use name", "username", "1232312",  TypeUserDTO.valueOf(service.name()), service.getAllowedProfiles());
     }
 
     private User createMockUser() {

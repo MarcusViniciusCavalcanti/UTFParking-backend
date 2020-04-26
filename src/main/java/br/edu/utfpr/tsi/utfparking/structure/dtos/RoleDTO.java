@@ -2,8 +2,10 @@ package br.edu.utfpr.tsi.utfparking.structure.dtos;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
 @Builder
 public class RoleDTO {
     private Long id;

@@ -26,17 +26,6 @@ public class AccessCardFactory {
                 .build();
     }
 
-    public AccessCardDTO createAccessCardByUser(UserDTO userDTO, AccessCard accessCard, List<RoleDTO> roles) {
-        return AccessCardDTO.builder()
-                .username(accessCard.getUsername())
-                .accountNonExpired(accessCard.isAccountNonExpired())
-                .accountNonLocked(accessCard.isAccountNonLocked())
-                .credentialsNonExpired(accessCard.isCredentialsNonExpired())
-                .enabled(accessCard.isEnabled())
-                .roles(roles)
-                .build();
-    }
-
     public AccessCardDTO createAccessCardByUser(User newUser) {
         var accessCard = newUser.getAccessCard();
 

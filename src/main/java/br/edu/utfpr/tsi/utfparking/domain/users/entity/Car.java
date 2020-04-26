@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@EqualsAndHashCode
-@ToString
 @Setter
 @Builder
 public class Car {
