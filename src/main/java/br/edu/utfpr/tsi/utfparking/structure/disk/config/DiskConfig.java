@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -48,7 +49,8 @@ public class DiskConfig {
                 var normalize = path.normalize();
                 return new UrlResource(normalize.toUri());
             } else {
-                var normalize = Path.of(diskProperties.getPath() + File.separator + "default.png").normalize();
+                var resource = getClass().getResource("/avatar/default.png").getPath();
+                var normalize = Path.of(resource).normalize();
                 return new UrlResource(normalize.toUri());
             }
         } catch (MalformedURLException e) {

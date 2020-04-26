@@ -49,7 +49,7 @@ configuration:
   isMock: false
 
 files:
-  path: ${user.home}/development/person/tcc-utfparking-app/backend/utfparking/usersFiles/avatar
+  path: /usersFiles/avatar
 
 ---
 spring:

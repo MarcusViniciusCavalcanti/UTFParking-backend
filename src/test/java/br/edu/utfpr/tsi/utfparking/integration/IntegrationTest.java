@@ -30,8 +30,8 @@ import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 
+@ActiveProfiles("test")
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-@ActiveProfiles("h2test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class IntegrationTest {
 

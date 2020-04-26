@@ -1,21 +1,27 @@
 package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
+import br.edu.utfpr.tsi.utfparking.structure.disk.properties.DiskProperties;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasSize;
@@ -27,10 +33,14 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 import static org.springframework.restdocs.snippet.Attributes.key;
 
 public class UserIntegrationTest extends IntegrationTest {
+
     private static final String URI_USERS = "/api/v1/users";
     private static final String NAME_USER = "Fulano de Tal";
     private static final String USERNAME = "fulano_username";
     private static final String PASSWORD = "12345678";
+
+    @Autowired
+    private DiskProperties diskProperties;
 
     @BeforeEach
     void setup(RestDocumentationContextProvider restDocumentation) {
@@ -448,6 +458,7 @@ public class UserIntegrationTest extends IntegrationTest {
                 .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
+    @Order(1)
     @Test
     void shouldHaveUploadAvatar() throws URISyntaxException {
         var resource = this.getClass().getResource("/avatar/1.png");
@@ -458,8 +469,18 @@ public class UserIntegrationTest extends IntegrationTest {
                 .accept(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .multiPart("files", file)
-                .log().all()
                 .post(URI_USERS + "/{id}/avatar", currentUserDTO.getId())
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Order(2)
+    @Test
+    void shouldHaveDownloadAvatar() {
+        given(specAuthentication)
+                .filter(document("user/download", getRequestPreprocessor(), getResponsePreprocessor()))
+                .accept(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .get(URI_USERS + "/{id}/avatar", currentUserDTO.getId())
                 .then()
                 .statusCode(HttpStatus.OK.value());
     }

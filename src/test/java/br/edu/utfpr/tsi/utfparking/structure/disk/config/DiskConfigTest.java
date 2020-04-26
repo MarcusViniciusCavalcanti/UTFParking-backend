@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.FileSystemUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -67,7 +68,7 @@ class DiskConfigTest {
     @Order(3)
     @Test
     void shouldReturnException() throws IOException {
-        Files.deleteIfExists(Path.of(diskProperties.getPath()));
+        FileSystemUtils.deleteRecursively(Path.of(diskProperties.getPath()));
 
         var resource = this.getClass().getResourceAsStream("/avatar/1.png");
         var multipartFile = new MockMultipartFile("file", resource);
