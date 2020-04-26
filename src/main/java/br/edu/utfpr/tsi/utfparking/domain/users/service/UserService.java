@@ -116,7 +116,6 @@ public class UserService {
         return new PageImpl<>(userDTOS, pageable, userPage.getTotalElements());
     }
 
-    @Transactional
     public void delete(Long id) {
         userRepository.deleteById(id);
     }

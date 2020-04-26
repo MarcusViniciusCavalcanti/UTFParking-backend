@@ -4,11 +4,13 @@ import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
 import br.edu.utfpr.tsi.utfparking.domain.security.service.TokenCreator;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.LoginDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.ResponseJWEDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -66,14 +68,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         var signedJWT = tokenCreator.createSignedJWT(authResult, expirationJWT);
         var encryptToken = tokenCreator.encryptToken(signedJWT);
 
-        var token = objectMapper.createObjectNode()
-                .put("value", headerJWT.getPrefix() + encryptToken)
-                .put("expiration", expirationJWT.getTime());
+        var token = ResponseJWEDTO.builder()
+                .value(headerJWT.getPrefix() + encryptToken)
+                .expiration(expirationJWT.getTime())
+                .build();
 
-        response.addHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        response.addHeader("Access-Control-Expose-Headers", String.format("XSRF-TOKEN, %s", headerJWT.getName()));
+        response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, String.format("XSRF-TOKEN, %s", headerJWT.getName()));
         response.addHeader(headerJWT.getName(), headerJWT.getPrefix() + encryptToken);
-        response.getWriter().write(objectMapper.createObjectNode().setAll(token).toString());
+        response.getWriter().write(objectMapper.writeValueAsString(token));
     }
 
 }

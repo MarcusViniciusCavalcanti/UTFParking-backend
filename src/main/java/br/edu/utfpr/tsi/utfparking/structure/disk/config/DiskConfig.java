@@ -40,7 +40,6 @@ public class DiskConfig {
         }
     }
 
-
     public Resource loadAvatar(Long id) {
         var path = Path.of(diskProperties.getPath() + File.separator + id + ".png");
 

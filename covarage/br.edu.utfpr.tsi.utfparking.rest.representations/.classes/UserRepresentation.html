@@ -58,10 +58,10 @@
 </td>
 <td class="coverageStat">
   <span class="percent">
-    94,4%
+    95,2%
   </span>
   <span class="absValue">
-    (17/ 18)
+    (20/ 21)
   </span>
 </td>
 </tr>
@@ -74,50 +74,57 @@
 
 <div class="sourceCode"><i>1</i>&nbsp;package br.edu.utfpr.tsi.utfparking.rest.representations;
 <i>2</i>&nbsp;
-<i>3</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
-<i>4</i>&nbsp;import lombok.Data;
-<i>5</i>&nbsp;import lombok.EqualsAndHashCode;
-<i>6</i>&nbsp;import org.springframework.hateoas.RepresentationModel;
-<i>7</i>&nbsp;
-<i>8</i>&nbsp;import java.util.List;
-<i>9</i>&nbsp;import java.util.stream.Collectors;
-<i>10</i>&nbsp;
-<b class="fc"><i>11</i>&nbsp;@Data</b>
-<b class="nc"><i>12</i>&nbsp;@EqualsAndHashCode(callSuper = true)</b>
-<i>13</i>&nbsp;public class UserRepresentation extends RepresentationModel&lt;UserRepresentation&gt; {
+<i>3</i>&nbsp;import br.edu.utfpr.tsi.utfparking.rest.endpoints.UsersController;
+<i>4</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
+<i>5</i>&nbsp;import lombok.Data;
+<i>6</i>&nbsp;import lombok.EqualsAndHashCode;
+<i>7</i>&nbsp;import org.springframework.hateoas.RepresentationModel;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;import java.util.List;
+<i>10</i>&nbsp;import java.util.stream.Collectors;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+<i>13</i>&nbsp;import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 <i>14</i>&nbsp;
-<b class="fc"><i>15</i>&nbsp;    private Long userId;</b>
-<i>16</i>&nbsp;
-<b class="fc"><i>17</i>&nbsp;    private String name;</b>
+<b class="fc"><i>15</i>&nbsp;@Data</b>
+<b class="nc"><i>16</i>&nbsp;@EqualsAndHashCode(callSuper = true)</b>
+<i>17</i>&nbsp;public class UserRepresentation extends RepresentationModel&lt;UserRepresentation&gt; {
 <i>18</i>&nbsp;
-<b class="fc"><i>19</i>&nbsp;    private String type;</b>
+<b class="fc"><i>19</i>&nbsp;    private Long userId;</b>
 <i>20</i>&nbsp;
-<b class="fc"><i>21</i>&nbsp;    private List&lt;RoleRepresentation&gt; roles;</b>
+<b class="fc"><i>21</i>&nbsp;    private String name;</b>
 <i>22</i>&nbsp;
-<b class="fc"><i>23</i>&nbsp;    private CarRepresentation car;</b>
+<b class="fc"><i>23</i>&nbsp;    private String type;</b>
 <i>24</i>&nbsp;
-<i>25</i>&nbsp;    public void copyAttributeBy(UserDTO user) {
-<b class="fc"><i>26</i>&nbsp;        this.userId = user.getId();</b>
-<b class="fc"><i>27</i>&nbsp;        this.name = user.getName();</b>
-<b class="fc"><i>28</i>&nbsp;        this.type = user.getTypeUser().name();</b>
-<i>29</i>&nbsp;
-<b class="fc"><i>30</i>&nbsp;        user.car().ifPresent(carDTO -&gt; {</b>
-<b class="fc"><i>31</i>&nbsp;            this.car = new CarRepresentation();</b>
-<b class="fc"><i>32</i>&nbsp;            this.car.copyAttributeBy(carDTO);</b>
-<b class="fc"><i>33</i>&nbsp;        });</b>
-<i>34</i>&nbsp;
-<b class="fc"><i>35</i>&nbsp;        this.roles = user.getAccessCard().getRoles().stream()</b>
-<b class="fc"><i>36</i>&nbsp;            .map(role -&gt; new RoleRepresentation(role.getId(), role.getName(), role.getDescription()))</b>
-<b class="fc"><i>37</i>&nbsp;            .collect(Collectors.toList());</b>
+<b class="fc"><i>25</i>&nbsp;    private List&lt;RoleRepresentation&gt; roles;</b>
+<i>26</i>&nbsp;
+<b class="fc"><i>27</i>&nbsp;    private CarRepresentation car;</b>
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    public void copyAttributeBy(UserDTO user) {
+<b class="fc"><i>30</i>&nbsp;        this.userId = user.getId();</b>
+<b class="fc"><i>31</i>&nbsp;        this.name = user.getName();</b>
+<b class="fc"><i>32</i>&nbsp;        this.type = user.getTypeUser().name();</b>
+<i>33</i>&nbsp;
+<b class="fc"><i>34</i>&nbsp;        user.car().ifPresent(carDTO -&gt; {</b>
+<b class="fc"><i>35</i>&nbsp;            this.car = new CarRepresentation();</b>
+<b class="fc"><i>36</i>&nbsp;            this.car.copyAttributeBy(carDTO);</b>
+<b class="fc"><i>37</i>&nbsp;        });</b>
 <i>38</i>&nbsp;
-<b class="fc"><i>39</i>&nbsp;    }</b>
-<i>40</i>&nbsp;}
+<b class="fc"><i>39</i>&nbsp;        this.roles = user.getAccessCard().getRoles().stream()</b>
+<b class="fc"><i>40</i>&nbsp;            .map(role -&gt; new RoleRepresentation(role.getId(), role.getName(), role.getDescription()))</b>
+<b class="fc"><i>41</i>&nbsp;            .collect(Collectors.toList());</b>
+<i>42</i>&nbsp;
+<b class="fc"><i>43</i>&nbsp;        add(linkTo(methodOn(UsersController.class).downloadAvatar(userId)).withRel(&quot;avatar&quot;));</b>
+<b class="fc"><i>44</i>&nbsp;        add(linkTo(methodOn(UsersController.class).getUserByAccessCard()).withRel(&quot;me&quot;));</b>
+<b class="fc"><i>45</i>&nbsp;        add(linkTo(methodOn(UsersController.class).changeCar(userId, null, null)).withRel(&quot;updateCar&quot;));</b>
+<b class="fc"><i>46</i>&nbsp;    }</b>
+<i>47</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-04-21 10:17</div>
+    <div style="float:right;">generated on 2020-04-26 09:58</div>
 </div>
 </body>
 </html>

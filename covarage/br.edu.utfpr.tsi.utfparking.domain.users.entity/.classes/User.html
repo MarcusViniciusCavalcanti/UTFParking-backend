@@ -55,13 +55,13 @@
 </td>
 </tr>
   <tr>
-    <td class="name">User$HibernateProxy$0TemmXmP</td>
+    <td class="name">User$HibernateProxy$000epVPV</td>
   </tr>
   <tr>
-    <td class="name">User$HibernateProxy$8Izb1EnP</td>
+    <td class="name">User$HibernateProxy$j4V5ZXpM</td>
   </tr>
   <tr>
-    <td class="name">User$HibernateProxy$c3DHCQVc</td>
+    <td class="name">User$HibernateProxy$splWTVtG</td>
   </tr>
   <tr>
     <td class="name">User$UserBuilder</td>
@@ -136,70 +136,71 @@
 <i>27</i>&nbsp;
 <i>28</i>&nbsp;    @OneToOne
 <i>29</i>&nbsp;    @MapsId
-<b class="fc"><i>30</i>&nbsp;    private AccessCard accessCard;</b>
-<i>31</i>&nbsp;
-<i>32</i>&nbsp;    @Column(name = &quot;created_at&quot;)
-<b class="nc"><i>33</i>&nbsp;    private LocalDate createdAt;</b>
-<i>34</i>&nbsp;
-<i>35</i>&nbsp;    @Column(name = &quot;updated_at&quot;)
-<b class="nc"><i>36</i>&nbsp;    private LocalDate updatedAt;</b>
-<i>37</i>&nbsp;
-<i>38</i>&nbsp;    @Column(name = &quot;type&quot;)
-<i>39</i>&nbsp;    @Enumerated(value = EnumType.STRING)
-<b class="fc"><i>40</i>&nbsp;    private TypeUser typeUser;</b>
-<i>41</i>&nbsp;
-<i>42</i>&nbsp;    @OneToOne(mappedBy = &quot;user&quot;, cascade = CascadeType.ALL)
-<b class="fc"><i>43</i>&nbsp;    private Car car;</b>
-<i>44</i>&nbsp;
-<i>45</i>&nbsp;    @PrePersist
-<i>46</i>&nbsp;    private void newAccessCard() {
-<b class="fc"><i>47</i>&nbsp;        this.createdAt = LocalDate.now();</b>
-<b class="fc"><i>48</i>&nbsp;        this.updatedAt = LocalDate.now();</b>
-<b class="fc"><i>49</i>&nbsp;    }</b>
-<i>50</i>&nbsp;
-<i>51</i>&nbsp;    @PreUpdate
-<i>52</i>&nbsp;    private void updateAccessCard() {
-<b class="fc"><i>53</i>&nbsp;        this.updatedAt = LocalDate.now();</b>
-<b class="fc"><i>54</i>&nbsp;    }</b>
-<i>55</i>&nbsp;
-<i>56</i>&nbsp;    public Optional&lt;Car&gt; car() {
-<b class="fc"><i>57</i>&nbsp;        return Optional.ofNullable(this.car);</b>
-<i>58</i>&nbsp;    }
-<i>59</i>&nbsp;
-<i>60</i>&nbsp;    @Override
-<i>61</i>&nbsp;    public boolean equals(Object o) {
-<b class="nc"><i>62</i>&nbsp;        if (this == o) return true;</b>
-<b class="nc"><i>63</i>&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
-<b class="nc"><i>64</i>&nbsp;        User user = (User) o;</b>
-<b class="nc"><i>65</i>&nbsp;        return id.equals(user.id) &amp;&amp;</b>
-<b class="nc"><i>66</i>&nbsp;                name.equals(user.name) &amp;&amp;</b>
-<b class="nc"><i>67</i>&nbsp;                accessCard.equals(user.accessCard) &amp;&amp;</b>
-<b class="nc"><i>68</i>&nbsp;                Objects.equals(createdAt, user.createdAt) &amp;&amp;</b>
-<b class="nc"><i>69</i>&nbsp;                Objects.equals(updatedAt, user.updatedAt);</b>
-<i>70</i>&nbsp;    }
-<i>71</i>&nbsp;
-<i>72</i>&nbsp;    @Override
-<i>73</i>&nbsp;    public int hashCode() {
-<b class="nc"><i>74</i>&nbsp;        return Objects.hash(id, name, accessCard, createdAt, updatedAt);</b>
-<i>75</i>&nbsp;    }
-<i>76</i>&nbsp;
-<i>77</i>&nbsp;    @Override
-<i>78</i>&nbsp;    public String toString() {
-<b class="nc"><i>79</i>&nbsp;        return &quot;User{&quot; +</b>
-<i>80</i>&nbsp;                &quot;id=&quot; + id +
-<i>81</i>&nbsp;                &quot;, name=&#39;&quot; + name + &#39;\&#39;&#39; +
-<i>82</i>&nbsp;                &quot;, accessCard=&quot; + accessCard +
-<i>83</i>&nbsp;                &quot;, createdAt=&quot; + createdAt +
-<i>84</i>&nbsp;                &quot;, updatedAt=&quot; + updatedAt +
-<i>85</i>&nbsp;                &#39;}&#39;;
-<i>86</i>&nbsp;    }
-<i>87</i>&nbsp;}
+<i>30</i>&nbsp;    @JoinColumn(name = &quot;access_card_id&quot;)
+<b class="fc"><i>31</i>&nbsp;    private AccessCard accessCard;</b>
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    @Column(name = &quot;created_at&quot;)
+<b class="nc"><i>34</i>&nbsp;    private LocalDate createdAt;</b>
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    @Column(name = &quot;updated_at&quot;)
+<b class="nc"><i>37</i>&nbsp;    private LocalDate updatedAt;</b>
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    @Column(name = &quot;type&quot;)
+<i>40</i>&nbsp;    @Enumerated(value = EnumType.STRING)
+<b class="fc"><i>41</i>&nbsp;    private TypeUser typeUser;</b>
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    @OneToOne(mappedBy = &quot;user&quot;, cascade = CascadeType.ALL)
+<b class="fc"><i>44</i>&nbsp;    private Car car;</b>
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    @PrePersist
+<i>47</i>&nbsp;    private void newAccessCard() {
+<b class="fc"><i>48</i>&nbsp;        this.createdAt = LocalDate.now();</b>
+<b class="fc"><i>49</i>&nbsp;        this.updatedAt = LocalDate.now();</b>
+<b class="fc"><i>50</i>&nbsp;    }</b>
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    @PreUpdate
+<i>53</i>&nbsp;    private void updateAccessCard() {
+<b class="fc"><i>54</i>&nbsp;        this.updatedAt = LocalDate.now();</b>
+<b class="fc"><i>55</i>&nbsp;    }</b>
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    public Optional&lt;Car&gt; car() {
+<b class="fc"><i>58</i>&nbsp;        return Optional.ofNullable(this.car);</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    @Override
+<i>62</i>&nbsp;    public boolean equals(Object o) {
+<b class="nc"><i>63</i>&nbsp;        if (this == o) return true;</b>
+<b class="nc"><i>64</i>&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+<b class="nc"><i>65</i>&nbsp;        User user = (User) o;</b>
+<b class="nc"><i>66</i>&nbsp;        return id.equals(user.id) &amp;&amp;</b>
+<b class="nc"><i>67</i>&nbsp;                name.equals(user.name) &amp;&amp;</b>
+<b class="nc"><i>68</i>&nbsp;                accessCard.equals(user.accessCard) &amp;&amp;</b>
+<b class="nc"><i>69</i>&nbsp;                Objects.equals(createdAt, user.createdAt) &amp;&amp;</b>
+<b class="nc"><i>70</i>&nbsp;                Objects.equals(updatedAt, user.updatedAt);</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    @Override
+<i>74</i>&nbsp;    public int hashCode() {
+<b class="nc"><i>75</i>&nbsp;        return Objects.hash(id, name, accessCard, createdAt, updatedAt);</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    @Override
+<i>79</i>&nbsp;    public String toString() {
+<b class="nc"><i>80</i>&nbsp;        return &quot;User{&quot; +</b>
+<i>81</i>&nbsp;                &quot;id=&quot; + id +
+<i>82</i>&nbsp;                &quot;, name=&#39;&quot; + name + &#39;\&#39;&#39; +
+<i>83</i>&nbsp;                &quot;, accessCard=&quot; + accessCard +
+<i>84</i>&nbsp;                &quot;, createdAt=&quot; + createdAt +
+<i>85</i>&nbsp;                &quot;, updatedAt=&quot; + updatedAt +
+<i>86</i>&nbsp;                &#39;}&#39;;
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-04-21 10:17</div>
+    <div style="float:right;">generated on 2020-04-26 09:58</div>
 </div>
 </body>
 </html>

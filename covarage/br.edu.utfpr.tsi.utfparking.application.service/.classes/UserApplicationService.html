@@ -41,32 +41,40 @@
 <i>3</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 <i>4</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 <i>5</i>&nbsp;import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
-<i>6</i>&nbsp;import org.springframework.data.domain.Page;
-<i>7</i>&nbsp;import org.springframework.data.domain.Pageable;
-<i>8</i>&nbsp;import org.springframework.stereotype.Service;
-<i>9</i>&nbsp;
-<i>10</i>&nbsp;@Service
-<i>11</i>&nbsp;public interface UserApplicationService {
-<i>12</i>&nbsp;    UserDTO getUserRequest();
+<i>6</i>&nbsp;import org.springframework.core.io.Resource;
+<i>7</i>&nbsp;import org.springframework.data.domain.Page;
+<i>8</i>&nbsp;import org.springframework.data.domain.Pageable;
+<i>9</i>&nbsp;import org.springframework.stereotype.Service;
+<i>10</i>&nbsp;import org.springframework.web.multipart.MultipartFile;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;import java.io.File;
 <i>13</i>&nbsp;
-<i>14</i>&nbsp;    Page&lt;UserDTO&gt; findAllPageableUsers(Pageable pageable);
-<i>15</i>&nbsp;
-<i>16</i>&nbsp;    UserDTO saveNewUser(InputUserDTO inputUser);
+<i>14</i>&nbsp;@Service
+<i>15</i>&nbsp;public interface UserApplicationService {
+<i>16</i>&nbsp;    UserDTO getUserRequest();
 <i>17</i>&nbsp;
-<i>18</i>&nbsp;    void deleteById(Long id);
+<i>18</i>&nbsp;    Page&lt;UserDTO&gt; findAllPageableUsers(Pageable pageable);
 <i>19</i>&nbsp;
-<i>20</i>&nbsp;    UserDTO findUserById(Long id);
+<i>20</i>&nbsp;    UserDTO saveNewUser(InputUserDTO inputUser);
 <i>21</i>&nbsp;
-<i>22</i>&nbsp;    UserDTO updateUser(InputUserDTO inputUser, Long id);
+<i>22</i>&nbsp;    void deleteById(Long id);
 <i>23</i>&nbsp;
-<i>24</i>&nbsp;    UserDTO updateCar(InputUpdateCarDTO inputUpdateCarDTO, Long id);
-<i>25</i>&nbsp;}
+<i>24</i>&nbsp;    UserDTO findUserById(Long id);
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;    UserDTO updateUser(InputUserDTO inputUser, Long id);
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;    UserDTO updateCar(InputUpdateCarDTO inputUpdateCarDTO, Long id);
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    Resource getAvatar(Long id);
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;    Resource uploadAvatar(MultipartFile file, Long id);
+<i>33</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-04-21 10:17</div>
+    <div style="float:right;">generated on 2020-04-26 09:58</div>
 </div>
 </body>
 </html>
