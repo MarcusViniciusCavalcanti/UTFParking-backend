@@ -5,6 +5,7 @@ import br.edu.utfpr.tsi.utfparking.domain.exceptions.UsernameExistException;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.ValidationErrors;
 import br.edu.utfpr.tsi.utfparking.rest.erros.exceptions.IlegalRequestBodyException;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.ResponseError;
+import br.edu.utfpr.tsi.utfparking.structure.exceptions.UpdateCarException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,20 @@ public class RestExceptionHandler {
                 .title("Validation Errors " + exception.getTitle())
                 .timestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli())
                 .error(new ValidationErrors(exception.errors()))
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .path(request.getServletPath())
+                .build();
+
+        return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(UpdateCarException.class)
+    public ResponseEntity<?> handleUpdateCarException(UpdateCarException exception, HttpServletRequest request) {
+        log.error("Error in process request: " + request.getRequestURL() + " cause by: " + exception.getClass().getSimpleName());
+        var errors = ResponseError.builder()
+                .title("Limite Update car exceeded")
+                .timestamp(LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli())
+                .error(exception.getMessage())
                 .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .path(request.getServletPath())
                 .build();

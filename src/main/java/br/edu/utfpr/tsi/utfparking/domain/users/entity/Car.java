@@ -43,9 +43,4 @@ public class Car {
         this.createdAt = LocalDate.now();
         this.updatedAt = LocalDate.now();
     }
-
-    @PreUpdate
-    private void updateCar() {
-        this.updatedAt = LocalDate.now();
-    }
 }

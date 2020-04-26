@@ -16,6 +16,7 @@ import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.exceptions.UpdateCarException;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,9 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
@@ -41,6 +45,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserService {
+
+    private static final long SEVEM_DAYS = 7L;
 
     private final UserRepository userRepository;
 
@@ -66,7 +72,6 @@ public class UserService {
     public UserDTO saveNewUser(InputUserDTO inputUser) {
         var user = getUser(inputUser);
         user.getAccessCard().setPassword(encoder.encode(inputUser.getPassword()));
-
         setCarIfExist(inputUser, user);
 
         try {
@@ -101,10 +106,23 @@ public class UserService {
 
     @Transactional
     public UserDTO updateCar(InputUpdateCarDTO inputUpdateCarDTO, Long id) {
-        return userRepository.findById(id)
+        var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return user.car()
+                .map(car -> {
+                    var from = LocalDate.now().minusDays(SEVEM_DAYS);
+                    var lastModifier = car.getUpdatedAt();
+                    var days = ChronoUnit.DAYS.between(from, lastModifier);
+
+                    if (days > 0) {
+                        var msg = String.format("Alteração do carro só pode ser feita uma vez por semana, a alteração será possível em %d", days);
+                        throw new UpdateCarException(msg);
+                    }
+
+                    return car.getUser();
+                })
                 .map(setCarInUser(inputUpdateCarDTO))
                 .map(createUserDTO())
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow();
     }
 
     public Page<UserDTO> findAllPageableUsers(Pageable pageable) {
@@ -227,6 +245,7 @@ public class UserService {
         return mapCar -> {
             mapCar.setPlate(carPlate);
             mapCar.setModel(carModel);
+            mapCar.setUpdatedAt(LocalDate.now());
             return mapCar;
         };
     }
