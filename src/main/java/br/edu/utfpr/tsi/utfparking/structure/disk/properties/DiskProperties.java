@@ -15,5 +15,5 @@ public class DiskProperties {
 
     private String avatar = "/avatar";
 
-    private String path = "avatar";
+    private String path = "/avatar";
 }
