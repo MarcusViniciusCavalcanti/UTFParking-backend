@@ -29,12 +29,14 @@ public class DiskConfig {
 
     public Resource saveAvatar(MultipartFile file, Long id) {
         var path = Path.of(diskProperties.getPath() + File.separator + id + ".png");
-
+        log.info("verificando path: {}", path);
         try {
             if (!Files.exists(path)) {
+                log.info("arquivo no path: {} sendo gerado. . .", path);
                 Files.createFile(path);
             }
 
+            log.info("copiando arquivo no path: {}", path);
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             return new UrlResource(path.normalize().toUri());
         } catch (IOException e) {
@@ -48,9 +50,11 @@ public class DiskConfig {
 
         try {
             if (Files.exists(path)) {
+                log.info("recuperando arquivo no path: {}", path);
                 var normalize = path.normalize();
                 return new UrlResource(normalize.toUri());
             } else {
+                log.info("retornando arquivo padrão no classpath == classpath:image/default.png");
                 return resourceLoader.getResource("classpath:image/default.png");
             }
         } catch (MalformedURLException e) {
