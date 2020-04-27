@@ -8,6 +8,8 @@ RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml package
 FROM openjdk:14-jdk
 RUN useradd -ms /bin/bash application
 WORKDIR /backend
+
+RUN chown application:application /backend
 COPY --from=api /usr/src/api/target/utfparking-0.0.1.jar .
 
 ENTRYPOINT ["java", "-jar", "/backend/utfparking-0.0.1.jar"]
