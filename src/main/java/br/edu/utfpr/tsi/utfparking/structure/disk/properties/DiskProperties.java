@@ -11,9 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "files")
 public class DiskProperties {
 
-    private String root = "usersFiles";
+    private String path = "avatar";
 
-    private String avatar = "/avatar";
-
-    private String path = "/avatar";
 }
