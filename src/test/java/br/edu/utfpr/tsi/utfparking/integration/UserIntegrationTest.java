@@ -353,7 +353,7 @@ public class UserIntegrationTest extends IntegrationTest {
                     .body("car.plate", is(anotherPlate))
                     .body("car.model", is(anotherCarModel))
                     .body("roles", hasSize(TypeUser.STUDENTS.getAllowedProfiles().size()))
-                    .body("roles[0].name", is("ROLE_USER"));
+                    .body("roles[0].name", is("ROLE_DRIVER"));
     }
 
     @Test

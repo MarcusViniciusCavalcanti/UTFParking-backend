@@ -56,8 +56,8 @@
     <changeSet id="1586297950712-4" author="vinicius">
         <insert tableName="role">
             <column name="id">1</column>
-            <column name="description">Perfil usuário</column>
-            <column name="name">ROLE_USER</column>
+            <column name="description">Perfil Motorista</column>
+            <column name="name">ROLE_DRIVER</column>
         </insert>
 
         <insert tableName="role">
