@@ -24,10 +24,10 @@ spring:
         use_sql_comments: false
         format_sql: false
 
-logging:
-  level:
-    root: WARN
-    org:
-      hibernate:
-        SQL: OFF
-    org.springframework.boot: OFF
+#logging:
+#  level:
+#    root: WARN
+#    org:
+#      hibernate:
+#        SQL: OFF
+#    org.springframework.boot: OFF

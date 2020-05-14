@@ -5,16 +5,16 @@ import br.edu.utfpr.tsi.utfparking.domain.security.entity.Role;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.Car;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.User;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputApplicationConfiguration;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -65,6 +65,7 @@ public class CreateMock {
             "LEGANZA", "NUBIRA", "PRINCE", "RACER", "SUPER SALON", "TICO", "APPLAUSE", "CHARADE", "C3", "C4", "C5",
             "C6", "C8", "DS3", "EVASION", "JUMPER", "XANTIA", "XM", "XSARA", "ZX", "CL-244"
     };
+    public static final String IP_ADDRESSING = "192.0.0.0";
 
     public static InputUserDTO createMockInputUserDTO(String name, String username, String pass, TypeUserDTO type, List<Long> roles, String carModel, String carPlate) {
         var inputUser = new InputUserDTO();
@@ -98,6 +99,15 @@ public class CreateMock {
 
     public static InputUserDTO createMockInputUserDTO(String name, String username, String pass, TypeUserDTO type, List<Long> roles) {
         return createMockInputUserDTO(name, username, pass, type, roles, CAR_MODEL, CAR_PLATE);
+    }
+
+    public static InputApplicationConfiguration createMockInputApplicationConfiguration() {
+        var inputApplicationConfiguration = new InputApplicationConfiguration();
+
+        inputApplicationConfiguration.setModeSystem(InputApplicationConfiguration.TypeModeSystem.AUTOMATIC);
+        inputApplicationConfiguration.setIp(IP_ADDRESSING);
+
+        return inputApplicationConfiguration;
     }
 
     public static Role createRole(Long id, String description) {

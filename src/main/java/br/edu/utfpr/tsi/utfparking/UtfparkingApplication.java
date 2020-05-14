@@ -43,6 +43,5 @@ public class UtfparkingApplication implements CommandLineRunner {
         } else {
             log.info("diretório de avatar já existe em {}", rootPathAvatar);
         }
-
     }
 }
