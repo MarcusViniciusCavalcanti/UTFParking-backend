@@ -1,7 +1,7 @@
 package br.edu.utfpr.tsi.utfparking.integration;
 
-import br.edu.utfpr.tsi.utfparking.domain.users.entity.Car;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
+import br.edu.utfpr.tsi.utfparking.structure.disk.properties.DiskProperties;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
@@ -18,7 +18,10 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
@@ -36,6 +39,9 @@ public class UserIntegrationTest extends IntegrationTest {
     private static final String NAME_USER = "Fulano de Tal";
     private static final String USERNAME = "fulano_username";
     private static final String PASSWORD = "12345678";
+
+    @Autowired
+    private DiskProperties diskProperties;
 
     @Autowired
     private CarRepository carRepository;
@@ -462,7 +468,13 @@ public class UserIntegrationTest extends IntegrationTest {
 
     @Order(1)
     @Test
-    void shouldHaveUploadAvatar() throws URISyntaxException {
+    void shouldHaveUploadAvatar() throws URISyntaxException, IOException {
+        var avatarDirectory = Path.of(diskProperties.getPath());
+
+        if(!Files.exists(avatarDirectory)) {
+            Files.createDirectories(avatarDirectory);
+        }
+
         var resource = this.getClass().getResource("/avatar/1.png");
         var file = new File(resource.toURI());
 

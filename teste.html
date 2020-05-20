@@ -1,0 +1,26 @@
+<html>
+  <header>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.2/sockjs.js"></script>
+  </header>
+  <script>
+      const headerName = 'Authorization';
+      const token = 'Bearer eyJjdHkiOiJKV1QiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..mypzUGKhUf39JaPMj3Jing.9PMuqP1HtVIeDzamgQ4WWH6W4FA6ipRQK6nMoqtlZs6-mExGSl0C83Id3K_usUHgNLIIXAOh8zvMafb3z7rf4tOma2QbpETv3CM8C3Ngp5BIy2s0JFrT7YImTXvSjTT0fSIryS7P_HRco1z1JZgWj0ONDKO5Vy3P21UU1lizd-KIM3pJ43DllmYE5xCeVM1ScRRnshbZ-E--Zo_OimxM5QyEAnMEgulf6-MXKFhmvXWxAgfduCSaEOrCICmKehiIGMl68Kx5i3mBs_lXqt1pYKTl3_Zz2nZ4OdNI0MI785E_R1hL21Hf5V-CIayNtF-2rKxAEw9N8oItkjElKlX5mvmrrQ95tbazPdj6foGEGA2lK2XVh0TeqKnKc7zhWsTuKDr_qAU7HO1UAtqRBk8eJgC_9i_a6Tx6bwT58j_Fuz4wKU3KB9lYS_soG3dBXbWhnuc31bhI4wBDEVWEd5tM7sOlTLLmTMIV2YjPDJ_pwvaRxpTJ3gATfEED5za9mb-3nSzldg4Bf_E9gAisnd2r22_BREjDC3fQqVkMUFWu99L0yrpnWd8QZAFs77ui7fw199ee5R7Kp4B7OduLnSihYNCHi3Hd2e8viiBCiu7dBgbfTCeqr3EN0SZZWMaVTG1pkRrZ_MobH5caWbjWhpuzQlXwh12Upmgo1ll68STZSJ8MTAcTnXqPT6Bh_6REGZ1gITchRjkSd9Y7ZIMNQMS_VLyE64BBVWgMflItipDYZlXf6FTbO1rNATm9ZLH3d-SdD8zXfkFvSEVYcIVbKF9WJiEYvJxb1_N2aDaHZvugE_TUa6au0s_NzXBvg0N4gfzZnZtoHyFN8sQhYk9kjnVem2Nk9RMvghw7s7nIpA09gIztH8RAfVTvXGwbisHh6IymWjI-Wa9zKbmyj5oaX0EJPIf7PAepn_x2oYRHok8SDptNH_OwGjhCQieShRLhm0ecWNaMmaEyzbCP23Jx8LV-9519La1ORg9cD5FtOZj-8cSTfYJU919kpj8WMSt1N0QZlYlTl-VlknPU2zDMUf9BZNGfmGjkgbJZeO-j9qr-PrvGeC-6F4gBqYZSLbuwjQEYyMfG2ZPeNlQEOAhNxac-75r0EKlrQebVCeS5k0Fza4oQsHRBeSOlfUnNBli1BCKZxOSSG8zbNig12AwvkxeADSG1OeemZNLwIerPRaEwIIu3Mv-jVxlVcKwGbcgmqL54xw3oycowcDDJ2E8P7z_qDY062u6ApbNdzt0hwAoC4KkVqZicvr27rDtss3JgacMOK3F9JM5EmWJmOGKKI4oRXigaQhuNEoTqaFe6inLt6Y2JPFQ3JyvhPrkxea_mAlVwvYt05OfbIRhHgTmO_mJq6-FluGSXPTtBeuxiCZJWEzy7dfEw-rsQDofKtkY3JZukr67sLPKiCBEcSuZ4yP521w0sQP0VFTffCpb1yR2EQjZsB_QLeLWxFoVS7_PgGJ-C2jmbpH-O7bYZoOC0ey2JMPGIubvMGGSpyY9T4n8I2e3PXTrsOVqQS6wrl_EJpQDW.BY77g8AkP7zhr8iV_ZFrQQ';
+
+      const headers = {};
+      headers[headerName] = token;
+
+      const socket = new SockJS(`http://localhost:8080/api/v1/ws`);
+      stomp = Stomp.over(socket);
+      stomp.connect({"Authorization": token}, function(frame){
+          console.log(frame)
+
+          // configurations
+          stomp.subscribe('/topic/change-config', function(messageOutput) {
+              console.log("New Message: "+ messageOutput);
+          });
+      });
+
+  </script>
+</html>
+

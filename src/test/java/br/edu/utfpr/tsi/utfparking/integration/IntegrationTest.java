@@ -60,7 +60,7 @@ public abstract class IntegrationTest {
 
     protected UserDTO currentUserDTO;
 
-    private String token;
+    protected String token;
 
     public void setUp(RestDocumentationContextProvider restDocumentation) {
         this.configurer = documentationConfiguration(restDocumentation).operationPreprocessors();

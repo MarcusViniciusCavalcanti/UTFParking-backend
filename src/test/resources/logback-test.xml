@@ -8,13 +8,12 @@
 
     <logger name="ch.erni.community.ideasboard" level="OFF"/>
     <logger name="org.apache.catalina.startup.DigesterFactory" level="OFF"/>
-    <logger name="root" level="OFF"/>
-    <logger name="br.edu.utfpr.tsi.utfparking" level="OFF"/>
-    <logger name="org.springframework" level="OFF"/>
+<!--    <logger name="root" level="INFO"/>-->
+    <logger name="org.springframework" level="INFO"/>
     <logger name="org.liquibase.executor" level="OFF"/>
-    <logger name="liquibase.changelog" level="OFF"/>
-    <logger name="org.springframework.boot" level="OFF"/>
-    <logger name="org.springframework.web.servlet" level="OFF"/>
-    <logger name="org.springframework.boot.security" level="OFF"/>
-    <logger name="org.springframework.web.SimpLogging" level="OFF"/>
+<!--    <logger name="liquibase.changelog" level="OFF"/>-->
+<!--    <logger name="org.springframework.boot" level="OFF"/>-->
+<!--    <logger name="org.springframework.web.servlet" level="OFF"/>-->
+<!--    <logger name="org.springframework.boot.security" level="OFF"/>-->
+<!--    <logger name="org.springframework.web.SimpLogging" level="OFF"/>-->
 </configuration>

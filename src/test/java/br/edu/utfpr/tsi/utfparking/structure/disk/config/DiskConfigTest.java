@@ -67,12 +67,17 @@ class DiskConfigTest {
 
     @Order(3)
     @Test
-    void shouldReturnException() throws IOException {
-        FileSystemUtils.deleteRecursively(Path.of(diskProperties.getPath()));
+    void shouldReturnException() {
+        try {
+            FileSystemUtils.deleteRecursively(Path.of(diskProperties.getPath()));
+            var resource = this.getClass().getResourceAsStream("/avatar/1.png");
+            var multipartFile = new MockMultipartFile("file", resource);
 
-        var resource = this.getClass().getResourceAsStream("/avatar/1.png");
-        var multipartFile = new MockMultipartFile("file", resource);
+            assertThrows(SaveAvatarException.class, () -> diskConfig.saveAvatar(multipartFile,10L));
 
-        assertThrows(SaveAvatarException.class, () -> diskConfig.saveAvatar(multipartFile,10L));
+            resource.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

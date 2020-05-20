@@ -13,11 +13,11 @@
 
 Api para o sistema UTFParking, de alunos para alunos.
 
-Esta api está agnostica de clientes deste que uso protocolos **HTTP**, seja ele a aplicação de reconhecimento
+Esta api está agnostica de clientes deste que uso protocolos, **HTTP **, seja ele a aplicação de reconhecimento
 ou web.
 
 == Começando
-Esta documentação ira auxiliar novas implementações de __clients sides__, dando uma base
+Esta documentação ira auxiliar em novas implementações de __clients sides__, dando uma base
 de como manipular os recursos que a API provem.
 
 |===
@@ -29,8 +29,8 @@ de como manipular os recursos que a API provem.
 [[overview-http-verbs]]
 === HTTP Verbs
 
-Esta Api foi construída seguindo os padrões RESTFull, tentando aderir o mais próximo
-possíveis as suas conveções em seu uso dos verbos HTTP
+Esta Api foi construída a seguir os padrões RESTFull, tentando aderir o mais próximo
+possíveis das convenções uso dos verbos HTTP
 
 |===
 | Verb | Usage
@@ -129,7 +129,7 @@ fica a cargo do JWT.
 [[security-headers]]
 === Headers
 
-Toda requisição, exceto para requisitar um token e requisições advinda do dispositivo (este utiliza outro tipo de autorização, vide: <<security-device>>),
+Todas requisições, exceto para requisitar um token e requisições advinda do dispositivo (este utiliza outro tipo de autorização, vide: <<security-device>>),
 deverá conter um Header `Authorization` contendo um portador (`Bearer`).
 
 Exemplo:
@@ -208,7 +208,7 @@ Ostipos definem quais possíveis perfils serão atribuido a um usuário, as rest
 
 |===
 |**SERVICE** |Podera ter perfil de ADMIN, OPERATOR, DRIVE
-|**STUDENT** |Tera apenas perfil de DRIVE
+|**STUDENTS** |Tera apenas perfil de DRIVE
 |===
 
 Para mais informações dos perfil consulte a sessão de Perfils, <<roles>>
@@ -416,7 +416,124 @@ caso isso ocorra um error será lançado com código de status ``422``. consulte
 Para usuário não existe:
 include::{snippets}/user/get/error/http-response.adoc[]
 
+[[config]]
+== Configurações do Sistema
+
+As configurações do sistema definem alguns comportamentos da API como, por exemplo, autorização do dispositivo.
+
+A API provêm o recurso ApplicationConfiguration para manipular o comportamento da mesma.
+
+Campos:
+include::{snippets}/configurations/load/success/response-fields.adoc[]
+
+=== Modos do Sistema
+API tem até 3 comportamentos:
+
+**AUTOMATIC**: No modo _Automático_ API após reconhecer a placa do carro é validar o acesso, emite uma notificação para o dispositivo conectado
+ativar o mecanismo de abertura.
+
+**MANUTAL**: No modo _Manual_ API após reconhecer a placa do carro notifica o _Subscribe_ dos reconhecimentos, ver sessão <<subscribes-recognizer>> para mais informações,
+que uma reconhecimento foi verificado e delega para o operador a próxima ação, emitir o sinal para o dispositivo ou não.
+
+**NONE**: No modo _Desabilitado_ a API apenas notifica o resultado do reconhecimento para o _Subscribe_.
+
+IMPORTANT: Por padrão o sistema tem uma configuração padrão da qual define o modeSystem como desabilitado.
+
+[[config-load]]
+== Recuperando as Configurações da aplicação
+|===
+|METHOD|URI|ROLE
+
+|GET
+|`/ap/v1/configuration/`
+|**ADMIN**
+|===
+
+Request:
+include::{snippets}/configurations/load/success/curl-request.adoc[]
+
+Resposta:
+include::{snippets}/configurations/load/success/http-response.adoc[]
+
+[[config-save]]
+== Salvando Configurações do aplicação
+|===
+|METHOD|URI|ROLE
+
+|POST
+|`/ap/v1/configuration/`
+|**ADMIN**
+|===
+
+Request:
+include::{snippets}/configurations/create/success/curl-request.adoc[]
+
+Resposta:
+include::{snippets}/configurations/create/success/http-response.adoc[]
+
+IMPORTANT: O campo **modelSystem** é `REQUERIDO` para modificar as configurações da aplicação. Consulte a sessão <<erros-unprocess>> para mais informações.
+
+[[subscribes]]
+== Observadores
+
+API tem 3 canais para um observador se inscrever para receber notificações de algumas alterações de estado da aplicação.
+
+IMPORTANT: Ambos os canais de de notificações demandam autenticação, igualmente as outras urls, é necessário adicionar o header Authorization
+
+Os canais foram construido utilizando a Stomp sobre Websocket, exemplos de construção de clientes:
+
+Javascript:
+[source, javascript]
+----
+const headerName = 'Authorization';
+      const token = 'Bearer <token>'
+      const headers = {};
+      headers[headerName] = token;
+
+      const socket = new SockJS(`http://localhost:8080/api/v1/ws`);
+      stomp = Stomp.over(socket);
+      stomp.connect({"Authorization": token}, function(frame){
+          stomp.subscribe('/topic/change-config', function(messageOutput) {
+              console.log("New Message: "+ messageOutput);
+          });
+      });
+----
+
+[[subscribes-notifications]]
+=== Observador de notificações do Sistema
+
+
+** EM CONSTRUÇÃO**
+
+[[subscribes-change-config]]
+=== Observador de alteração de configurações
+
+`Endpoint: /topic/change-config`
+
+Este canal notifica uma alteração nas configurações de modo do Sistema, as respostas possíveis são:
+
+`AUTOMATIC, NONE, MANUAL`
+
+Mensagem:
+[source, json]
+----
+content-length:11
+message-id:0p1b3qhd-0
+subscription:sub-0
+content-type:application/json
+destination:/topic/change-config
+content-length:11
+
+"AUTOMATIC"
+----
+
+[[subscribes-recognizer]]
+=== Observador de Reconhecimento
+
+** EM CONSTRUÇÃO**
+
 [[erros]]
+== Erros
 
 As respostas de erros da Api seguem uma estrutura padrão de campos
 
