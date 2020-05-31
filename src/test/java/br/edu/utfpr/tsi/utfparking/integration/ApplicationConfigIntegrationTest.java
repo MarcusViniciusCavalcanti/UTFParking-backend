@@ -1,11 +1,15 @@
 package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputApplicationConfiguration;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.TypeModeSystem;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.ApplicationConfigRepository;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -75,7 +79,7 @@ public class ApplicationConfigIntegrationTest extends IntegrationTest{
 
     @Test
     void shouldReturnConfigurations() {
-        var types = Stream.of(InputApplicationConfiguration.TypeModeSystem.values())
+        var types = Stream.of(TypeModeSystem.values())
                 .map(Enum::name)
                 .collect(Collectors.joining(", "));
 
@@ -103,5 +107,82 @@ public class ApplicationConfigIntegrationTest extends IntegrationTest{
                 .body("modeSystem", is("NONE"))
                 .body("ip", is("0.0.0.0"))
                 .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    void shouldReturnErrorWhenModelSystemIsNull() {
+        var configuration = CreateMock.createMockInputApplicationConfiguration();
+        configuration.setModeSystem(null);
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(configuration)
+                .post(PATH)
+                .then()
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
+    void shouldReturnErrorWhenModelSystemIsInvalidValue() {
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("{ \"modeSystem\": \"other\", \"ip\":\"192.0.0.0\"}")
+                .post(PATH)
+                .then()
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
+    void shouldReturnErrorWhenIpIsNull() {
+        var configuration = CreateMock.createMockInputApplicationConfiguration();
+        configuration.setIp(null);
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(configuration)
+                .post(PATH)
+                .then()
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "providerIpErrors")
+    void shouldReturnErrorWhenIpIsInvalid(String ip) {
+        var configuration = CreateMock.createMockInputApplicationConfiguration();
+        configuration.setIp(ip);
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(configuration)
+                .post(PATH)
+                .then()
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    private static Stream<Arguments> providerIpErrors() {
+        return Stream.of(
+               Arguments.of("00000000000000"),
+               Arguments.of("00.0.00000000000"),
+               Arguments.of("000000.00000000"),
+               Arguments.of("000.000.000.000.00"),
+               Arguments.of("00:00:0000:000000"),
+               Arguments.of("000000:00000000"),
+               Arguments.of("00:0:000:00000000"),
+               Arguments.of("00:00:00:00:000:000:00"),
+               Arguments.of("000000:00000:000"),
+               Arguments.of("000:000:00000:00:0")
+        );
     }
 }

@@ -3,7 +3,6 @@ package br.edu.utfpr.tsi.utfparking.rest.representations;
 import br.edu.utfpr.tsi.utfparking.rest.endpoints.UsersController;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
@@ -13,7 +12,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class UserRepresentation extends RepresentationModel<UserRepresentation> {
 
     private Long userId;

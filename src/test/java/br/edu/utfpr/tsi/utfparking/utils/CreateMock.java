@@ -9,6 +9,7 @@ import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputApplicationConfiguration;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.TypeModeSystem;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -104,7 +105,7 @@ public class CreateMock {
     public static InputApplicationConfiguration createMockInputApplicationConfiguration() {
         var inputApplicationConfiguration = new InputApplicationConfiguration();
 
-        inputApplicationConfiguration.setModeSystem(InputApplicationConfiguration.TypeModeSystem.AUTOMATIC);
+        inputApplicationConfiguration.setModeSystem(TypeModeSystem.AUTOMATIC);
         inputApplicationConfiguration.setIp(IP_ADDRESSING);
 
         return inputApplicationConfiguration;

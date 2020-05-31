@@ -4,7 +4,7 @@ import br.edu.utfpr.tsi.utfparking.domain.configuration.service.ApplicationConfi
 import br.edu.utfpr.tsi.utfparking.domain.notification.model.MessageResponse;
 import br.edu.utfpr.tsi.utfparking.domain.notification.model.TopicApplication;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputApplicationConfiguration;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputApplicationConfiguration.TypeModeSystem;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.TypeModeSystem;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
