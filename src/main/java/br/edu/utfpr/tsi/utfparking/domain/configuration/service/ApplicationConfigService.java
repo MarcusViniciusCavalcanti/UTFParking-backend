@@ -6,6 +6,7 @@ import br.edu.utfpr.tsi.utfparking.domain.notification.model.TopicApplication;
 import br.edu.utfpr.tsi.utfparking.domain.notification.service.SendingMessageService;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.ApplicationConfigDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputApplicationConfiguration;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.TypeModeSystem;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.ApplicationConfigRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class ApplicationConfigService {
         applicationConfig.setIp(config.getIp());
 
         var configMessage = ConfigMessage.builder()
-                .modeSystem(InputApplicationConfiguration.TypeModeSystem.valueOf(applicationConfig.getModeSystem()))
+                .modeSystem(TypeModeSystem.valueOf(applicationConfig.getModeSystem()))
                 .build();
 
         sendingMessageService.sendBeforeTransactionCommit(configMessage, TopicApplication.CONFIG.getTopicName());
@@ -56,7 +57,7 @@ public class ApplicationConfigService {
     }
 
     private ApplicationConfig getDefaultApplicationConfiguration() {
-        var applicationConfig = new ApplicationConfig(1, InputApplicationConfiguration.TypeModeSystem.NONE.name());
+        var applicationConfig = new ApplicationConfig(1, TypeModeSystem.NONE.name());
         applicationConfig.setIp("0.0.0.0");
         return applicationConfig;
     }

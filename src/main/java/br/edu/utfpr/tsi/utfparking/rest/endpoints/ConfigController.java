@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/configurations")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -31,9 +33,9 @@ public class ConfigController {
 
     @IsAdmin
     @PostMapping
-    public ResponseEntity<ApplicationConfigurationRepresentation> save(@RequestBody InputApplicationConfiguration input,  BindingResult resultSet) {
+    public ResponseEntity<ApplicationConfigurationRepresentation> save(@Valid @RequestBody InputApplicationConfiguration input, BindingResult resultSet) {
         if (resultSet.hasErrors()) {
-            throw new IlegalRequestBodyException("Save configuration", resultSet);
+            throw new IlegalRequestBodyException("Change configuration", resultSet);
         }
 
         var config = applicationConfigurationService.save(input);

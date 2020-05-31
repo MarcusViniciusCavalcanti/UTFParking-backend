@@ -562,6 +562,9 @@ Os objetos fieldsErrors, poderão ser os seguintes:
 |Size
 |O campo deve respeitar o tamanho definido. Verifique o tamanho do valor do campo.
 
+|ValueOfEnum
+|O campo deve respeitar os valores de enum validos
+
 |===
 
 

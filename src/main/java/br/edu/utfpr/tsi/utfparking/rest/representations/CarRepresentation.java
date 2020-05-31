@@ -8,7 +8,6 @@ import org.springframework.hateoas.RepresentationModel;
 import java.time.LocalDateTime;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class CarRepresentation extends RepresentationModel<CarRepresentation> {
 
     private Long carId;

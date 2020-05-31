@@ -10,7 +10,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class ApplicationConfigurationRepresentation extends RepresentationModel<ApplicationConfigurationRepresentation> {
     
     private String modeSystem;
