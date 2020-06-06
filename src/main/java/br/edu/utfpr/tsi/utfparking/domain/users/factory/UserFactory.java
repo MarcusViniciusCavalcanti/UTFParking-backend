@@ -13,6 +13,7 @@ public class UserFactory {
     public User createUserByUserDTO(InputUserDTO dto) {
         return User.builder()
                 .name(dto.getName())
+                .authorisedAccess(dto.isAccountNonLocked())
                 .typeUser(TypeUser.valueOf(dto.getType().name()))
                 .build();
     }

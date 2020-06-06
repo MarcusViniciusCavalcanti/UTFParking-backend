@@ -40,7 +40,7 @@ class CarFactoryTest {
     }
 
     @Test
-    void shouldCreateCarWhitPlateAndModelEmpty() {
+    void shouldCreateCarWhitPlateAndModelNull() {
         var input = CreateMock.createMockInputUserDTO(
                 "name user",
                 "username",
@@ -49,6 +49,29 @@ class CarFactoryTest {
                 CreateMock.AUTHORITIES_DRIVER,
                 null,
                 null
+        );
+
+        var user = CreateMock.createUserDefaultUser();
+
+        Car result = carFactory.createCarByInputUser(input, user);
+
+        assertNotNull(result.getModel());
+        assertNotNull(result.getPlate());
+
+        assertEquals(CarFactory.AUSENTE, result.getModel());
+        assertEquals(CarFactory.AUSENTE, result.getPlate());
+    }
+
+    @Test
+    void shouldCreateCarWhitPlateAndModelEmpty() {
+        var input = CreateMock.createMockInputUserDTO(
+                "name user",
+                "username",
+                "password",
+                TypeUserDTO.SERVICE,
+                CreateMock.AUTHORITIES_DRIVER,
+                "",
+                ""
         );
 
         var user = CreateMock.createUserDefaultUser();

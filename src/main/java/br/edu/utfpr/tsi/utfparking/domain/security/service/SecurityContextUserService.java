@@ -1,6 +1,5 @@
 package br.edu.utfpr.tsi.utfparking.domain.security.service;
 
-import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
@@ -18,9 +17,6 @@ import javax.persistence.EntityNotFoundException;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SecurityContextUserService {
-
-    private final JwtConfiguration jwtConfiguration;
-
     private final TokenConverter tokenConverter;
 
     private final AccessCardRepository accessCardRepository;

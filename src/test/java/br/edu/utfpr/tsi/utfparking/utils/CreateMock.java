@@ -163,6 +163,15 @@ public class CreateMock {
         return createUser(1L, accessCard, TypeUser.STUDENTS, "name", car);
     }
 
+    public static AccessCard createUserWithAccessCardUser() {
+        var roles = List.of(Role.builder()
+                .description("Perfil usuário")
+                .name("USER")
+                .build());
+
+        return createAccessCard(1L, roles, "vinicius_usuario", "pass");
+    }
+
     public static List<User> createListUser() {
         return LongStream.rangeClosed(0, 10)
                 .boxed()

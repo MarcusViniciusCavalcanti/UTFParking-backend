@@ -1,12 +1,13 @@
 package br.edu.utfpr.tsi.utfparking.structure.dtos;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@SuperBuilder
 public class CarDTO {
 
     private Long id;

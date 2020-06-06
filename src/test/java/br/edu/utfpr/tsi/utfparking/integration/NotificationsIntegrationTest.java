@@ -1,15 +1,14 @@
 package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.configuration.service.ApplicationConfigService;
-import br.edu.utfpr.tsi.utfparking.domain.notification.model.MessageResponse;
-import br.edu.utfpr.tsi.utfparking.domain.notification.model.TopicApplication;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputApplicationConfiguration;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.TypeModeSystem;
+import lombok.Builder;
+import lombok.Getter;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -22,7 +21,6 @@ import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import javax.transaction.Transactional;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -97,5 +95,13 @@ public class NotificationsIntegrationTest extends IntegrationTest {
         public void handleFrame(StompHeaders stompHeaders, Object o) {
             completableFuture.complete((MessageResponse<TypeModeSystem>) o);
         }
+    }
+
+    @Builder
+    @Getter
+    private static class MessageResponse<T> {
+
+        private T message;
+
     }
 }

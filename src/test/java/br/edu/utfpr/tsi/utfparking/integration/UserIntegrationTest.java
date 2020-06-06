@@ -363,6 +363,34 @@ public class UserIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void shouldReturnErrorOfValidationInUpdate() {
+        var mockInputUserDTO = createMockInputUserDTO();
+        var userDTO = userService.saveNewUser(mockInputUserDTO);
+
+        mockInputUserDTO.setName(null);
+
+        given(specAuthentication)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("user/update/error/validation", getRequestPreprocessor(), getResponsePreprocessor(),
+                        responseFields(
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("Titulo do error."),
+                                fieldWithPath("statusCode").type(JsonFieldType.NUMBER).description("Código de status HTTP."),
+                                fieldWithPath("timestamp").type(JsonFieldType.NUMBER).description("Timestamp do error."),
+                                fieldWithPath("error").type(JsonFieldType.OBJECT).description("Definição do error."),
+                                fieldWithPath("error.fieldErrors[].message").ignored(),
+                                fieldWithPath("error.fieldErrors[].field").ignored(),
+                                fieldWithPath("error.fieldErrors[].code").ignored(),
+                                fieldWithPath("path").type(JsonFieldType.STRING).description("Uri que gerou o error."))
+                        )
+                ).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(mockInputUserDTO)
+                .when()
+                .put(URI_USERS + "/{id}", userDTO.getId())
+                .then()
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
     void shouldDeleteUser() {
         InputUserDTO inputUser = createMockInputUserDTO();
 
