@@ -176,7 +176,10 @@ public class UserService {
     }
 
     private void setCarIfExist(InputUserDTO inputUser, User user) {
-        if ((inputUser.getCarPlate() != null && !inputUser.getCarPlate().isEmpty()) || (inputUser.getCarModel() != null && !inputUser.getCarModel().isEmpty())) {
+        var isCarPlate = inputUser.getCarPlate() != null && !inputUser.getCarPlate().isEmpty();
+        var isCarModel = inputUser.getCarModel() != null && !inputUser.getCarModel().isEmpty();
+
+        if (isCarPlate || isCarModel) {
             var car = carFactory.createCarByInputUser(inputUser, user);
             user.setCar(car);
         }
@@ -254,11 +257,16 @@ public class UserService {
         return user -> {
             user.setName(inputUser.getName());
             user.setTypeUser(TypeUser.valueOf(inputUser.getType().name()));
+            user.setAuthorisedAccess(inputUser.isAccountNonLocked() && inputUser.isEnabled());
 
             var roles = roleRepository.findAllById(inputUser.getAuthorities());
 
             user.getAccessCard().setUsername(inputUser.getUsername());
             user.getAccessCard().setRoles(roles);
+            user.getAccessCard().setAccountNonExpired(inputUser.isAccountNonExpired());
+            user.getAccessCard().setAccountNonLocked(inputUser.isAccountNonLocked());
+            user.getAccessCard().setCredentialsNonExpired(inputUser.isCredentialsNonExpired());
+            user.getAccessCard().setEnabled(inputUser.isEnabled());
 
             return userRepository.save(user);
         };

@@ -1,6 +1,5 @@
 package br.edu.utfpr.tsi.utfparking.structure.repositories;
 
-import br.edu.utfpr.tsi.utfparking.domain.users.entity.Car;
 import br.edu.utfpr.tsi.utfparking.domain.users.entity.TypeUser;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 class CarRepositoryTest {

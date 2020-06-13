@@ -2,6 +2,7 @@ package br.edu.utfpr.tsi.utfparking.integration;
 
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
 import br.edu.utfpr.tsi.utfparking.domain.users.service.UserService;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputPlateRecognizerDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.LoginDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
@@ -9,6 +10,7 @@ import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
+import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.AfterEach;
@@ -29,8 +31,12 @@ import org.springframework.restdocs.restassured3.RestAssuredOperationPreprocesso
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
+import static io.restassured.RestAssured.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -54,6 +60,7 @@ public class SecurityIntegrationTest {
 
     private static final String URI_USERS = "/api/v1/users";
     private static final String URI_LOGIN = "/api/v1/login";
+    private static final String URI_RECOGNIZER = "/api/v1/recognizers/send/plate";
 
     @Autowired
     private UserService userService;
@@ -201,6 +208,58 @@ public class SecurityIntegrationTest {
                 .body("timestamp", notNullValue())
                 .body("error", is("Access resource denied."))
                 .body("path", is("/users/" + userDTO.getId()));
+    }
+
+    @Test
+    void shouldReceivePlateButNotAcknowledgedDevice() {
+        var specification = new RequestSpecBuilder()
+                .setPort(port)
+                .addFilter(configurer)
+                .build();
+
+        var cordianate = new InputPlateRecognizerDTO.Coordinate();
+        cordianate.setX(10F);
+        cordianate.setY(10F);
+
+        var result = new InputPlateRecognizerDTO.Result();
+        result.setConfidence(10F);
+        result.setMatchesTemplate(10);
+        result.setPlate("ABC1234");
+        result.setRegion("region");
+        result.setRegionConfidence(10);
+        result.setCoordinates(List.of(cordianate));
+
+        var recognizerDTO = new InputPlateRecognizerDTO();
+        recognizerDTO.setResults(List.of(result));
+        recognizerDTO.setCameraId(10);
+        recognizerDTO.setEpochTime(Timestamp.valueOf(LocalDateTime.now()).getTime());
+        recognizerDTO.setImgHeight(800);
+        recognizerDTO.setImgWidth(600);
+        recognizerDTO.setProcessingTimeMs(1000F);
+        recognizerDTO.setSiteId(UUID.randomUUID().toString());
+        recognizerDTO.setUuid(UUID.randomUUID().toString());
+
+        given(specification)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .filter(document("security/authenticate/device/failure/unauthorized",
+                        preprocessResponse(
+                                prettyPrint(),
+                                removeHeaders("Vary", "X-Frame-Options", "Date", "Cache-Control", "X-XSS", "Pragma")
+                        ),
+                        responseFields(
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("Titulo do error."),
+                                fieldWithPath("statusCode").type(JsonFieldType.NUMBER).description("Código de status HTTP."),
+                                fieldWithPath("timestamp").type(JsonFieldType.NUMBER).description("Timestamp do error."),
+                                fieldWithPath("error").type(JsonFieldType.STRING).description("Definição do error."),
+                                fieldWithPath("path").type(JsonFieldType.STRING).description("Uri que gerou o error."))
+                        )
+                ).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(recognizerDTO)
+                .post(URI_RECOGNIZER)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+
     }
 
     private void setNotAuthentication() {

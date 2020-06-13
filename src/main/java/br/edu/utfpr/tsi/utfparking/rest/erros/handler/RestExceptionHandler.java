@@ -5,6 +5,7 @@ import br.edu.utfpr.tsi.utfparking.domain.exceptions.UsernameExistException;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.ValidationErrors;
 import br.edu.utfpr.tsi.utfparking.rest.erros.exceptions.IlegalRequestBodyException;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.ResponseError;
+import br.edu.utfpr.tsi.utfparking.structure.exceptions.DeviceDeniedException;
 import br.edu.utfpr.tsi.utfparking.structure.exceptions.UpdateCarException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;

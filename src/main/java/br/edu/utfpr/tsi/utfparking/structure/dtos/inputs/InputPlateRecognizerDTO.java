@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -17,12 +20,18 @@ public class InputPlateRecognizerDTO {
     private Integer imgHeight;
     private Long epochTime;
     private Float processingTimeMs;
+
+    @Valid
     private List<Result> results;
 
     @Data
     @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class )
     public static class Result {
+
+        @NotEmpty
         private String plate;
+
+        @NotNull
         private Float confidence;
         private Integer matchesTemplate;
         private String region;

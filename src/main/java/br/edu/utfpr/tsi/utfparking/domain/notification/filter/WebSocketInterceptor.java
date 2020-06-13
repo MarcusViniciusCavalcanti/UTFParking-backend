@@ -12,6 +12,8 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -22,7 +24,11 @@ public class WebSocketInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         var accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        assert accessor != null;
+
+        if (Objects.isNull(accessor)) {
+            throw new IllegalStateException("Accessor not be null");
+        }
+
         log.info("message to {}. . .", accessor.getCommand());
 
         if (StompCommand.CONNECT.equals(accessor.getCommand()) && message.getHeaders().get("simpUser") != null) {
@@ -32,7 +38,11 @@ public class WebSocketInterceptor implements ChannelInterceptor {
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             log.info("message to connect. . .");
             var authorization = accessor.getNativeHeader("Authorization");
-            assert authorization != null;
+
+            if (Objects.isNull(authorization)) {
+                throw new IllegalStateException("Header Authorization not be null");
+            }
+
             var token = authorization.get(0).replace("Bearer", "").trim();
             securityContextUserService.receiveTokenToSecurityHolder(token);
         }

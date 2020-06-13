@@ -49,10 +49,10 @@ public abstract class IntegrationTest {
     @Autowired
     private JwtConfiguration jwtConfiguration;
 
-    private RestAssuredOperationPreprocessorsConfigurer configurer;
+    protected RestAssuredOperationPreprocessorsConfigurer configurer;
 
     @LocalServerPort
-    private int port;
+    protected int port;
 
     protected RequestSpecification specAuthentication;
 

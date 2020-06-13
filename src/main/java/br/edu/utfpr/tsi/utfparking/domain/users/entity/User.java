@@ -40,6 +40,12 @@ public class User implements Serializable {
     @Enumerated(value = EnumType.STRING)
     private TypeUser typeUser;
 
+    @Column(name = "number_access")
+    private Integer numberAccess;
+
+    @Column(name = "authorised_access")
+    private Boolean authorisedAccess = Boolean.TRUE;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Car car;
 

@@ -29,6 +29,11 @@ class AccessCardRepositoryTest {
         assertNotNull(result.getId());
         assertEquals(LocalDate.now(), result.getCreatedAt());
         assertEquals(LocalDate.now(), result.getUpdatedAt());
+        assertEquals(accessCard.getUsername(), result.getUsername());
+        assertEquals(accessCard.getUser(), result.getUser());
+        assertEquals(accessCard.getRoles(), result.getRoles());
+        assertEquals(accessCard.getAuthorities(), result.getAuthorities());
+        assertEquals(accessCard.getPassword(), result.getPassword());
     }
 
 }

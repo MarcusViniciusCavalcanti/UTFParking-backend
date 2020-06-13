@@ -1,20 +1,15 @@
 package br.edu.utfpr.tsi.utfparking.domain.security.config;
 
-import br.edu.utfpr.tsi.utfparking.domain.notification.filter.WebSocketFilter;
-import br.edu.utfpr.tsi.utfparking.domain.security.filter.AccessDeniedFailureHandler;
-import br.edu.utfpr.tsi.utfparking.domain.security.filter.AuthenticationFailureHandlerImpl;
-import br.edu.utfpr.tsi.utfparking.domain.security.filter.JwtAuthenticationFilter;
-import br.edu.utfpr.tsi.utfparking.domain.security.filter.JwtAuthorizationFilter;
+import br.edu.utfpr.tsi.utfparking.domain.security.filter.*;
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
-import br.edu.utfpr.tsi.utfparking.domain.security.service.TokenConverter;
+import br.edu.utfpr.tsi.utfparking.domain.security.service.SecurityContextUserService;
 import br.edu.utfpr.tsi.utfparking.domain.security.service.TokenCreator;
-import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,7 +23,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.util.List;
 
@@ -46,9 +40,9 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
 
     private final TokenCreator tokenCreator;
 
-    private final TokenConverter tokenConverter;
+    private final SecurityContextUserService securityContextUserService;
 
-    private final AccessCardRepository accessCardRepository;
+    private final AuthenticatedDevice authenticatedDevice;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -66,11 +60,11 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
                     .accessDeniedHandler(new AccessDeniedFailureHandler())
                     .authenticationEntryPoint(new AuthenticationFailureHandlerImpl())
                 .and()
-                    .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), jwtConfiguration, tokenConverter, accessCardRepository), BasicAuthenticationFilter.class)
+                    .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), jwtConfiguration, securityContextUserService, authenticatedDevice), BasicAuthenticationFilter.class)
                     .addFilterAfter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, jwtConfiguration, tokenCreator), UsernamePasswordAuthenticationFilter.class)
                     .authorizeRequests()
                         .antMatchers(jwtConfiguration.getLoginUrl()).permitAll()
-                        .antMatchers("/recognizer/plate").permitAll()
+                        .antMatchers(HttpMethod.POST, "/recognizers/send/plate").permitAll()
                         .antMatchers("/docs/**").permitAll()
                         .antMatchers("/ws/**").permitAll()
                     .anyRequest().authenticated();
