@@ -1,4 +1,4 @@
-= Api - UTFParking
+= Api - UTFParking v0.1.1
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -191,7 +191,14 @@ do seu carro de acesso.
 |===
 
 [[security-device]]
-=== Autorizando Dispositivo
+== Autorizando Dispositivo
+
+Para autorizar um Dispositivo é necessário primeiro ter perfil de administrador
+enviar uma requisição para a URI de configuração passando o IP do dispositivo.
+
+Caso uma requisição for enviado de uma dispositivo sem o ip autorizado esta será negada
+retornando uma mensagem de error com **STATUS CODE 401**
+
 
 [[users]]
 == Usuários
@@ -473,12 +480,37 @@ include::{snippets}/configurations/create/success/http-response.adoc[]
 
 IMPORTANT: O campo **modelSystem** é `REQUERIDO` para modificar as configurações da aplicação. Consulte a sessão <<erros-unprocess>> para mais informações.
 
+[[recognizer]]
+== Reconhecimento
+
+Os reconhecimentos enviados para API seguirá a seguinte estrutura:
+
+Campos:
+include::{snippets}/recognizer/send-plate/success/request-fields.adoc[]
+
+== Enviar uma reconhecimento
+
+|===
+|METHOD|URI|ROLE
+
+|POST
+|`/ap/v1/configuration/`
+|**DISPOSITIVO AUTORIZADO**
+|===
+
+Enviar uma requisição.
+Request:
+include::{snippets}/recognizer/send-plate/success/curl-request.adoc[]
+
+Resposta:
+include::{snippets}/recognizer/send-plate/success/http-response.adoc[]
+
 [[subscribes]]
 == Observadores
 
 API tem 3 canais para um observador se inscrever para receber notificações de algumas alterações de estado da aplicação.
 
-IMPORTANT: Ambos os canais de de notificações demandam autenticação, igualmente as outras urls, é necessário adicionar o header Authorization
+IMPORTANT: Ambos os canais de notificações demandam autenticação, igualmente as outras urls, é necessário adicionar o header Authorization
 
 Os canais foram construido utilizando a Stomp sobre Websocket, exemplos de construção de clientes:
 
@@ -501,7 +533,6 @@ const headerName = 'Authorization';
 
 [[subscribes-notifications]]
 === Observador de notificações do Sistema
-
 
 ** EM CONSTRUÇÃO**
 
@@ -529,6 +560,85 @@ content-length:11
 
 [[subscribes-recognizer]]
 === Observador de Reconhecimento
+
+`Endpoint: /topic/change-config`
+
+Este endpoint poderá receber até 3 (três) mensagens distintas:
+
+**VALIDADO**: Reconhecimento recebido corresponde a um Motorista válido e autorizado;
+[source, json]
+----
+content-length:270
+message-id:jkurrso1-1
+subscription:sub-0
+content-type:application/json
+destination:/topic/new-recognizer
+content-length:270
+
+{
+   "identified":true,
+   "authorize":true,
+   "driver":{
+      "userId":155,
+      "userName":"Fulano de Tal",
+      "type":"SERVICE",
+      "userAvatar":"/user/avatar/155",
+      "lastAccess":"13/7/2020",
+      "lastHoursAccess":"14 : 27",
+      "carModel":"Car model",
+      "plate":"adf12345",
+      "authorizedAccess":true
+   },
+   "tax":77.13066
+}
+
+----
+**NÃO AUTORIZADO**: Reconhecimento recebido corresponde a um Motorista válido porém não autorizado, e;
+[source, json]
+----
+content-length:272
+message-id:fq32jjkq-3
+subscription:sub-0
+content-type:application/json
+destination:/topic/new-recognizer
+content-length:272
+
+{
+   "identified":true,
+   "authorize":false,
+   "driver":{
+      "userId":155,
+      "userName":"Fulano de Tal",
+      "type":"SERVICE",
+      "userAvatar":"/user/avatar/155",
+      "lastAccess":"13/7/2020",
+      "lastHoursAccess":"14 : 45",
+      "carModel":"Car model",
+      "plate":"adf12345",
+      "authorizedAccess":false
+   },
+   "tax":77.13066
+}
+----
+
+TIP: Para bloquear o acesso de um Motorista consulte <<users-edit>>, para mais detalhes
+
+**NÃO RECONHECIDO**: Reconhecimento recebido corresponde não coresponde a um motorista cadastrado na base de dados.
+
+[source, json]
+----
+content-length:35
+message-id:jkurrso1-0
+subscription:sub-0
+content-type:application/json
+destination:/topic/new-recognizer
+content-length:35
+
+{
+  "identified": false,
+  "tax": 77.13066
+}
+----
 
 ** EM CONSTRUÇÃO**
 

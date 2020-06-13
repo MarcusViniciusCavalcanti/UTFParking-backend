@@ -257,11 +257,16 @@ public class UserService {
         return user -> {
             user.setName(inputUser.getName());
             user.setTypeUser(TypeUser.valueOf(inputUser.getType().name()));
+            user.setAuthorisedAccess(inputUser.isAccountNonLocked() && inputUser.isEnabled());
 
             var roles = roleRepository.findAllById(inputUser.getAuthorities());
 
             user.getAccessCard().setUsername(inputUser.getUsername());
             user.getAccessCard().setRoles(roles);
+            user.getAccessCard().setAccountNonExpired(inputUser.isAccountNonExpired());
+            user.getAccessCard().setAccountNonLocked(inputUser.isAccountNonLocked());
+            user.getAccessCard().setCredentialsNonExpired(inputUser.isCredentialsNonExpired());
+            user.getAccessCard().setEnabled(inputUser.isEnabled());
 
             return userRepository.save(user);
         };

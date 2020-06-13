@@ -12,8 +12,6 @@ import java.time.LocalDate;
 @Getter
 @Setter(value = AccessLevel.PACKAGE)
 @Builder
-@EqualsAndHashCode
-@ToString
 public class Coordinate {
 
     @Id

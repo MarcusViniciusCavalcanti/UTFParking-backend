@@ -27,7 +27,7 @@ public class RecognizeService {
         coordinateRepository.saveAll(coordinates);
     }
 
-    public boolean isVerifier(String plate) {
+    public boolean isEntryOnTenMinutes(String plate) {
         var start = LocalDateTime.now().minusSeconds(10);
         var end = LocalDateTime.now();
         return recognizeRepository.findByPlateAndEpochTimeBetween(plate, start, end).isPresent();

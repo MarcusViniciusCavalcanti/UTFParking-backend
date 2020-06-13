@@ -16,7 +16,7 @@
           console.log(frame)
 
           // configurations
-          stomp.subscribe('/topic/change-config', function(messageOutput) {
+          stomp.subscribe('/topic/new-recognizer', function(messageOutput) {
               console.log("New Message: "+ messageOutput);
           });
       });

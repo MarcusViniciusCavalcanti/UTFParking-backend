@@ -36,7 +36,7 @@ public class ExecutorRecognizer implements Consumer<String> {
 
     @Override
     public void accept(String plate) {
-        if (!recognizeService.isVerifier(plate)) {
+        if (!recognizeService.isEntryOnTenMinutes(plate)) {
             var recognizes = createRecognizers(dto);
 
             var coordinates = recognizes.stream()
@@ -46,10 +46,11 @@ public class ExecutorRecognizer implements Consumer<String> {
             recognizeService.saveCoordinates(coordinates);
             recognizeService.saveAll(recognizes);
 
-            var firstTwoPlace = dto.getResults().stream()
+            var list = dto.getResults().stream()
                     .sorted(Comparator.comparing(InputPlateRecognizerDTO.Result::getConfidence).reversed())
                     .collect(Collectors.toList());
 
+            var firstTwoPlace = getFirstTwoPlace(list);
             var plates = firstTwoPlace.stream()
                     .map(InputPlateRecognizerDTO.Result::getPlate)
                     .map(String::toLowerCase)
@@ -57,18 +58,30 @@ public class ExecutorRecognizer implements Consumer<String> {
 
             dto.getResults().stream()
                     .findFirst()
-                    .ifPresent(result -> executeResult(plates, result));
+                    .ifPresent(result -> executeResult(plates, firstTwoPlace));
         }
     }
 
-    private void executeResult(List<String> plates, InputPlateRecognizerDTO.Result result) {
+    private List<InputPlateRecognizerDTO.Result> getFirstTwoPlace(List<InputPlateRecognizerDTO.Result> list) {
+        return list.size() > 1 ? List.of(list.get(0), list.get(1)) : list;
+    }
+
+    private void executeResult(List<String> plates, List<InputPlateRecognizerDTO.Result> results) {
         var cars = carService.getCarByPlates(plates).stream()
                 .map(this::createCarResultDTO)
-                .map(car -> new ResultRecognizerDTO(car, result.getConfidence()))
+                .map(car -> {
+                    var confidenceResult = results.stream()
+                            .filter(result -> result.getPlate().equals(car.getPlate()))
+                            .findFirst()
+                            .map(InputPlateRecognizerDTO.Result::getConfidence)
+                            .orElse(0F);
+
+                    return new ResultRecognizerDTO(car, confidenceResult);
+                })
                 .collect(Collectors.toList());
 
         new ExecutorResult(sendingMessageService).sendingResult(
-                cars.isEmpty() ? List.of(new ResultRecognizerDTO(null, result.getConfidence())) : cars
+                cars.isEmpty() ? List.of(new ResultRecognizerDTO(null, results.get(0).getConfidence())) : cars
         );
     }
 

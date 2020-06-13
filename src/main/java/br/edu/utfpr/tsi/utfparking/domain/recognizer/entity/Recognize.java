@@ -13,10 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@Setter(value = AccessLevel.PACKAGE)
 @Builder
-@EqualsAndHashCode
-@ToString
 public class Recognize {
 
     @Id

@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.nio.file.AccessDeniedException;
+import java.text.ParseException;
 
 @Slf4j
 @Service
@@ -21,22 +23,28 @@ public class SecurityContextUserService {
 
     private final AccessCardRepository accessCardRepository;
 
+    @SneakyThrows
     public void receiveTokenToSecurityHolder(String token) {
-        String s = decryptToken(token);
-        SignedJWT signedJWT = validatingToken(s);
+        String decryptToken = decryptToken(token);
+        SignedJWT signedJWT = validatingToken(decryptToken);
         setSecurityContext(signedJWT);
-
     }
 
-    @SneakyThrows
-    private String decryptToken(String encryptedToken) {
-        return tokenConverter.decryptToken(encryptedToken);
+    private String decryptToken(String encryptedToken) throws AccessDeniedException {
+        try {
+            return tokenConverter.decryptToken(encryptedToken);
+        } catch (ParseException | JOSEException e) {
+            throw new AccessDeniedException("Token is invalid");
+        }
     }
 
-    @SneakyThrows
-    private SignedJWT validatingToken(String encryptedToken) {
+    private SignedJWT validatingToken(String encryptedToken) throws AccessDeniedException {
         tokenConverter.validateTokenSignature(encryptedToken);
-        return SignedJWT.parse(encryptedToken);
+        try {
+            return SignedJWT.parse(encryptedToken);
+        } catch (ParseException e) {
+            throw new AccessDeniedException("Token is invalid");
+        }
     }
 
     private void setSecurityContext(SignedJWT signedJWT) {

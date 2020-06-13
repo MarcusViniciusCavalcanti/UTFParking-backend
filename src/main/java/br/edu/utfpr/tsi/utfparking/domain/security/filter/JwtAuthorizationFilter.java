@@ -2,18 +2,11 @@ package br.edu.utfpr.tsi.utfparking.domain.security.filter;
 
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
 import br.edu.utfpr.tsi.utfparking.domain.security.service.SecurityContextUserService;
-import br.edu.utfpr.tsi.utfparking.domain.security.service.TokenConverter;
-import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jwt.SignedJWT;
-import lombok.SneakyThrows;
+import br.edu.utfpr.tsi.utfparking.structure.exceptions.DeviceDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,26 +16,36 @@ import java.io.IOException;
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
+    private static final String SEND_PLATE = "/api/v1/recognizers/send/plate";
+
     private final JwtConfiguration jwtConfiguration;
 
     private final SecurityContextUserService securityContextUserService;
 
+    private final AuthenticatedDevice authenticatedDevice;
+
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
                                   JwtConfiguration jwtConfiguration,
-                                  SecurityContextUserService securityContextUserService) {
+                                  SecurityContextUserService securityContextUserService,
+                                  AuthenticatedDevice authenticatedDevice) {
         super(authenticationManager);
         this.jwtConfiguration = jwtConfiguration;
         this.securityContextUserService = securityContextUserService;
+        this.authenticatedDevice = authenticatedDevice;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws IOException, ServletException {
         log.info("Running request from id address '{}' ", httpServletRequest.getRemoteAddr());
         String header = httpServletRequest.getHeader(jwtConfiguration.getHeader().getName());
 
         if (header == null || !header.startsWith(jwtConfiguration.getHeader().getPrefix())) {
             log.info("Running request not authenticate ");
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            try {
+                checkRequest(httpServletRequest, httpServletResponse, filterChain);
+            } catch (ServletException e) {
+                throw new DeviceDeniedException("Device not authority with ip addressing");
+            }
             return;
         }
 
@@ -54,5 +57,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         securityContextUserService.receiveTokenToSecurityHolder(token);
         log.info("Token validate authenticated successfully!");
         filterChain.doFilter(httpServletRequest, httpServletResponse);
+    }
+
+    private void checkRequest(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        var uri = request.getRequestURI();
+        if (uri.equals(SEND_PLATE)) {
+            authenticatedDevice.doFilterInternal(request, response, filterChain);
+        } else {
+            filterChain.doFilter(request, response);
+        }
     }
 }

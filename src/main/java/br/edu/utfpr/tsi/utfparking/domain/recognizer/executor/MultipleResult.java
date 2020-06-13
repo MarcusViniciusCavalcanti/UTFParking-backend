@@ -8,6 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 
 public class MultipleResult extends ResultHandler {
@@ -22,7 +23,13 @@ public class MultipleResult extends ResultHandler {
             results.stream()
                     .filter(car -> {
                         var lastAccess = car.getCar().getLastAccess();
-                        return LocalDateTime.now().minusMinutes(10).isBefore(lastAccess);
+                        var currentTimeMinusTenMinute = LocalDateTime.now().minusMinutes(10);
+
+                        if (Objects.isNull(lastAccess)) {
+                            return false;
+                        }
+
+                        return lastAccess.isBefore(currentTimeMinusTenMinute);
                     })
                     .max(Comparator.comparing(ResultRecognizerDTO::getConfidence))
                     .ifPresent(result -> {

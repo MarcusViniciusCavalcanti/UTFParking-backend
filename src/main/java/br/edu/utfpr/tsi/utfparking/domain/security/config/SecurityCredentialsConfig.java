@@ -1,9 +1,6 @@
 package br.edu.utfpr.tsi.utfparking.domain.security.config;
 
-import br.edu.utfpr.tsi.utfparking.domain.security.filter.AccessDeniedFailureHandler;
-import br.edu.utfpr.tsi.utfparking.domain.security.filter.AuthenticationFailureHandlerImpl;
-import br.edu.utfpr.tsi.utfparking.domain.security.filter.JwtAuthenticationFilter;
-import br.edu.utfpr.tsi.utfparking.domain.security.filter.JwtAuthorizationFilter;
+import br.edu.utfpr.tsi.utfparking.domain.security.filter.*;
 import br.edu.utfpr.tsi.utfparking.domain.security.properties.JwtConfiguration;
 import br.edu.utfpr.tsi.utfparking.domain.security.service.SecurityContextUserService;
 import br.edu.utfpr.tsi.utfparking.domain.security.service.TokenCreator;
@@ -12,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -44,6 +42,8 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
 
     private final SecurityContextUserService securityContextUserService;
 
+    private final AuthenticatedDevice authenticatedDevice;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
@@ -60,11 +60,11 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
                     .accessDeniedHandler(new AccessDeniedFailureHandler())
                     .authenticationEntryPoint(new AuthenticationFailureHandlerImpl())
                 .and()
-                    .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), jwtConfiguration, securityContextUserService), BasicAuthenticationFilter.class)
+                    .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), jwtConfiguration, securityContextUserService, authenticatedDevice), BasicAuthenticationFilter.class)
                     .addFilterAfter(new JwtAuthenticationFilter(authenticationManager(), objectMapper, jwtConfiguration, tokenCreator), UsernamePasswordAuthenticationFilter.class)
                     .authorizeRequests()
                         .antMatchers(jwtConfiguration.getLoginUrl()).permitAll()
-                        .antMatchers("/recognizer/plate").permitAll()
+                        .antMatchers(HttpMethod.POST, "/recognizers/send/plate").permitAll()
                         .antMatchers("/docs/**").permitAll()
                         .antMatchers("/ws/**").permitAll()
                     .anyRequest().authenticated();
