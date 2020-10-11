@@ -6,11 +6,9 @@ import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputPlateRecognizerDTO
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.LoginDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
-import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.AccessCardRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
 import br.edu.utfpr.tsi.utfparking.utils.CreateMock;
-import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.AfterEach;
@@ -36,7 +34,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static io.restassured.RestAssured.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;

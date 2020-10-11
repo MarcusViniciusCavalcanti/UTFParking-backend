@@ -49,7 +49,7 @@ configuration:
   isMock: false
 
 files:
-  path: /usersFiles/avatar
+  path: usersFiles/avatar
 
 ---
 spring:

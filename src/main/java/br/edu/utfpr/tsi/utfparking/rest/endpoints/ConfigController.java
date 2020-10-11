@@ -6,6 +6,8 @@ import br.edu.utfpr.tsi.utfparking.rest.erros.exceptions.IlegalRequestBodyExcept
 import br.edu.utfpr.tsi.utfparking.rest.factories.ApplicationConfigRepresentationFactory;
 import br.edu.utfpr.tsi.utfparking.rest.representations.ApplicationConfigurationRepresentation;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputApplicationConfiguration;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.TypeModeSystem;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.UpdateModeSystem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +41,18 @@ public class ConfigController {
         }
 
         var config = applicationConfigurationService.save(input);
+        var representation = applicationConfigRepresentationFactory.toModel(config);
+        return ResponseEntity.ok(representation);
+    }
+
+    @IsAdmin
+    @PatchMapping("/mode-system")
+    public ResponseEntity<ApplicationConfigurationRepresentation> updateModeSystem(@Valid @RequestBody UpdateModeSystem typeModeSystem, BindingResult resultSet) {
+        if (resultSet.hasErrors()) {
+            throw new IlegalRequestBodyException("Update mode system", resultSet);
+        }
+
+        var config = applicationConfigurationService.updateModeSystem(typeModeSystem.getModeSystem());
         var representation = applicationConfigRepresentationFactory.toModel(config);
         return ResponseEntity.ok(representation);
     }

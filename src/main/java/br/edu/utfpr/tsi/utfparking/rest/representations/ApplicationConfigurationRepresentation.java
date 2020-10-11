@@ -24,6 +24,7 @@ public class ApplicationConfigurationRepresentation extends RepresentationModel<
 
         add(linkTo(methodOn(ConfigController.class).loadConfig()).withRel("load"));
         add(linkTo(methodOn(ConfigController.class).save(null, null)).withRel("save"));
+        add(linkTo(methodOn(ConfigController.class).updateModeSystem(null, null)).withRel("updateModeSystem"));
 
     }
 }
