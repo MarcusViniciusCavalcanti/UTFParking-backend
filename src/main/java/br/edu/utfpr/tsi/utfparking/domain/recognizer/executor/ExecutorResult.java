@@ -6,7 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.List;
 
-public class ExecutorResult {
+public final class ExecutorResult {
 
     private ResultHandler resultHandler;
 
@@ -22,7 +22,7 @@ public class ExecutorResult {
         resultHandler.handleResult(cars);
     }
 
-    protected void initialHandlerResult(ResultHandler resultHandler) {
-        this.resultHandler = resultHandler;
+    protected void initialHandlerResult(ResultHandler handler) {
+        resultHandler = handler;
     }
 }

@@ -12,6 +12,7 @@ import br.edu.utfpr.tsi.utfparking.structure.dtos.RoleDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.ParamsSearchRequestDTO;
 import br.edu.utfpr.tsi.utfparking.structure.exceptions.UpdateCarException;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
@@ -260,7 +261,7 @@ class UserServiceTest {
         when(carFactory.createCarDTOByUser(any())).thenCallRealMethod();
         when(accessCardFactory.createAccessCardByUser(any())).thenCallRealMethod();
 
-        var users = userService.findAllPageableUsers(Pageable.unpaged());
+        var users = userService.findAllPageableUsers(new ParamsSearchRequestDTO());
 
         assertEquals(userList.size(), users.getSize());
     }

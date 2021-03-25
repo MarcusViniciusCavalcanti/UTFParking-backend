@@ -1,13 +1,28 @@
 package br.edu.utfpr.tsi.utfparking.domain.users.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+
 @Entity
-@Table(name = "cars", indexes = { @Index(columnList = "plate", name = "Index_car_plate") })
+@Table(name = "cars", indexes = @Index(columnList = "plate", name = "Index_car_plate"))
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
@@ -40,7 +55,7 @@ public class Car {
 
     @PrePersist
     private void newCar() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        createdAt = LocalDate.now();
+        updatedAt = LocalDate.now();
     }
 }

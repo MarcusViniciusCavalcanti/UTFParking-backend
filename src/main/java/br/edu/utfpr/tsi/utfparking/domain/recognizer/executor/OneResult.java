@@ -18,7 +18,7 @@ public class OneResult extends ResultHandler {
             var car = results.get(0).getCar();
             var confidence = results.get(0).getConfidence();
             var dto = RecognizerDTO.getNewInstance(car, confidence);
-            super.sending(dto);
+            sending(dto);
         }
 
         super.handleResult(results);

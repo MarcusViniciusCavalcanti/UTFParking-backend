@@ -39,9 +39,8 @@ public class TokenConverter {
     public void validateTokenSignature(String signedToken) throws AccessDeniedException {
         log.info("Starting method to validate toke signature");
 
-        SignedJWT signedJWT = null;
         try {
-            signedJWT = SignedJWT.parse(signedToken);
+            SignedJWT signedJWT = SignedJWT.parse(signedToken);
 
             log.info("Token parsed! Retrieving public key from signed token");
 

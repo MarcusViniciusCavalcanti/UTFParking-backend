@@ -1,5 +1,6 @@
 package br.edu.utfpr.tsi.utfparking.domain.security.entity;
 
+import br.edu.utfpr.tsi.utfparking.structure.dtos.RoleDTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,4 +25,11 @@ public class Role implements Serializable {
     @Column(name = "description", nullable = false)
     private String description;
 
+    public RoleDTO createDto() {
+        return RoleDTO.builder()
+            .id(id)
+            .description(description)
+            .name(name)
+            .build();
+    }
 }

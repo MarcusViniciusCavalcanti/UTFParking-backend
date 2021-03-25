@@ -22,7 +22,7 @@ public class AuthenticationFailureHandlerImpl implements AuthenticationEntryPoin
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
-        log.error("Error in process request: " + request.getRequestURL() + " cause by: failiure authentication");
+        log.error("Error in process request: {} cause by: failiure authentication", request.getRequestURL());
 
         var responseError = ResponseError.builder()
                 .title(HttpStatus.UNAUTHORIZED.getReasonPhrase())

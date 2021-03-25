@@ -25,11 +25,7 @@ public class MultipleResult extends ResultHandler {
                         var lastAccess = car.getCar().getLastAccess();
                         var currentTimeMinusTenMinute = LocalDateTime.now().minusMinutes(10);
 
-                        if (Objects.isNull(lastAccess)) {
-                            return false;
-                        }
-
-                        return lastAccess.isBefore(currentTimeMinusTenMinute);
+                        return !Objects.isNull(lastAccess) && lastAccess.isBefore(currentTimeMinusTenMinute);
                     })
                     .max(Comparator.comparing(ResultRecognizerDTO::getConfidence))
                     .ifPresent(result -> {

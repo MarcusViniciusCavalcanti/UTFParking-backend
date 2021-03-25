@@ -53,7 +53,8 @@ public class ApplicationConfigIntegrationTest extends IntegrationTest{
                 .filter(document("configurations/create/success", getRequestPreprocessor(), getResponsePreprocessor(),
                         links(halLinks(),
                                 linkWithRel("save").description("Url para configurar o sistema."),
-                                linkWithRel("load").description("Url para recuperar as configurações do sistema.")
+                                linkWithRel("load").description("Url para recuperar as configurações do sistema."),
+                                linkWithRel("updateModeSystem").description("Url para alterar o modo do sistema.")
                         ),
                         requestFields(
                                 fields.withPath("ip").type(JsonFieldType.STRING).description("Endereço Ip do dispositivo."),
@@ -64,7 +65,8 @@ public class ApplicationConfigIntegrationTest extends IntegrationTest{
                                 fieldWithPath("modeSystem").type(JsonFieldType.STRING).description("Modo do sistema."),
                                 fieldWithPath("_links").type(JsonFieldType.OBJECT).description("Uris relacionadas ao recurso."),
                                 fieldWithPath("_links.save.href").ignored(),
-                                fieldWithPath("_links.load.href").ignored()
+                                fieldWithPath("_links.load.href").ignored(),
+                                fieldWithPath("_links.updateModeSystem.href").ignored()
                         )
                 ))
                 .when()
@@ -90,13 +92,15 @@ public class ApplicationConfigIntegrationTest extends IntegrationTest{
                 .filter(document("configurations/load/success", getRequestPreprocessor(), getResponsePreprocessor(),
                         links(halLinks(),
                                 linkWithRel("save").description("Url para configurar o sistema."),
-                                linkWithRel("load").description("Url para recuperar as configurações do sistema.")
+                                linkWithRel("load").description("Url para recuperar as configurações do sistema."),
+                                linkWithRel("updateModeSystem").description("Url para alterar o modo do sistema.")
                         ),
                         responseFields(
                                 fieldWithPath("ip").type(JsonFieldType.STRING).description("Endereço Ip do dispositivo."),
                                 fieldWithPath("modeSystem").type(JsonFieldType.STRING).description(msgModelSystem),
                                 fieldWithPath("_links").type(JsonFieldType.OBJECT).description("Uris relacionadas ao recurso."),
                                 fieldWithPath("_links.save.href").ignored(),
+                                fieldWithPath("_links.updateModeSystem.href").ignored(),
                                 fieldWithPath("_links.load.href").ignored()
                         )
                 ))

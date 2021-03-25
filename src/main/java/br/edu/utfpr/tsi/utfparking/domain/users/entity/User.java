@@ -1,13 +1,31 @@
 package br.edu.utfpr.tsi.utfparking.domain.users.entity;
 
 import br.edu.utfpr.tsi.utfparking.domain.security.entity.AccessCard;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Optional;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "users")
@@ -37,7 +55,7 @@ public class User implements Serializable {
     private LocalDate updatedAt;
 
     @Column(name = "type")
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private TypeUser typeUser;
 
     @Column(name = "number_access")
@@ -51,16 +69,16 @@ public class User implements Serializable {
 
     @PrePersist
     private void newAccessCard() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        createdAt = LocalDate.now();
+        updatedAt = LocalDate.now();
     }
 
     @PreUpdate
     private void updateAccessCard() {
-        this.updatedAt = LocalDate.now();
+        updatedAt = LocalDate.now();
     }
 
     public Optional<Car> car() {
-        return Optional.ofNullable(this.car);
+        return Optional.ofNullable(car);
     }
 }

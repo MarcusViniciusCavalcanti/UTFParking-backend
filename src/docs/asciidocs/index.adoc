@@ -160,7 +160,7 @@ include::{snippets}/security/authenticate/Login/failure/forbidden/http-response.
 === Login
 
 |===
-|POST |`/ap/v1/login`
+|POST |`/api/v1/login`
 |===
 
 Para criar um token **/api/v1/login** passando as credenciais, username e password.

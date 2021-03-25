@@ -4,6 +4,7 @@ logging:
     com.memorynotfound: INFO
     org.springframework.web: INFO
     org.springframework.security: INFO
+    org.hibernate.type: TRACE
 
 server:
   port: 8080
@@ -34,6 +35,9 @@ spring:
       ddl-auto: none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/utfparking

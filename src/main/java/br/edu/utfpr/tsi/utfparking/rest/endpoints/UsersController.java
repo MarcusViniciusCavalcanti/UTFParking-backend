@@ -5,24 +5,39 @@ import br.edu.utfpr.tsi.utfparking.rest.annotations.IsAdmin;
 import br.edu.utfpr.tsi.utfparking.rest.annotations.IsEqualsUser;
 import br.edu.utfpr.tsi.utfparking.rest.annotations.IsOperatorOrAdmin;
 import br.edu.utfpr.tsi.utfparking.rest.erros.exceptions.IlegalRequestBodyException;
+import br.edu.utfpr.tsi.utfparking.rest.factories.TypeUserRepresentationFactory;
 import br.edu.utfpr.tsi.utfparking.rest.factories.UserRepresentationFactory;
+import br.edu.utfpr.tsi.utfparking.rest.representations.TypeUserRepresentation;
 import br.edu.utfpr.tsi.utfparking.rest.representations.UserRepresentation;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.ParamsSearchRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -36,6 +51,8 @@ public class UsersController {
     private final PagedResourcesAssembler<UserDTO> pagedResourcesAssembler;
 
     private final UserApplicationService userApplicationService;
+
+    private final TypeUserRepresentationFactory typeUserRepresentationFactory;
 
     @GetMapping(value = "/me")
     public ResponseEntity<UserRepresentation> getUserByAccessCard() {
@@ -56,10 +73,14 @@ public class UsersController {
 
     @IsAdmin
     @GetMapping
-    public ResponseEntity<PagedModel<UserRepresentation>> findAll(Pageable pageable) {
-        var page = userApplicationService.findAllPageableUsers(pageable);
-        var userRepresentations = pagedResourcesAssembler.toModel(page, userRepresentationFactory);
-        return ResponseEntity.ok(userRepresentations);
+    public ResponseEntity<Page<UserRepresentation>> findAll(ParamsSearchRequestDTO params) {
+        var page = userApplicationService.findAllPageableUsers(params);
+
+        var listUserPresentation = page.getContent().stream()
+            .map(userRepresentationFactory::toModel)
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new PageImpl<>(listUserPresentation, page.getPageable(), page.getTotalElements()));
     }
 
     @IsAdmin
@@ -109,12 +130,22 @@ public class UsersController {
         return unwrap(userDto);
     }
 
+    @IsAdmin
+    @GetMapping("/types")
+    public ResponseEntity<List<TypeUserRepresentation>> getAllTypeUser() {
+        List<TypeUserRepresentation> types = userApplicationService.getAllTypeUser().stream()
+            .map(typeUserRepresentationFactory::toModel)
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(types);
+    }
+
     private ResponseEntity<UserRepresentation> unwrap(UserDTO user) {
         var userRepresentation = userRepresentationFactory.toModel(user);
         return ResponseEntity.ok(userRepresentation);
     }
 
-    private ResponseEntity<Resource> getResponseEntityToFile(Resource avatar) {
+    private static ResponseEntity<Resource> getResponseEntityToFile(Resource avatar) {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + avatar.getFilename() + "\"")

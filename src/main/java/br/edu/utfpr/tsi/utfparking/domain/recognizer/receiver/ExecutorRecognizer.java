@@ -62,30 +62,36 @@ public class ExecutorRecognizer implements Consumer<String> {
         }
     }
 
-    private List<InputPlateRecognizerDTO.Result> getFirstTwoPlace(List<InputPlateRecognizerDTO.Result> list) {
-        return list.size() > 1 ? List.of(list.get(0), list.get(1)) : list;
+    private static List<InputPlateRecognizerDTO.Result> getFirstTwoPlace(List<InputPlateRecognizerDTO.Result> list) {
+        if (list.size() > 1) {
+            return List.of(list.get(0), list.get(1));
+        }
+        return list;
     }
 
     private void executeResult(List<String> plates, List<InputPlateRecognizerDTO.Result> results) {
         var cars = carService.getCarByPlates(plates).stream()
-                .map(this::createCarResultDTO)
+                .map(ExecutorRecognizer::createCarResultDTO)
                 .map(car -> {
                     var confidenceResult = results.stream()
                             .filter(result -> result.getPlate().equals(car.getPlate()))
                             .findFirst()
                             .map(InputPlateRecognizerDTO.Result::getConfidence)
-                            .orElse(0F);
+                            .orElse(0.0F);
 
                     return new ResultRecognizerDTO(car, confidenceResult);
                 })
                 .collect(Collectors.toList());
 
-        new ExecutorResult(sendingMessageService).sendingResult(
-                cars.isEmpty() ? List.of(new ResultRecognizerDTO(null, results.get(0).getConfidence())) : cars
-        );
+        if (cars.isEmpty()) {
+            new ExecutorResult(sendingMessageService)
+                .sendingResult(List.of(new ResultRecognizerDTO(null, results.get(0).getConfidence())));
+        } else {
+            new ExecutorResult(sendingMessageService).sendingResult(cars);
+        }
     }
 
-    private CarResultDTO createCarResultDTO(Car car) {
+    private static CarResultDTO createCarResultDTO(Car car) {
         var user = car.getUser();
         var userResultDTO = UserCarResultDTO.builder()
                 .accessNumber(user.getNumberAccess())
@@ -104,7 +110,7 @@ public class ExecutorRecognizer implements Consumer<String> {
                 .build();
     }
 
-    private List<Recognize> createRecognizers(InputPlateRecognizerDTO dto) {
+    private static List<Recognize> createRecognizers(InputPlateRecognizerDTO dto) {
         var cameraId = dto.getCameraId();
         var siteId = dto.getSiteId();
         var processingTimeMs = dto.getProcessingTimeMs();
@@ -133,7 +139,7 @@ public class ExecutorRecognizer implements Consumer<String> {
                 .collect(Collectors.toList());
     }
 
-    private List<Coordinate> createCoordinates(InputPlateRecognizerDTO.Result result) {
+    private static List<Coordinate> createCoordinates(InputPlateRecognizerDTO.Result result) {
         return result.getCoordinates().stream()
                 .map(coordinate -> Coordinate.builder()
                         .axiosX(coordinate.getX())

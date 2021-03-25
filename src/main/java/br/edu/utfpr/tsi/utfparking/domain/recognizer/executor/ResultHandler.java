@@ -20,13 +20,13 @@ public abstract class ResultHandler {
     private final SendingMessageService sendingMessageService;
 
     public void handleResult(List<ResultRecognizerDTO> results) {
-        if (Objects.nonNull(this.next)) {
-            this.getNext().handleResult(results);
+        if (Objects.nonNull(next)) {
+            getNext().handleResult(results);
         }
     }
 
     public ResultHandler getNext() {
-        return this.next;
+        return next;
     }
 
     protected void sending(RecognizerDTO message) {

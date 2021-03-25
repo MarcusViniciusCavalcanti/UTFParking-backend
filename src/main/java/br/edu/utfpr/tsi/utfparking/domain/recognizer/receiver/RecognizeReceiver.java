@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RecognizeReceiver {
 
+    public static final float LIMIT_CONFIDENCE_VALID = 75.0F;
     private final RecognizeService recognizeService;
 
     private final CarService carService;
@@ -23,7 +24,7 @@ public class RecognizeReceiver {
     @Transactional
     public void receive(InputPlateRecognizerDTO dto) {
         dto.getResults().stream()
-                .filter(result -> result.getConfidence() >= 75.0F)
+                .filter(result -> result.getConfidence() >= LIMIT_CONFIDENCE_VALID)
                 .findFirst()
                 .map(InputPlateRecognizerDTO.Result::getPlate)
                 .ifPresent(new ExecutorRecognizer(recognizeService, carService, sendingMessageService, dto));

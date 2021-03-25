@@ -16,6 +16,7 @@ import br.edu.utfpr.tsi.utfparking.structure.dtos.TypeUserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.UserDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUpdateCarDTO;
 import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.InputUserDTO;
+import br.edu.utfpr.tsi.utfparking.structure.dtos.inputs.ParamsSearchRequestDTO;
 import br.edu.utfpr.tsi.utfparking.structure.exceptions.UpdateCarException;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.RoleRepository;
 import br.edu.utfpr.tsi.utfparking.structure.repositories.UserRepository;
@@ -25,21 +26,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 @Slf4j
 @Service
@@ -125,7 +127,10 @@ public class UserService {
                 .orElseThrow();
     }
 
-    public Page<UserDTO> findAllPageableUsers(Pageable pageable) {
+    public Page<UserDTO> findAllPageableUsers(ParamsSearchRequestDTO paramsSearchRequestDTO) {
+        var sort = Sort.by(Sort.Direction.fromString(paramsSearchRequestDTO.getSortDirection()), paramsSearchRequestDTO.getSort());
+        var pageable = PageRequest.of(paramsSearchRequestDTO.getPage(), paramsSearchRequestDTO.getSize());
+
         var userPage = userRepository.findAll(pageable);
         var userDTOS = userPage.stream()
                 .map(createUserDTO())
@@ -185,7 +190,7 @@ public class UserService {
         }
     }
 
-    private BiFunction<UserDTO, CarDTO, UserDTO> executorSetCarToUserDTO() {
+    private static BiFunction<UserDTO, CarDTO, UserDTO> executorSetCarToUserDTO() {
         return (userDTO, carDTO) -> {
             userDTO.setCar(carDTO);
             return userDTO;
@@ -197,7 +202,7 @@ public class UserService {
                 () -> newUser.car().map(car -> carFactory.createCarDTOByUser(newUser)).orElse(null));
     }
 
-    private BiFunction<UserDTO, AccessCardDTO, UserDTO> executorSetAccessCardToUserDTO() {
+    private static BiFunction<UserDTO, AccessCardDTO, UserDTO> executorSetAccessCardToUserDTO() {
         return (userDTO, accessCardDTO) -> {
             userDTO.setAccessCard(accessCardDTO);
             return userDTO;
@@ -244,7 +249,7 @@ public class UserService {
         };
     }
 
-    private Function<Car, Car> updateCar(String carPlate, String carModel) {
+    private static Function<Car, Car> updateCar(String carPlate, String carModel) {
         return mapCar -> {
             mapCar.setPlate(carPlate);
             mapCar.setModel(carModel);

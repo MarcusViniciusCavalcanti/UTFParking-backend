@@ -60,14 +60,14 @@ public class SecurityContextUserService {
 
             accessCardRepository.findById(id)
                     .ifPresentOrElse(
-                            accessCard -> {
-                                var auth = new UsernamePasswordAuthenticationToken(accessCard, null, accessCard.getAuthorities());
-                                auth.setDetails(accessCard);
-                                SecurityContextHolder.getContext().setAuthentication(auth);
-                            },
-                            () -> {
-                                throw new EntityNotFoundException(String.format("Access card by username %s not found", subject));
-                            }
+                        accessCard -> {
+                            var auth = new UsernamePasswordAuthenticationToken(accessCard, null, accessCard.getAuthorities());
+                            auth.setDetails(accessCard);
+                            SecurityContextHolder.getContext().setAuthentication(auth);
+                        },
+                        () -> {
+                            throw new EntityNotFoundException(String.format("Access card by username %s not found", subject));
+                        }
                     );
 
         } catch (Exception ex) {

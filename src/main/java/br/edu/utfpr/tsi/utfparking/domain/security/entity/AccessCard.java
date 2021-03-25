@@ -74,17 +74,17 @@ public class AccessCard implements UserDetails {
 
     @PrePersist
     private void newAccessCard() {
-        this.accountNonExpired = true;
-        this.accountNonLocked = true;
-        this.credentialsNonExpired = true;
-        this.enabled = true;
+        accountNonExpired = true;
+        accountNonLocked = true;
+        credentialsNonExpired = true;
+        enabled = true;
 
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        createdAt = LocalDate.now();
+        updatedAt = LocalDate.now();
     }
 
     @PreUpdate
     private void updateAccessCard() {
-        this.updatedAt = LocalDate.now();
+        updatedAt = LocalDate.now();
     }
 }

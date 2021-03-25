@@ -496,7 +496,7 @@ public class UserIntegrationTest extends IntegrationTest {
 
     @Order(1)
     @Test
-    void shouldHaveUploadAvatar() throws URISyntaxException, IOException {
+    void shouldHaveUploadAvatar() throws Exception {
         var avatarDirectory = Path.of(diskProperties.getPath());
 
         if(!Files.exists(avatarDirectory)) {

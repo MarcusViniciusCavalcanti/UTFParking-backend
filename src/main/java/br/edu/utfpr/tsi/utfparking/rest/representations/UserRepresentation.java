@@ -33,20 +33,20 @@ public class UserRepresentation extends RepresentationModel<UserRepresentation> 
     private CarRepresentation car;
 
     public void copyAttributeBy(UserDTO user) {
-        this.userId = user.getId();
-        this.name = user.getName();
-        this.type = user.getTypeUser().name();
-        this.accountNonExpired = user.getAccessCard().isAccountNonExpired();
-        this.accountNonLocked = user.getAccessCard().isAccountNonLocked();
-        this.credentialsNonExpired = user.getAccessCard().isCredentialsNonExpired();
-        this.enabled = user.getAccessCard().isEnabled();
+        userId = user.getId();
+        name = user.getName();
+        type = user.getTypeUser().name();
+        accountNonExpired = user.getAccessCard().isAccountNonExpired();
+        accountNonLocked = user.getAccessCard().isAccountNonLocked();
+        credentialsNonExpired = user.getAccessCard().isCredentialsNonExpired();
+        enabled = user.getAccessCard().isEnabled();
 
         user.car().ifPresent(carDTO -> {
-            this.car = new CarRepresentation();
-            this.car.copyAttributeBy(carDTO);
+            car = new CarRepresentation();
+            car.copyAttributeBy(carDTO);
         });
 
-        this.roles = user.getAccessCard().getRoles().stream()
+        roles = user.getAccessCard().getRoles().stream()
             .map(role -> new RoleRepresentation(role.getId(), role.getName(), role.getDescription()))
             .collect(Collectors.toList());
 
